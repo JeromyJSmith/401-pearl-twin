@@ -1,0 +1,1 @@
+import{n as e,__tla as __tla_0}from"./jspdf.es.min-BwFg2b1s.js";let __tla=Promise.all([(()=>{try{return __tla_0}catch{}})()]).then(async()=>{});export{e as default,e as jsPDF,__tla};

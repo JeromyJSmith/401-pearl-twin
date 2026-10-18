@@ -1,0 +1,176 @@
+{
+ "label": "polycam_upper",
+ "points": 500068,
+ "frame": "model frame (composed IFCX local metres, z up)",
+ "source": {
+  "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/00_inbox/captures/polycam/10_8_2026.glb",
+  "sha256": "61a7cf23c73b98db79378619e1714910e8cf20e416ee52cdd4ba04675ea03f85",
+  "triangles": 425252,
+  "surface_m2": 270.25
+ },
+ "transform_capture_to_model": [
+  [
+   0.24640051,
+   1.00878244,
+   0.0,
+   -0.44900172
+  ],
+  [
+   -1.00878244,
+   0.24640051,
+   0.0,
+   -2.5756658
+  ],
+  [
+   0.0,
+   0.0,
+   1.03843884,
+   4.72245387
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "scale": 1.03844,
+ "rigid_fit": {
+  "yaw_deg": -78.265,
+  "t_m": [
+   -0.514,
+   -2.5026
+  ],
+  "residual": {
+   "n": 44978,
+   "share_within_1m": 0.9928,
+   "median_cm": 7.8,
+   "p90_cm": 32.0,
+   "share_within_8cm": 0.5034
+  }
+ },
+ "wall_residual": {
+  "n": 179922,
+  "share_within_1m": 0.9928,
+  "median_cm": 4.3,
+  "p90_cm": 25.6,
+  "share_within_8cm": 0.7051
+ },
+ "per_space": {
+  "Upper - Stairs": {
+   "n": 14257,
+   "share_within_1m": 0.9857,
+   "median_cm": 12.1,
+   "p90_cm": 17.8,
+   "share_within_8cm": 0.4137,
+   "points": 14464,
+   "median_offset_on_u_walls_cm": 11.4,
+   "median_offset_on_v_walls_cm": 17.5
+  },
+  "Upper - Room 3": {
+   "n": 39261,
+   "share_within_1m": 0.9412,
+   "median_cm": 7.8,
+   "p90_cm": 25.2,
+   "share_within_8cm": 0.4717,
+   "points": 41715,
+   "median_offset_on_u_walls_cm": 4.9,
+   "median_offset_on_v_walls_cm": 6.4
+  },
+  "Upper - Hallway": {
+   "n": 62010,
+   "share_within_1m": 0.9967,
+   "median_cm": 6.5,
+   "p90_cm": 22.2,
+   "share_within_8cm": 0.6121,
+   "points": 62217,
+   "median_offset_on_u_walls_cm": 1.0,
+   "median_offset_on_v_walls_cm": -4.1
+  },
+  "Upper - Stair Landing & Transition": {
+   "n": 18374,
+   "share_within_1m": 0.9889,
+   "median_cm": 5.5,
+   "p90_cm": 26.5,
+   "share_within_8cm": 0.6542,
+   "points": 18581,
+   "median_offset_on_u_walls_cm": 1.0,
+   "median_offset_on_v_walls_cm": 17.0
+  },
+  "Upper - Closet": {
+   "n": 12678,
+   "share_within_1m": 1.0,
+   "median_cm": 4.1,
+   "p90_cm": 6.1,
+   "share_within_8cm": 0.9485,
+   "points": 12678,
+   "median_offset_on_u_walls_cm": -0.9,
+   "median_offset_on_v_walls_cm": 1.9
+  },
+  "Upper - Room 3 closet": {
+   "n": 21633,
+   "share_within_1m": 1.0,
+   "median_cm": 3.7,
+   "p90_cm": 7.6,
+   "share_within_8cm": 0.9124,
+   "points": 21633,
+   "median_offset_on_u_walls_cm": 0.9,
+   "median_offset_on_v_walls_cm": -0.2
+  },
+  "Upper - Room 1": {
+   "n": 59874,
+   "share_within_1m": 1.0,
+   "median_cm": 2.7,
+   "p90_cm": 18.6,
+   "share_within_8cm": 0.7676,
+   "points": 59874,
+   "median_offset_on_u_walls_cm": -3.6,
+   "median_offset_on_v_walls_cm": -0.6
+  },
+  "Upper - Toilet": {
+   "n": 14806,
+   "share_within_1m": 1.0,
+   "median_cm": 2.6,
+   "p90_cm": 6.1,
+   "share_within_8cm": 0.952,
+   "points": 14806,
+   "median_offset_on_u_walls_cm": 1.7,
+   "median_offset_on_v_walls_cm": -0.2
+  },
+  "Upper - Room 2": {
+   "n": 48832,
+   "share_within_1m": 0.9935,
+   "median_cm": 2.5,
+   "p90_cm": 29.1,
+   "share_within_8cm": 0.7255,
+   "points": 49152,
+   "median_offset_on_u_walls_cm": 0.2,
+   "median_offset_on_v_walls_cm": -1.1
+  },
+  "Upper - Shower": {
+   "n": 9264,
+   "share_within_1m": 1.0,
+   "median_cm": 1.5,
+   "p90_cm": 8.4,
+   "share_within_8cm": 0.8913,
+   "points": 9264,
+   "median_offset_on_u_walls_cm": -4.8,
+   "median_offset_on_v_walls_cm": -0.7
+  }
+ },
+ "bbox": [
+  [
+   -5.960999965667725,
+   -7.814000129699707,
+   0.37700000405311584
+  ],
+  [
+   4.578999996185303,
+   1.4490000009536743,
+   5.75
+  ]
+ ],
+ "sha256": "c2f25002a8e8300283b430fceec63de14b9ca46675dc8fb699f4352fd0ba2b7e",
+ "made_by": "marpa-desk scripts/place_polycam_401.py",
+ "receipt": "docs/evidence/runs/polycam-placement-20261018/receipt.json"
+}

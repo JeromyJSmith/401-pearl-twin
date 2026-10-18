@@ -1,0 +1,1 @@
+import{Nd as e,__tla as __tla_0}from"./store-KciyMF2F.js";let t,n;let __tla=Promise.all([(()=>{try{return __tla_0}catch{}})()]).then(async()=>{t=e()(()=>({choice:null}));n=function(e){t.setState({choice:e})}});export{t as n,n as t,__tla};

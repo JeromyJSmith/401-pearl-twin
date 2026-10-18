@@ -1,0 +1,1 @@
+import{r as e,t}from"./index.browser-ByUCT8up.js";import{__tla as __tla_0}from"./dist-es-omWWOdTu.js";let __tla=Promise.all([(()=>{try{return __tla_0}catch{}})()]).then(async()=>{});export{t as EventStreamSerde,e as eventStreamSerdeProvider,__tla};

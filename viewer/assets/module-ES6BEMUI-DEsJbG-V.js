@@ -1,0 +1,1 @@
+import{a as e,c as t,o as n,s as r,__tla as __tla_0}from"./sandbox-DYKP9Y_c.js";let __tla=Promise.all([(()=>{try{return __tla_0}catch{}})()]).then(async()=>{});export{e as QuickJSModuleCallbacks,n as QuickJSWASMModule,r as applyBaseRuntimeOptions,t as applyModuleEvalRuntimeOptions,__tla};

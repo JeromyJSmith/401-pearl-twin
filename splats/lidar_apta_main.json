@@ -1,0 +1,26 @@
+{
+ "label": "Apartment A main level + house exterior \u00b7 SiteScape LiDAR g1..g4",
+ "points": 1852249,
+ "voxel_m": 0.04,
+ "crop_uv": "-6.3,-7.0,4.0,5.8",
+ "frame": "model site frame (composed IFCX local metres)",
+ "source_sha256": {
+  "lidar_g1_epsg2876_ftUS_navd88_v2_accept.laz": "977edb59031ad7a0fafc2b6bfc93e93f69f0b1ce9aa66c429f70cf08c378f88a",
+  "lidar_g2_epsg2876_ftUS_navd88_v2_accept.laz": "8c79b60f77d0b47879e50e45f0735d9f29f85b1e53baa1028d9818716d439909",
+  "lidar_g3_epsg2876_ftUS_navd88_v2_accept.laz": "e76aecbbfa8cceee500ac20bb8bc8db7e8b4c5362cc6755ffb749db6535ab8ad",
+  "lidar_g4_epsg2876_ftUS_navd88_v2_accept.laz": "e42b5ee9eeb11d4db926a3957553db0988380b4c12549c365d22b694bd0bcd30"
+ },
+ "bbox": [
+  [
+   -7.554999828338623,
+   -8.359000205993652,
+   -0.3799999952316284
+  ],
+  [
+   5.631999969482422,
+   6.613999843597412,
+   6.690999984741211
+  ]
+ ],
+ "sha256": "e2384d9a793e691d49012d495d3dbe527d6773b9e6b45479d241d0622a6cf543"
+}

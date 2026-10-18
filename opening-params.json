@@ -1,0 +1,49 @@
+{
+ "schema": "marpa.401_pearl.opening_params.v1",
+ "note": "Arch openings set by the owner in the presentation (drag handles over the photo scan). House frame (u east, v north, metres; z above the main floor slab top 0.20). Read by scripts/fix50_openings_from_params.py.",
+ "walls": {
+  "Apartment A entry arch wall (N-S at u=-2.03)": {
+   "runs_along": "v",
+   "thickness": [
+    -2.16,
+    -2.02
+   ],
+   "span": [
+    -6.29,
+    -4.62
+   ],
+   "open": [
+    -6,
+    -4.8
+   ],
+   "head": 2.4,
+   "radius": 0.15,
+   "doorways": []
+  },
+  "Apartment A wall 04 (interior E-W at v=-2.76)": {
+   "runs_along": "u",
+   "thickness": [
+    -2.76,
+    -2.62
+   ],
+   "span": [
+    -5.71,
+    -0.37
+   ],
+   "open": [
+    -5.5,
+    -3.12
+   ],
+   "head": 2.37,
+   "radius": 0.18,
+   "doorways": [
+    [
+     -1.09,
+     -0.51,
+     2.23
+    ]
+   ]
+  }
+ },
+ "updated": "2026-10-18T23:00:00.199Z by claude-preview (drag edit of Apartment A entry arch wall (N-S at u=-2.03))"
+}

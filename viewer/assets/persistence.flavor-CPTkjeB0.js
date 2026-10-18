@@ -1,0 +1,1 @@
+import{t as e,__tla as __tla_0}from"./persistence.flavor-Bz0NS2ub.js";let __tla=Promise.all([(()=>{try{return __tla_0}catch{}})()]).then(async()=>{});export{e as deserializeClashConfig,__tla};

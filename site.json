@@ -1,0 +1,130 @@
+{
+ "schema": "marpa.twin.presentation_site.v1",
+ "frame": "local metres, z up, origin EPSG:2876 3058724 / 1248744 ftUS, 5396 ft NAVD88",
+ "zone": "RMX-1",
+ "parcel_no": "146125437008",
+ "lot_area_sf": 4144.5536053587775,
+ "lot": [
+  [
+   -10.6879,
+   9.8064
+  ],
+  [
+   4.2446,
+   13.8339
+  ],
+  [
+   10.8988,
+   -9.959
+  ],
+  [
+   -4.2081,
+   -14.1006
+  ]
+ ],
+ "edges": [
+  {
+   "role": "rear",
+   "start": [
+    -10.6879,
+    9.8064
+   ],
+   "end": [
+    4.2446,
+    13.8339
+   ],
+   "length_ft": 50.74176926974444,
+   "required_ft": 25.0,
+   "measured_ft": 22.564898459832097,
+   "fails": true
+  },
+  {
+   "role": "side_interior",
+   "start": [
+    4.2446,
+    13.8339
+   ],
+   "end": [
+    10.8988,
+    -9.959
+   ],
+   "length_ft": 81.05617795192366,
+   "required_ft": 5.0,
+   "measured_ft": 13.567617581781244,
+   "fails": false
+  },
+  {
+   "role": "front",
+   "start": [
+    10.8988,
+    -9.959
+   ],
+   "end": [
+    -4.2081,
+    -14.1006
+   ],
+   "length_ft": 51.39202462246202,
+   "required_ft": 25.0,
+   "measured_ft": 19.8308074536521,
+   "fails": true
+  },
+  {
+   "role": "side_street",
+   "start": [
+    -4.2081,
+    -14.1006
+   ],
+   "end": [
+    -10.6879,
+    9.8064
+   ],
+   "length_ft": 81.26488341953235,
+   "required_ft": 25.0,
+   "measured_ft": 5.894185178478278,
+   "fails": true
+  }
+ ],
+ "envelope": [
+  [
+   [
+    -1.3374,
+    4.4361
+   ],
+   [
+    4.8255,
+    6.0983
+   ],
+   [
+    7.3766,
+    -3.0235
+   ],
+   [
+    1.1474,
+    -4.7312
+   ]
+  ]
+ ],
+ "height": {
+  "limit_ft": 28.814797166660806,
+  "formula": "(nonstandard lot size - 3,000) x .003333 + 25",
+  "standard_limit_ft": 35.0,
+  "grade_ft_navd88": 5396.501953125,
+  "grade_z": 0.153,
+  "top_z": 8.9358
+ },
+ "failing": [
+  "front_setback_ft",
+  "rear_setback_ft",
+  "street_side_setback_ft"
+ ],
+ "sources": [
+  {
+   "path": "docs/evidence/runs/twin-permit-rules-20261015/survey/setbacks.json",
+   "sha256": "07f5211f0356d1a56df272c7b4a60a232772c40c6700a4b54c686a395488da6f"
+  },
+  {
+   "path": "docs/evidence/runs/twin-permit-rules-20261015/permit/precheck.json",
+   "sha256": "c7f5509b8613a3d12e1269536b6c3400308d3a2e4c376873470d84e01be31aab"
+  }
+ ]
+}

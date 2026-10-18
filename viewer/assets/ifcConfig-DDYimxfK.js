@@ -1,0 +1,1 @@
+import{i as e}from"./ifcConfig-aA820c8n.js";export{e as STREAM_SAB_THRESHOLD};

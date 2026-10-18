@@ -1,0 +1,22 @@
+{
+ "label": "Stair \u00b7 SiteScape LiDAR",
+ "points": 404666,
+ "voxel_m": 0.02,
+ "frame": "model site frame (composed IFCX local metres)",
+ "source_sha256": {
+  "lidar_stair_sitescape_19_03_epsg2876_ftUS_navd88.laz": "7d8d75ba574933c5cbd167245aaee50778cf7f67477651fb080adf1c5bf4b675"
+ },
+ "bbox": [
+  [
+   -2.8469998836517334,
+   -6.297999858856201,
+   0.006000000052154064
+  ],
+  [
+   1.1759999990463257,
+   -1.402999997138977,
+   5.6020002365112305
+  ]
+ ],
+ "sha256": "13d26a036c89d7200dae9e371e42904e6f2b1c347740d0f9caa06e36486d746c"
+}

@@ -1,0 +1,172 @@
+{
+ "label": "polycam_main_aptb",
+ "points": 299574,
+ "frame": "model frame (composed IFCX local metres, z up)",
+ "source": {
+  "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/00_inbox/captures/polycam/10_8_2026 (1).zip",
+  "sha256": "c4ae7951b3cb9b2c1d6a9cdcd4cbf73532d286c56c48103adea603649b913602",
+  "triangles": 11022,
+  "surface_m2": 465.98,
+  "member": "10_8_2026.obj",
+  "object_kinds": [
+   "Ceiling_Bathroom",
+   "Ceiling_Dining_Room",
+   "Ceiling_Kitchen",
+   "Ceiling_Other",
+   "Door",
+   "Floor_Bathroom",
+   "Floor_Dining_Room",
+   "Floor_Kitchen",
+   "Floor_Other",
+   "Joint",
+   "Wall",
+   "Window",
+   "chair_other_four_back_no",
+   "refrigerator",
+   "sink",
+   "storage_cabinet_mid1",
+   "storage_cabinet_mid2",
+   "storage_cabinet_mid3",
+   "storage_cabinet_tall2",
+   "storage_shelf",
+   "stove",
+   "toilet",
+   "washer_dryer"
+  ]
+ },
+ "transform_capture_to_model": [
+  [
+   1.00076711,
+   -0.2604597,
+   0.0,
+   0.72337845
+  ],
+  [
+   0.2604597,
+   1.00076711,
+   0.0,
+   -0.46684522
+  ],
+  [
+   0.0,
+   0.0,
+   1.03410544,
+   0.18465998
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "scale": 1.03411,
+ "rigid_fit": {
+  "yaw_deg": 11.838,
+  "t_m": [
+   0.6676,
+   -0.4318
+  ],
+  "residual": {
+   "n": 55513,
+   "share_within_1m": 0.9987,
+   "median_cm": 9.3,
+   "p90_cm": 42.3,
+   "share_within_8cm": 0.4646
+  }
+ },
+ "wall_residual": {
+  "n": 111132,
+  "share_within_1m": 0.9996,
+  "median_cm": 4.1,
+  "p90_cm": 27.9,
+  "share_within_8cm": 0.6297
+ },
+ "per_space": {
+  "AptB - Shower Area": {
+   "n": 10688,
+   "share_within_1m": 0.987,
+   "median_cm": 5.7,
+   "p90_cm": 27.1,
+   "share_within_8cm": 0.582,
+   "points": 10829,
+   "median_offset_on_u_walls_cm": 5.7,
+   "median_offset_on_v_walls_cm": -5.1
+  },
+  "AptB - Toilet Area": {
+   "n": 19634,
+   "share_within_1m": 0.9348,
+   "median_cm": 4.8,
+   "p90_cm": 27.9,
+   "share_within_8cm": 0.5502,
+   "points": 21003,
+   "median_offset_on_u_walls_cm": 17.2,
+   "median_offset_on_v_walls_cm": -0.4
+  },
+  "AptB - Bathroom": {
+   "n": 28230,
+   "share_within_1m": 0.9536,
+   "median_cm": 4.8,
+   "p90_cm": 27.5,
+   "share_within_8cm": 0.5736,
+   "points": 29605,
+   "median_offset_on_u_walls_cm": 16.7,
+   "median_offset_on_v_walls_cm": -0.5
+  },
+  "AptB - Kitchen": {
+   "n": 35182,
+   "share_within_1m": 0.9583,
+   "median_cm": 3.0,
+   "p90_cm": 34.6,
+   "share_within_8cm": 0.6557,
+   "points": 36712,
+   "median_offset_on_u_walls_cm": -0.1,
+   "median_offset_on_v_walls_cm": -0.1
+  },
+  "AptB - Front Room": {
+   "n": 36282,
+   "share_within_1m": 0.9958,
+   "median_cm": 2.9,
+   "p90_cm": 13.3,
+   "share_within_8cm": 0.6855,
+   "points": 36434,
+   "median_offset_on_u_walls_cm": -0.4,
+   "median_offset_on_v_walls_cm": 0.0
+  },
+  "AptB - Nook": {
+   "n": 18629,
+   "share_within_1m": 1.0,
+   "median_cm": 1.9,
+   "p90_cm": 10.2,
+   "share_within_8cm": 0.8921,
+   "points": 18629,
+   "median_offset_on_u_walls_cm": -0.3,
+   "median_offset_on_v_walls_cm": 0.4
+  },
+  "AptB - Bedroom": {
+   "n": 29342,
+   "share_within_1m": 1.0,
+   "median_cm": 1.7,
+   "p90_cm": 10.2,
+   "share_within_8cm": 0.8016,
+   "points": 29342,
+   "median_offset_on_u_walls_cm": 0.0,
+   "median_offset_on_v_walls_cm": -0.6
+  }
+ },
+ "bbox": [
+  [
+   -2.618000030517578,
+   -6.489999771118164,
+   0.07999999821186066
+  ],
+  [
+   5.026000022888184,
+   6.051000118255615,
+   2.997999906539917
+  ]
+ ],
+ "sha256": "f79cecbe7aa0c935689a45b9c03ee6e3e964853ae3c1567098c759896af08ad6",
+ "made_by": "marpa-desk scripts/place_polycam_401.py",
+ "receipt": "docs/evidence/runs/polycam-placement-20261018/receipt.json"
+}

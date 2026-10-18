@@ -1,0 +1,53 @@
+{
+ "label": "Upper level scan (KIRI c730, placed on Upper Room 1 / Room 2, site frame mapped to model)",
+ "points": 248627,
+ "frame": "model frame (composed IFCX local metres)",
+ "transform": {
+  "site_fit": "/Volumes/MARPA/runs/capture-placement-401/_house_to_site/house_fit.v2_5ca0a9180af01ea7_aee8c4e687942074.json",
+  "applied": "inverse of best.matrix (site -> model)",
+  "matrix_model_to_site": [
+   [
+    0.9998430582279589,
+    -0.01771606370970145,
+    0.0,
+    -0.012900174557995428
+   ],
+   [
+    0.017716063709700924,
+    0.9998430582279572,
+    0.0,
+    0.1376175351044545
+   ],
+   [
+    0.0,
+    0.0,
+    0.9999999999999984,
+    -0.14311788257443847
+   ],
+   [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  ]
+ },
+ "source": {
+  "points_site.npy": "0d236dc70cc3e11a3a3d5fb498acd2f5494622fc4cb60c4ec2164734dcfd3ce2",
+  "rgb.npy": "6f7df240d33c58927972cc19601e0fe291ed59ebd00d63dc83e271d6313ae12b"
+ },
+ "run": "/Volumes/MARPA/runs/capture-placement-401/kiri-mesh-c730",
+ "bbox": [
+  [
+   -7.388000011444092,
+   -5.289000034332275,
+   2.618000030517578
+  ],
+  [
+   2.1070001125335693,
+   4.796999931335449,
+   7.171000003814697
+  ]
+ ],
+ "sha256": "0f9a8b0540ca60f3f43e9a8e027cb11060515f78726589d39e970d3cd9c11baf"
+}

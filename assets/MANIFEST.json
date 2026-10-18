@@ -1,0 +1,1758 @@
+{
+  "generated": "2026-10-18T02:14:44.049Z",
+  "source": "Poly Haven public API https://api.polyhaven.com",
+  "licence": "CC0 1.0 Universal (public domain dedication)",
+  "paths_relative_to": "/Volumes/MARPA/projects/marpa/0001-401-pearl/09_delivery/twin-presentation/plan-to-walk-20261017/assets",
+  "axis_note": "glTF is Y-up, metres. dims_m = [width X, depth Z, height Y] of the default-scene world bbox.",
+  "hdri": [
+    {
+      "id": "qwantani_late_afternoon_puresky",
+      "name": "Qwantani Late Afternoon (Pure Sky)",
+      "resolution": "1k",
+      "path": "hdri/qwantani_late_afternoon_puresky_1k.hdr",
+      "size_bytes": 1115880,
+      "sha256": "9ac3609a3b1381c1c5f0775abf65835ac4215739b5860c60883cf0b215132dfd",
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/qwantani_late_afternoon_puresky",
+      "authors": [
+        "Greg Zaal",
+        "Jarod Guest"
+      ]
+    },
+    {
+      "id": "qwantani_late_afternoon_puresky",
+      "name": "Qwantani Late Afternoon (Pure Sky)",
+      "resolution": "2k",
+      "path": "hdri/qwantani_late_afternoon_puresky_2k.hdr",
+      "size_bytes": 4429634,
+      "sha256": "d1c4d610811b7b94328d67fa48fc107078af21318197e5b937310c825d72074d",
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/qwantani_late_afternoon_puresky",
+      "authors": [
+        "Greg Zaal",
+        "Jarod Guest"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "id": "sofa_02",
+      "name": "Sofa 02",
+      "room": "living",
+      "role": "sofa",
+      "categories": [
+        "furniture",
+        "seating"
+      ],
+      "folder": "models/sofa_02",
+      "gltf": "models/sofa_02/sofa_02_1k.gltf",
+      "dims_m": [
+        1.807,
+        0.818,
+        0.709
+      ],
+      "bbox_min_m": [
+        -0.903,
+        0,
+        -0.478
+      ],
+      "bbox_max_m": [
+        0.904,
+        0.71,
+        0.34
+      ],
+      "polyhaven_dimensions_mm": [
+        1807,
+        818,
+        709
+      ],
+      "files": 5,
+      "size_bytes": 427171,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/sofa_02",
+      "api_files": "https://api.polyhaven.com/files/sofa_02",
+      "authors": [
+        "Kirill Sannikov"
+      ],
+      "gltf_sha256": "5df114209f9b956ccd4831eaeef469a81339ab371d0056eb6d5d29eee08eb431"
+    },
+    {
+      "id": "sofa_03",
+      "name": "Sofa 03",
+      "room": "living",
+      "role": "sofa_large",
+      "categories": [
+        "furniture",
+        "seating"
+      ],
+      "folder": "models/sofa_03",
+      "gltf": "models/sofa_03/sofa_03_1k.gltf",
+      "dims_m": [
+        2.731,
+        0.925,
+        1.118
+      ],
+      "bbox_min_m": [
+        -1.366,
+        0.001,
+        -0.464
+      ],
+      "bbox_max_m": [
+        1.366,
+        1.119,
+        0.461
+      ],
+      "polyhaven_dimensions_mm": [
+        2731,
+        925,
+        1118
+      ],
+      "files": 6,
+      "size_bytes": 668033,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/sofa_03",
+      "api_files": "https://api.polyhaven.com/files/sofa_03",
+      "authors": [
+        "Fran Calvente"
+      ],
+      "gltf_sha256": "123f491bef4e9bda153bda770a5d12810bfc9b87ce56aa5973aed041ea17fd92"
+    },
+    {
+      "id": "mid_century_lounge_chair",
+      "name": "Mid Century Lounge Chair",
+      "room": "living",
+      "role": "armchair",
+      "categories": [
+        "furniture",
+        "seating"
+      ],
+      "folder": "models/mid_century_lounge_chair",
+      "gltf": "models/mid_century_lounge_chair/mid_century_lounge_chair_1k.gltf",
+      "dims_m": [
+        1.009,
+        1.19,
+        1.169
+      ],
+      "bbox_min_m": [
+        -0.504,
+        0,
+        -0.661
+      ],
+      "bbox_max_m": [
+        0.504,
+        1.169,
+        0.529
+      ],
+      "polyhaven_dimensions_mm": [
+        1009,
+        1190,
+        1169
+      ],
+      "files": 5,
+      "size_bytes": 2087019,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/mid_century_lounge_chair",
+      "api_files": "https://api.polyhaven.com/files/mid_century_lounge_chair",
+      "authors": [
+        "Kuutti Siitonen"
+      ],
+      "gltf_sha256": "47c5769ee4dfa350e2506a6a76d8ef58a1e1060344acda35c503ddff46645d26"
+    },
+    {
+      "id": "modern_coffee_table_01",
+      "name": "Modern Coffee Table 01",
+      "room": "living",
+      "role": "coffee_table",
+      "categories": [
+        "furniture",
+        "table"
+      ],
+      "folder": "models/modern_coffee_table_01",
+      "gltf": "models/modern_coffee_table_01/modern_coffee_table_01_1k.gltf",
+      "dims_m": [
+        0.6,
+        1.202,
+        0.39
+      ],
+      "bbox_min_m": [
+        -0.3,
+        0,
+        -0.601
+      ],
+      "bbox_max_m": [
+        0.3,
+        0.39,
+        0.601
+      ],
+      "polyhaven_dimensions_mm": [
+        1202,
+        600,
+        390
+      ],
+      "files": 5,
+      "size_bytes": 1331297,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/modern_coffee_table_01",
+      "api_files": "https://api.polyhaven.com/files/modern_coffee_table_01",
+      "authors": [
+        "Amin"
+      ],
+      "gltf_sha256": "a35d811da4c174d0c888f23353dda21501763dbf5505c66f57fef4b3f613e50c"
+    },
+    {
+      "id": "side_table_01",
+      "name": "Side Table 01",
+      "room": "living",
+      "role": "side_table",
+      "categories": [
+        "furniture",
+        "table"
+      ],
+      "folder": "models/side_table_01",
+      "gltf": "models/side_table_01/side_table_01_1k.gltf",
+      "dims_m": [
+        0.55,
+        0.45,
+        0.551
+      ],
+      "bbox_min_m": [
+        -0.275,
+        -0.002,
+        -0.225
+      ],
+      "bbox_max_m": [
+        0.275,
+        0.548,
+        0.225
+      ],
+      "polyhaven_dimensions_mm": [
+        550,
+        450,
+        551
+      ],
+      "files": 5,
+      "size_bytes": 505268,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/side_table_01",
+      "api_files": "https://api.polyhaven.com/files/side_table_01",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "gltf_sha256": "a441125a4f660a23a31601aedd9aa379c6febf2b35171c08814187b5ec5a3309"
+    },
+    {
+      "id": "potted_plant_01",
+      "name": "Potted Plant 01",
+      "room": "living",
+      "role": "potted_plant_large",
+      "categories": [
+        "decorative",
+        "plants",
+        "potted plants",
+        "nature"
+      ],
+      "folder": "models/potted_plant_01",
+      "gltf": "models/potted_plant_01/potted_plant_01_1k.gltf",
+      "dims_m": [
+        0.587,
+        0.634,
+        1.35
+      ],
+      "bbox_min_m": [
+        -0.338,
+        -0.014,
+        -0.364
+      ],
+      "bbox_max_m": [
+        0.249,
+        1.336,
+        0.27
+      ],
+      "polyhaven_dimensions_mm": [
+        589,
+        637,
+        1351
+      ],
+      "files": 8,
+      "size_bytes": 6325139,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/potted_plant_01",
+      "api_files": "https://api.polyhaven.com/files/potted_plant_01",
+      "authors": [
+        "Rico Cilliers"
+      ],
+      "gltf_sha256": "23b30294407684b02f14800d6685bd8938da5d2111e17753ac8dd3c37d8c88a0"
+    },
+    {
+      "id": "potted_plant_02",
+      "name": "Potted Plant 02",
+      "room": "living",
+      "role": "potted_plant",
+      "categories": [
+        "decorative",
+        "plants",
+        "potted plants",
+        "nature"
+      ],
+      "folder": "models/potted_plant_02",
+      "gltf": "models/potted_plant_02/potted_plant_02_1k.gltf",
+      "dims_m": [
+        0.701,
+        0.657,
+        0.841
+      ],
+      "bbox_min_m": [
+        -0.397,
+        0,
+        -0.42
+      ],
+      "bbox_max_m": [
+        0.304,
+        0.841,
+        0.237
+      ],
+      "polyhaven_dimensions_mm": [
+        701,
+        657,
+        841
+      ],
+      "files": 8,
+      "size_bytes": 2634698,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/potted_plant_02",
+      "api_files": "https://api.polyhaven.com/files/potted_plant_02",
+      "authors": [
+        "Rico Cilliers"
+      ],
+      "gltf_sha256": "c533dcce0d1aa4379eb7db04601a04983f8df2422b28578de922655a416e64a9"
+    },
+    {
+      "id": "wooden_display_shelves_01",
+      "name": "Wooden Display Shelves 01",
+      "room": "living",
+      "role": "bookshelf",
+      "categories": [
+        "furniture",
+        "shelves"
+      ],
+      "folder": "models/wooden_display_shelves_01",
+      "gltf": "models/wooden_display_shelves_01/wooden_display_shelves_01_1k.gltf",
+      "dims_m": [
+        0.372,
+        1.078,
+        1.556
+      ],
+      "bbox_min_m": [
+        -0.186,
+        0,
+        -0.539
+      ],
+      "bbox_max_m": [
+        0.186,
+        1.557,
+        0.539
+      ],
+      "polyhaven_dimensions_mm": [
+        1078,
+        372,
+        1556
+      ],
+      "files": 5,
+      "size_bytes": 471129,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/wooden_display_shelves_01",
+      "api_files": "https://api.polyhaven.com/files/wooden_display_shelves_01",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "gltf_sha256": "3784953c451b088d24ac1b0e6946c7f7bd589115f51e6549fdb8fe9f7c10600e"
+    },
+    {
+      "id": "ceramic_vase_01",
+      "name": "Ceramic Vase 01",
+      "room": "living",
+      "role": "vase",
+      "categories": [
+        "vases",
+        "containers",
+        "decorative"
+      ],
+      "folder": "models/ceramic_vase_01",
+      "gltf": "models/ceramic_vase_01/ceramic_vase_01_1k.gltf",
+      "dims_m": [
+        0.204,
+        0.204,
+        0.4
+      ],
+      "bbox_min_m": [
+        -0.102,
+        0.001,
+        -0.102
+      ],
+      "bbox_max_m": [
+        0.102,
+        0.401,
+        0.102
+      ],
+      "polyhaven_dimensions_mm": [
+        205,
+        206,
+        401
+      ],
+      "files": 5,
+      "size_bytes": 418457,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/ceramic_vase_01",
+      "api_files": "https://api.polyhaven.com/files/ceramic_vase_01",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "gltf_sha256": "4e2c69eb5bbccf86e9fbf92af438464669d804c1f0eae041ee28651a5b57d91e"
+    },
+    {
+      "id": "ceramic_vase_02",
+      "name": "Ceramic Vase 02",
+      "room": "living",
+      "role": "vase",
+      "categories": [
+        "decorative",
+        "containers",
+        "vases"
+      ],
+      "folder": "models/ceramic_vase_02",
+      "gltf": "models/ceramic_vase_02/ceramic_vase_02_1k.gltf",
+      "dims_m": [
+        0.218,
+        0.218,
+        0.309
+      ],
+      "bbox_min_m": [
+        -0.109,
+        0.001,
+        -0.109
+      ],
+      "bbox_max_m": [
+        0.109,
+        0.31,
+        0.109
+      ],
+      "polyhaven_dimensions_mm": [
+        220,
+        221,
+        309
+      ],
+      "files": 5,
+      "size_bytes": 750161,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/ceramic_vase_02",
+      "api_files": "https://api.polyhaven.com/files/ceramic_vase_02",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "gltf_sha256": "1bda047833b68c2c1b190ee53a55b1aa42d30748c84739909b6ca65b2f2d76c9"
+    },
+    {
+      "id": "book_encyclopedia_set_01",
+      "name": "Book Encyclopedia Set 01",
+      "room": "living",
+      "role": "books",
+      "categories": [
+        "props",
+        "decorative",
+        "books"
+      ],
+      "folder": "models/book_encyclopedia_set_01",
+      "gltf": "models/book_encyclopedia_set_01/book_encyclopedia_set_01_1k.gltf",
+      "dims_m": [
+        0.551,
+        0.163,
+        0.237
+      ],
+      "bbox_min_m": [
+        -0.019,
+        0,
+        -0.062
+      ],
+      "bbox_max_m": [
+        0.532,
+        0.237,
+        0.101
+      ],
+      "polyhaven_dimensions_mm": [
+        551,
+        163,
+        237
+      ],
+      "files": 8,
+      "size_bytes": 3261046,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/book_encyclopedia_set_01",
+      "api_files": "https://api.polyhaven.com/files/book_encyclopedia_set_01",
+      "authors": [
+        "John Malcolm"
+      ],
+      "gltf_sha256": "89eb80fffd619ebbe5043d632bd8cf25b2d68a3614aee2f356e850c69ae498ba"
+    },
+    {
+      "id": "standing_picture_frame_01",
+      "name": "Standing Picture Frame 01",
+      "room": "living",
+      "role": "picture_frame_standing",
+      "categories": [
+        "decorative"
+      ],
+      "folder": "models/standing_picture_frame_01",
+      "gltf": "models/standing_picture_frame_01/standing_picture_frame_01_1k.gltf",
+      "dims_m": [
+        0.1,
+        0.201,
+        0.25
+      ],
+      "bbox_min_m": [
+        -0.062,
+        0,
+        -0.1
+      ],
+      "bbox_max_m": [
+        0.039,
+        0.249,
+        0.1
+      ],
+      "polyhaven_dimensions_mm": [
+        201,
+        100,
+        250
+      ],
+      "files": 11,
+      "size_bytes": 447425,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/standing_picture_frame_01",
+      "api_files": "https://api.polyhaven.com/files/standing_picture_frame_01",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "gltf_sha256": "cd8a0326db53a48c918940c9a7ad016236d825a6b487e5d312fcac33897074bc"
+    },
+    {
+      "id": "hanging_picture_frame_01",
+      "name": "Hanging Picture Frame 01",
+      "room": "living",
+      "role": "picture_frame_wall",
+      "categories": [
+        "decorative",
+        "wall decoration"
+      ],
+      "folder": "models/hanging_picture_frame_01",
+      "gltf": "models/hanging_picture_frame_01/hanging_picture_frame_01_1k.gltf",
+      "dims_m": [
+        0.594,
+        0.016,
+        0.841
+      ],
+      "bbox_min_m": [
+        -0.297,
+        -0.42,
+        0
+      ],
+      "bbox_max_m": [
+        0.297,
+        0.42,
+        0.016
+      ],
+      "polyhaven_dimensions_mm": [
+        594,
+        16,
+        841
+      ],
+      "files": 9,
+      "size_bytes": 397466,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/hanging_picture_frame_01",
+      "api_files": "https://api.polyhaven.com/files/hanging_picture_frame_01",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "gltf_sha256": "00aaeab14751485287443b4c5cc2ee5673136510595daa6a2948519c116ad47b"
+    },
+    {
+      "id": "throw_pillows_01",
+      "name": "Throw Pillows 01",
+      "room": "living",
+      "role": "throw_pillows",
+      "categories": [
+        "decorative"
+      ],
+      "folder": "models/throw_pillows_01",
+      "gltf": "models/throw_pillows_01/throw_pillows_01_1k.gltf",
+      "dims_m": [
+        1.022,
+        0.627,
+        0.45
+      ],
+      "bbox_min_m": [
+        -0.505,
+        -0.002,
+        -0.242
+      ],
+      "bbox_max_m": [
+        0.517,
+        0.448,
+        0.386
+      ],
+      "polyhaven_dimensions_mm": [
+        1022,
+        627,
+        450
+      ],
+      "files": 5,
+      "size_bytes": 1194408,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/throw_pillows_01",
+      "api_files": "https://api.polyhaven.com/files/throw_pillows_01",
+      "authors": [
+        "Serhii Khromov"
+      ],
+      "gltf_sha256": "dd3f985a4446c82035028392ae905b9d996b8be10316a4572a870561a57f76fa"
+    },
+    {
+      "id": "dining_table",
+      "name": "Dining Table",
+      "room": "kitchen_dining",
+      "role": "dining_table",
+      "categories": [
+        "collection: project_lighthouse",
+        "furniture",
+        "table"
+      ],
+      "folder": "models/dining_table",
+      "gltf": "models/dining_table/dining_table_1k.gltf",
+      "dims_m": [
+        2.256,
+        1.39,
+        0.877
+      ],
+      "bbox_min_m": [
+        -1.133,
+        -0.004,
+        -0.678
+      ],
+      "bbox_max_m": [
+        1.123,
+        0.873,
+        0.712
+      ],
+      "polyhaven_dimensions_mm": [
+        2256,
+        1390,
+        877
+      ],
+      "files": 5,
+      "size_bytes": 2283933,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/dining_table",
+      "api_files": "https://api.polyhaven.com/files/dining_table",
+      "authors": [
+        "Aron Łyczek"
+      ],
+      "gltf_sha256": "6af2b850b0524d364b4c89869c6c70112b8d340317a256cf35fbe739040654c7"
+    },
+    {
+      "id": "dining_chair_02",
+      "name": "Dining Chair 02",
+      "room": "kitchen_dining",
+      "role": "dining_chair",
+      "categories": [
+        "furniture",
+        "seating"
+      ],
+      "folder": "models/dining_chair_02",
+      "gltf": "models/dining_chair_02/dining_chair_02_1k.gltf",
+      "dims_m": [
+        0.434,
+        0.576,
+        0.973
+      ],
+      "bbox_min_m": [
+        -0.217,
+        0.001,
+        -0.331
+      ],
+      "bbox_max_m": [
+        0.217,
+        0.975,
+        0.245
+      ],
+      "polyhaven_dimensions_mm": [
+        434,
+        576,
+        973
+      ],
+      "files": 5,
+      "size_bytes": 921075,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/dining_chair_02",
+      "api_files": "https://api.polyhaven.com/files/dining_chair_02",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "gltf_sha256": "88352a44a17319846f61fe03ce75c79fb1849aa508b6a262366c149c1bbd06b8"
+    },
+    {
+      "id": "bar_chair_round_01",
+      "name": "Bar Chair Round 01",
+      "room": "kitchen_dining",
+      "role": "bar_stool",
+      "categories": [
+        "seating",
+        "furniture"
+      ],
+      "folder": "models/bar_chair_round_01",
+      "gltf": "models/bar_chair_round_01/bar_chair_round_01_1k.gltf",
+      "dims_m": [
+        0.483,
+        0.486,
+        0.751
+      ],
+      "bbox_min_m": [
+        -0.229,
+        0,
+        -0.244
+      ],
+      "bbox_max_m": [
+        0.254,
+        0.751,
+        0.242
+      ],
+      "polyhaven_dimensions_mm": [
+        483,
+        486,
+        751
+      ],
+      "files": 5,
+      "size_bytes": 2812333,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/bar_chair_round_01",
+      "api_files": "https://api.polyhaven.com/files/bar_chair_round_01",
+      "authors": [
+        "Dairon Sanchez"
+      ],
+      "gltf_sha256": "6a8f92123245268cbb69fc96f305ee710b32a7a06761b143d3049eaabfcbdd32"
+    },
+    {
+      "id": "pot_enamel_01",
+      "name": "Pot Enamel 01",
+      "room": "kitchen_dining",
+      "role": "kitchen_pot",
+      "categories": [
+        "props",
+        "decorative",
+        "dishes"
+      ],
+      "folder": "models/pot_enamel_01",
+      "gltf": "models/pot_enamel_01/pot_enamel_01_1k.gltf",
+      "dims_m": [
+        0.263,
+        0.18,
+        0.178
+      ],
+      "bbox_min_m": [
+        -0.131,
+        0,
+        -0.09
+      ],
+      "bbox_max_m": [
+        0.131,
+        0.178,
+        0.09
+      ],
+      "polyhaven_dimensions_mm": [
+        263,
+        180,
+        178
+      ],
+      "files": 5,
+      "size_bytes": 1744727,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/pot_enamel_01",
+      "api_files": "https://api.polyhaven.com/files/pot_enamel_01",
+      "authors": [
+        "Kuutti Siitonen"
+      ],
+      "gltf_sha256": "ca60a8399463429cf23e04784334cbe344886e5c8747860ad9ad44c044e03dde"
+    },
+    {
+      "id": "wooden_bowl_01",
+      "name": "Wooden Bowl 01",
+      "room": "kitchen_dining",
+      "role": "bowl",
+      "categories": [
+        "props",
+        "decorative",
+        "dishes"
+      ],
+      "folder": "models/wooden_bowl_01",
+      "gltf": "models/wooden_bowl_01/wooden_bowl_01_1k.gltf",
+      "dims_m": [
+        0.313,
+        0.309,
+        0.094
+      ],
+      "bbox_min_m": [
+        -0.157,
+        0.001,
+        -0.154
+      ],
+      "bbox_max_m": [
+        0.156,
+        0.094,
+        0.155
+      ],
+      "polyhaven_dimensions_mm": [
+        313,
+        309,
+        94
+      ],
+      "files": 5,
+      "size_bytes": 1823237,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/wooden_bowl_01",
+      "api_files": "https://api.polyhaven.com/files/wooden_bowl_01",
+      "authors": [
+        "Oliver Harries"
+      ],
+      "gltf_sha256": "7fe0d6aa4b58e1b9bfc704a8142f4f23f651640c5701b26037fbee3c01613c3b"
+    },
+    {
+      "id": "wooden_cutting_board",
+      "name": "Wooden Cutting Board",
+      "room": "kitchen_dining",
+      "role": "cutting_board",
+      "categories": [
+        "props",
+        "food"
+      ],
+      "folder": "models/wooden_cutting_board",
+      "gltf": "models/wooden_cutting_board/wooden_cutting_board_1k.gltf",
+      "dims_m": [
+        0.45,
+        0.247,
+        0.041
+      ],
+      "bbox_min_m": [
+        -0.224,
+        0,
+        -0.123
+      ],
+      "bbox_max_m": [
+        0.226,
+        0.041,
+        0.123
+      ],
+      "polyhaven_dimensions_mm": [
+        450,
+        247,
+        41
+      ],
+      "files": 5,
+      "size_bytes": 1965772,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/wooden_cutting_board",
+      "api_files": "https://api.polyhaven.com/files/wooden_cutting_board",
+      "authors": [
+        "Kuutti Siitonen"
+      ],
+      "gltf_sha256": "89fa89f6987c5087c0c7a8ac8ccbe451cfa8976ae46377d83a423e658cff9de4"
+    },
+    {
+      "id": "modern_ceiling_lamp_01",
+      "name": "Modern Ceiling Lamp 01",
+      "room": "kitchen_dining",
+      "role": "pendant_lamp",
+      "categories": [
+        "lighting"
+      ],
+      "folder": "models/modern_ceiling_lamp_01",
+      "gltf": "models/modern_ceiling_lamp_01/modern_ceiling_lamp_01_1k.gltf",
+      "dims_m": [
+        0.432,
+        0.432,
+        0.952
+      ],
+      "bbox_min_m": [
+        -0.216,
+        0.221,
+        -0.214
+      ],
+      "bbox_max_m": [
+        0.216,
+        1.173,
+        0.217
+      ],
+      "polyhaven_dimensions_mm": [
+        432,
+        432,
+        952
+      ],
+      "files": 5,
+      "size_bytes": 436065,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/modern_ceiling_lamp_01",
+      "api_files": "https://api.polyhaven.com/files/modern_ceiling_lamp_01",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "gltf_sha256": "f88b5d0a81fa813457a77474e7e4e812f97ad5fac2109ba03ddb183274be3f8c"
+    },
+    {
+      "id": "GothicBed_01",
+      "name": "Gothic Bed 01",
+      "room": "bedroom",
+      "role": "bed",
+      "categories": [
+        "furniture",
+        "bed"
+      ],
+      "folder": "models/GothicBed_01",
+      "gltf": "models/GothicBed_01/GothicBed_01_1k.gltf",
+      "dims_m": [
+        1.494,
+        2.04,
+        1.534
+      ],
+      "bbox_min_m": [
+        -0.711,
+        0,
+        -1.053
+      ],
+      "bbox_max_m": [
+        0.782,
+        1.534,
+        0.987
+      ],
+      "polyhaven_dimensions_mm": [
+        1494,
+        2040,
+        1534
+      ],
+      "files": 5,
+      "size_bytes": 1155213,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/GothicBed_01",
+      "api_files": "https://api.polyhaven.com/files/GothicBed_01",
+      "authors": [
+        "Kirill Sannikov"
+      ],
+      "gltf_sha256": "67df189dd3a645936827f3cc123fb9e97ca9d2201d1e4090762bf477cab82fc0"
+    },
+    {
+      "id": "painted_wooden_nightstand",
+      "name": "Painted Wooden Nightstand",
+      "room": "bedroom",
+      "role": "nightstand",
+      "categories": [
+        "furniture",
+        "table"
+      ],
+      "folder": "models/painted_wooden_nightstand",
+      "gltf": "models/painted_wooden_nightstand/painted_wooden_nightstand_1k.gltf",
+      "dims_m": [
+        0.505,
+        0.509,
+        0.616
+      ],
+      "bbox_min_m": [
+        -0.253,
+        0,
+        -0.249
+      ],
+      "bbox_max_m": [
+        0.251,
+        0.616,
+        0.259
+      ],
+      "polyhaven_dimensions_mm": [
+        505,
+        509,
+        616
+      ],
+      "files": 5,
+      "size_bytes": 2151507,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/painted_wooden_nightstand",
+      "api_files": "https://api.polyhaven.com/files/painted_wooden_nightstand",
+      "authors": [
+        "Kirill Sannikov"
+      ],
+      "gltf_sha256": "fbdc51ee41f2ee2dc7c455cd6f8321ff14e80c7a7d1e7736b194ca0b3e48b304"
+    },
+    {
+      "id": "industrial_pipe_lamp",
+      "name": "Industrial Pipe Lamp",
+      "room": "bedroom",
+      "role": "bedside_lamp",
+      "categories": [
+        "collection: project_lighthouse",
+        "industrial",
+        "lighting"
+      ],
+      "folder": "models/industrial_pipe_lamp",
+      "gltf": "models/industrial_pipe_lamp/industrial_pipe_lamp_1k.gltf",
+      "dims_m": [
+        0.183,
+        0.262,
+        0.364
+      ],
+      "bbox_min_m": [
+        -0.091,
+        0,
+        -0.127
+      ],
+      "bbox_max_m": [
+        0.091,
+        0.364,
+        0.135
+      ],
+      "polyhaven_dimensions_mm": [
+        183,
+        262,
+        364
+      ],
+      "files": 6,
+      "size_bytes": 2408199,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/industrial_pipe_lamp",
+      "api_files": "https://api.polyhaven.com/files/industrial_pipe_lamp",
+      "authors": [
+        "Mateusz Sadek"
+      ],
+      "gltf_sha256": "c5a84037c9183d2966c5659213a0d5190f8fce305153829d81028f6589330af7"
+    },
+    {
+      "id": "drawer_cabinet",
+      "name": "Drawer Cabinet",
+      "room": "bedroom",
+      "role": "dresser",
+      "categories": [
+        "furniture"
+      ],
+      "folder": "models/drawer_cabinet",
+      "gltf": "models/drawer_cabinet/drawer_cabinet_1k.gltf",
+      "dims_m": [
+        1.141,
+        0.488,
+        1.881
+      ],
+      "bbox_min_m": [
+        -0.571,
+        0,
+        -0.248
+      ],
+      "bbox_max_m": [
+        0.571,
+        1.881,
+        0.24
+      ],
+      "polyhaven_dimensions_mm": [
+        1141,
+        488,
+        1881
+      ],
+      "files": 5,
+      "size_bytes": 1143429,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/drawer_cabinet",
+      "api_files": "https://api.polyhaven.com/files/drawer_cabinet",
+      "authors": [
+        "Ulan Cabanilla"
+      ],
+      "gltf_sha256": "899581e6a041644139a138f909c6ba001684cc55b5d1702e08f01094e20d0617"
+    },
+    {
+      "id": "potted_plant_04",
+      "name": "Potted Plant 04",
+      "room": "bathroom",
+      "role": "potted_plant_small",
+      "categories": [
+        "decorative",
+        "plants",
+        "potted plants",
+        "succulent",
+        "nature"
+      ],
+      "folder": "models/potted_plant_04",
+      "gltf": "models/potted_plant_04/potted_plant_04_1k.gltf",
+      "dims_m": [
+        0.168,
+        0.185,
+        0.267
+      ],
+      "bbox_min_m": [
+        -0.084,
+        0,
+        -0.084
+      ],
+      "bbox_max_m": [
+        0.084,
+        0.268,
+        0.101
+      ],
+      "polyhaven_dimensions_mm": [
+        170,
+        186,
+        268
+      ],
+      "files": 5,
+      "size_bytes": 2122625,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/potted_plant_04",
+      "api_files": "https://api.polyhaven.com/files/potted_plant_04",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "gltf_sha256": "b3a3bc3e97da75844999c4da07b7104b6c023f729a7c045979929b9504184339"
+    },
+    {
+      "id": "rubber_duck_toy",
+      "name": "Rubber Duck Toy",
+      "room": "bathroom",
+      "role": "bath_decor",
+      "categories": [
+        "props",
+        "decorative",
+        "collection: the_shed"
+      ],
+      "folder": "models/rubber_duck_toy",
+      "gltf": "models/rubber_duck_toy/rubber_duck_toy_1k.gltf",
+      "dims_m": [
+        0.214,
+        0.3,
+        0.286
+      ],
+      "bbox_min_m": [
+        -0.107,
+        0,
+        -0.146
+      ],
+      "bbox_max_m": [
+        0.107,
+        0.285,
+        0.154
+      ],
+      "polyhaven_dimensions_mm": [
+        214,
+        300,
+        286
+      ],
+      "files": 5,
+      "size_bytes": 735058,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/rubber_duck_toy",
+      "api_files": "https://api.polyhaven.com/files/rubber_duck_toy",
+      "authors": [
+        "Plat251"
+      ],
+      "gltf_sha256": "dcf036297843dad2775841fc41208fae8c776066848d3f6e26efa42eb98d5016"
+    },
+    {
+      "id": "ornate_mirror_01",
+      "name": "Ornate Mirror 01",
+      "room": "bathroom",
+      "role": "mirror",
+      "categories": [
+        "decorative",
+        "wall decoration",
+        "furniture"
+      ],
+      "folder": "models/ornate_mirror_01",
+      "gltf": "models/ornate_mirror_01/ornate_mirror_01_1k.gltf",
+      "dims_m": [
+        0.486,
+        0.026,
+        0.744
+      ],
+      "bbox_min_m": [
+        -0.243,
+        -0.411,
+        0
+      ],
+      "bbox_max_m": [
+        0.243,
+        0.333,
+        0.026
+      ],
+      "polyhaven_dimensions_mm": [
+        486,
+        26,
+        744
+      ],
+      "files": 5,
+      "size_bytes": 677241,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/ornate_mirror_01",
+      "api_files": "https://api.polyhaven.com/files/ornate_mirror_01",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "gltf_sha256": "2d9bb949df65d6470395959fb7976af6fcc1b3ad7d85084918ad543ee71850f6"
+    },
+    {
+      "id": "painted_wooden_bench",
+      "name": "Painted Wooden Bench",
+      "room": "entry",
+      "role": "bench",
+      "categories": [
+        "furniture",
+        "seating"
+      ],
+      "folder": "models/painted_wooden_bench",
+      "gltf": "models/painted_wooden_bench/painted_wooden_bench_1k.gltf",
+      "dims_m": [
+        1.165,
+        0.497,
+        0.889
+      ],
+      "bbox_min_m": [
+        -0.576,
+        0,
+        -0.254
+      ],
+      "bbox_max_m": [
+        0.589,
+        0.889,
+        0.243
+      ],
+      "polyhaven_dimensions_mm": [
+        1165,
+        497,
+        889
+      ],
+      "files": 5,
+      "size_bytes": 1989639,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/painted_wooden_bench",
+      "api_files": "https://api.polyhaven.com/files/painted_wooden_bench",
+      "authors": [
+        "Kirill Sannikov"
+      ],
+      "gltf_sha256": "2289ab82f3fe3045bf18f7b9541743d2c65b9f071cb34bbe424d2bc998f3e507"
+    },
+    {
+      "id": "ClassicConsole_01",
+      "name": "Classic Console 01",
+      "room": "entry",
+      "role": "console_table",
+      "categories": [
+        "furniture",
+        "table"
+      ],
+      "folder": "models/ClassicConsole_01",
+      "gltf": "models/ClassicConsole_01/ClassicConsole_01_1k.gltf",
+      "dims_m": [
+        1.543,
+        0.589,
+        0.949
+      ],
+      "bbox_min_m": [
+        -0.771,
+        0,
+        -0.338
+      ],
+      "bbox_max_m": [
+        0.772,
+        0.949,
+        0.251
+      ],
+      "polyhaven_dimensions_mm": [
+        1543,
+        589,
+        949
+      ],
+      "files": 5,
+      "size_bytes": 740693,
+      "missing_uris": [],
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/ClassicConsole_01",
+      "api_files": "https://api.polyhaven.com/files/ClassicConsole_01",
+      "authors": [
+        "Kirill Sannikov"
+      ],
+      "gltf_sha256": "6c7f79026ad7c388c5d40c56a0988f2a28dc0fc6e489e110332d06792ecd5833"
+    }
+  ],
+  "textures": [
+    {
+      "id": "brown_planks_05",
+      "name": "Brown Planks 05",
+      "role": "exterior_siding_painted_lap",
+      "categories": [
+        "wood",
+        "outdoor",
+        "indoor",
+        "clean",
+        "wall",
+        "man made"
+      ],
+      "tile_size_m": [
+        1,
+        1
+      ],
+      "resolution": "1k jpg",
+      "colour_space": {
+        "diffuse": "sRGB",
+        "normal_gl": "linear (OpenGL +Y)",
+        "roughness": "linear",
+        "ao": "linear"
+      },
+      "files": {
+        "normal_gl": "textures/brown_planks_05/brown_planks_05_nor_gl_1k.jpg",
+        "roughness": "textures/brown_planks_05/brown_planks_05_rough_1k.jpg",
+        "ao": "textures/brown_planks_05/brown_planks_05_ao_1k.jpg",
+        "diffuse": "textures/brown_planks_05/brown_planks_05_diff_1k.jpg"
+      },
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/brown_planks_05",
+      "authors": [
+        "Rob Tuytel"
+      ]
+    },
+    {
+      "id": "weathered_plank_siding",
+      "name": "Weathered Plank Siding",
+      "role": "exterior_siding_lap_alt",
+      "categories": [
+        "outdoor",
+        "wall",
+        "wood"
+      ],
+      "tile_size_m": [
+        1.57,
+        1.57
+      ],
+      "resolution": "1k jpg",
+      "colour_space": {
+        "diffuse": "sRGB",
+        "normal_gl": "linear (OpenGL +Y)",
+        "roughness": "linear",
+        "ao": "linear"
+      },
+      "files": {
+        "roughness": "textures/weathered_plank_siding/weathered_plank_siding_rough_1k.jpg",
+        "normal_gl": "textures/weathered_plank_siding/weathered_plank_siding_nor_gl_1k.jpg",
+        "diffuse": "textures/weathered_plank_siding/weathered_plank_siding_diff_1k.jpg",
+        "ao": "textures/weathered_plank_siding/weathered_plank_siding_ao_1k.jpg"
+      },
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/weathered_plank_siding",
+      "authors": [
+        "Dimitrios Savva"
+      ]
+    },
+    {
+      "id": "grey_roof_01",
+      "name": "Grey Roof 01",
+      "role": "roof_shingles",
+      "categories": [
+        "roofing",
+        "outdoor",
+        "man made",
+        "clean"
+      ],
+      "tile_size_m": [
+        8,
+        8
+      ],
+      "resolution": "1k jpg",
+      "colour_space": {
+        "diffuse": "sRGB",
+        "normal_gl": "linear (OpenGL +Y)",
+        "roughness": "linear",
+        "ao": "linear"
+      },
+      "files": {
+        "normal_gl": "textures/grey_roof_01/grey_roof_01_nor_gl_1k.jpg",
+        "diffuse": "textures/grey_roof_01/grey_roof_01_diff_1k.jpg",
+        "roughness": "textures/grey_roof_01/grey_roof_01_rough_1k.jpg",
+        "ao": "textures/grey_roof_01/grey_roof_01_ao_1k.jpg"
+      },
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/grey_roof_01",
+      "authors": [
+        "Rob Tuytel"
+      ]
+    },
+    {
+      "id": "roof_slates_03",
+      "name": "Roof Slates 03",
+      "role": "roof_shingles_alt",
+      "categories": [
+        "roofing",
+        "man made",
+        "outdoor",
+        "clean"
+      ],
+      "tile_size_m": [
+        3,
+        3
+      ],
+      "resolution": "1k jpg",
+      "colour_space": {
+        "diffuse": "sRGB",
+        "normal_gl": "linear (OpenGL +Y)",
+        "roughness": "linear",
+        "ao": "linear"
+      },
+      "files": {
+        "normal_gl": "textures/roof_slates_03/roof_slates_03_nor_gl_1k.jpg",
+        "ao": "textures/roof_slates_03/roof_slates_03_ao_1k.jpg",
+        "roughness": "textures/roof_slates_03/roof_slates_03_rough_1k.jpg",
+        "diffuse": "textures/roof_slates_03/roof_slates_03_diff_1k.jpg"
+      },
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/roof_slates_03",
+      "authors": [
+        "Rob Tuytel"
+      ]
+    },
+    {
+      "id": "corrugated_iron_02",
+      "name": "Corrugated Iron 02",
+      "role": "roof_metal_corrugated",
+      "categories": [
+        "man made",
+        "wall",
+        "metal"
+      ],
+      "tile_size_m": [
+        2.7,
+        2.7
+      ],
+      "resolution": "1k jpg",
+      "colour_space": {
+        "diffuse": "sRGB",
+        "normal_gl": "linear (OpenGL +Y)",
+        "roughness": "linear",
+        "ao": "linear"
+      },
+      "files": {
+        "roughness": "textures/corrugated_iron_02/corrugated_iron_02_rough_1k.jpg",
+        "ao": "textures/corrugated_iron_02/corrugated_iron_02_ao_1k.jpg",
+        "normal_gl": "textures/corrugated_iron_02/corrugated_iron_02_nor_gl_1k.jpg",
+        "diffuse": "textures/corrugated_iron_02/corrugated_iron_02_diff_1k.jpg"
+      },
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/corrugated_iron_02",
+      "authors": [
+        "Jenelle van Heerden",
+        "Sergej Majboroda"
+      ]
+    },
+    {
+      "id": "old_sandstone_02",
+      "name": "Old Sandstone 02",
+      "role": "foundation_sandstone",
+      "categories": [
+        "outdoor",
+        "man made",
+        "sandstone",
+        "wall"
+      ],
+      "tile_size_m": [
+        1.53,
+        1.53
+      ],
+      "resolution": "1k jpg",
+      "colour_space": {
+        "diffuse": "sRGB",
+        "normal_gl": "linear (OpenGL +Y)",
+        "roughness": "linear",
+        "ao": "linear"
+      },
+      "files": {
+        "ao": "textures/old_sandstone_02/old_sandstone_02_ao_1k.jpg",
+        "normal_gl": "textures/old_sandstone_02/old_sandstone_02_nor_gl_1k.jpg",
+        "roughness": "textures/old_sandstone_02/old_sandstone_02_rough_1k.jpg",
+        "diffuse": "textures/old_sandstone_02/old_sandstone_02_diff_1k.jpg"
+      },
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/old_sandstone_02",
+      "authors": [
+        "Dimitrios Savva"
+      ]
+    },
+    {
+      "id": "rustic_stone_wall_02",
+      "name": "Rustic Stone Wall 02",
+      "role": "foundation_rubble_alt",
+      "categories": [
+        "man made",
+        "outdoor",
+        "wall",
+        "rock"
+      ],
+      "tile_size_m": [
+        1.5,
+        1.5
+      ],
+      "resolution": "1k jpg",
+      "colour_space": {
+        "diffuse": "sRGB",
+        "normal_gl": "linear (OpenGL +Y)",
+        "roughness": "linear",
+        "ao": "linear"
+      },
+      "files": {
+        "ao": "textures/rustic_stone_wall_02/rustic_stone_wall_02_ao_1k.jpg",
+        "diffuse": "textures/rustic_stone_wall_02/rustic_stone_wall_02_diff_1k.jpg",
+        "normal_gl": "textures/rustic_stone_wall_02/rustic_stone_wall_02_nor_gl_1k.jpg",
+        "roughness": "textures/rustic_stone_wall_02/rustic_stone_wall_02_rough_1k.jpg"
+      },
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/rustic_stone_wall_02",
+      "authors": [
+        "Amal Kumar"
+      ]
+    },
+    {
+      "id": "painted_concrete_02",
+      "name": "Painted Concrete 02",
+      "role": "basement_floor_painted_concrete",
+      "categories": [
+        "floor",
+        "man made",
+        "concrete",
+        "plaster-concrete"
+      ],
+      "tile_size_m": [
+        4,
+        4
+      ],
+      "resolution": "1k jpg",
+      "colour_space": {
+        "diffuse": "sRGB",
+        "normal_gl": "linear (OpenGL +Y)",
+        "roughness": "linear",
+        "ao": "linear"
+      },
+      "files": {
+        "diffuse": "textures/painted_concrete_02/painted_concrete_02_diff_1k.jpg",
+        "ao": "textures/painted_concrete_02/painted_concrete_02_ao_1k.jpg",
+        "roughness": "textures/painted_concrete_02/painted_concrete_02_rough_1k.jpg",
+        "normal_gl": "textures/painted_concrete_02/painted_concrete_02_nor_gl_1k.jpg"
+      },
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/painted_concrete_02",
+      "authors": [
+        "Rob Tuytel"
+      ]
+    },
+    {
+      "id": "wood_floor_deck",
+      "name": "Wood Floor Deck",
+      "role": "porch_deck_boards",
+      "categories": [
+        "man made",
+        "wood",
+        "floor",
+        "outdoor"
+      ],
+      "tile_size_m": [
+        1.8,
+        1.8
+      ],
+      "resolution": "1k jpg",
+      "colour_space": {
+        "diffuse": "sRGB",
+        "normal_gl": "linear (OpenGL +Y)",
+        "roughness": "linear",
+        "ao": "linear"
+      },
+      "files": {
+        "normal_gl": "textures/wood_floor_deck/wood_floor_deck_nor_gl_1k.jpg",
+        "ao": "textures/wood_floor_deck/wood_floor_deck_ao_1k.jpg",
+        "diffuse": "textures/wood_floor_deck/wood_floor_deck_diff_1k.jpg",
+        "roughness": "textures/wood_floor_deck/wood_floor_deck_rough_1k.jpg"
+      },
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/wood_floor_deck",
+      "authors": [
+        "Dimitrios Savva"
+      ]
+    },
+    {
+      "id": "double_brick_floor",
+      "name": "Double Brick Floor",
+      "role": "paving_red_brick",
+      "categories": [
+        "man made",
+        "plaster-concrete",
+        "brick"
+      ],
+      "tile_size_m": [
+        2.16,
+        2.16
+      ],
+      "resolution": "1k jpg",
+      "colour_space": {
+        "diffuse": "sRGB",
+        "normal_gl": "linear (OpenGL +Y)",
+        "roughness": "linear",
+        "ao": "linear"
+      },
+      "files": {
+        "diffuse": "textures/double_brick_floor/double_brick_floor_diff_1k.jpg",
+        "ao": "textures/double_brick_floor/double_brick_floor_ao_1k.jpg",
+        "roughness": "textures/double_brick_floor/double_brick_floor_rough_1k.jpg",
+        "normal_gl": "textures/double_brick_floor/double_brick_floor_nor_gl_1k.jpg"
+      },
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/double_brick_floor",
+      "authors": [
+        "Dimitrios Savva"
+      ]
+    },
+    {
+      "id": "white_planks_clean",
+      "name": "White Planks Clean",
+      "role": "trim_painted_white_wood",
+      "categories": [
+        "wall",
+        "wood"
+      ],
+      "tile_size_m": [
+        1.8,
+        1.8
+      ],
+      "resolution": "1k jpg",
+      "colour_space": {
+        "diffuse": "sRGB",
+        "normal_gl": "linear (OpenGL +Y)",
+        "roughness": "linear",
+        "ao": "linear"
+      },
+      "files": {
+        "roughness": "textures/white_planks_clean/white_planks_clean_rough_1k.jpg",
+        "diffuse": "textures/white_planks_clean/white_planks_clean_diff_1k.jpg",
+        "normal_gl": "textures/white_planks_clean/white_planks_clean_nor_gl_1k.jpg",
+        "ao": "textures/white_planks_clean/white_planks_clean_ao_1k.jpg"
+      },
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/white_planks_clean",
+      "authors": [
+        "Rob Tuytel"
+      ]
+    },
+    {
+      "id": "white_plaster_02",
+      "name": "White Plaster 02",
+      "role": "interior_plaster_alt",
+      "categories": [
+        "plaster-concrete",
+        "wall",
+        "man made",
+        "outdoor",
+        "indoor",
+        "clean",
+        "floor"
+      ],
+      "tile_size_m": [
+        1,
+        1
+      ],
+      "resolution": "1k jpg",
+      "colour_space": {
+        "diffuse": "sRGB",
+        "normal_gl": "linear (OpenGL +Y)",
+        "roughness": "linear",
+        "ao": "linear"
+      },
+      "files": {
+        "diffuse": "textures/white_plaster_02/white_plaster_02_diff_1k.jpg",
+        "roughness": "textures/white_plaster_02/white_plaster_02_rough_1k.jpg",
+        "ao": "textures/white_plaster_02/white_plaster_02_ao_1k.jpg",
+        "normal_gl": "textures/white_plaster_02/white_plaster_02_nor_gl_1k.jpg"
+      },
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/white_plaster_02",
+      "authors": [
+        "Rob Tuytel"
+      ]
+    },
+    {
+      "id": "oak_wood_planks",
+      "name": "Oak Wood Planks",
+      "role": "interior_oak_floor_alt",
+      "categories": [
+        "wood"
+      ],
+      "tile_size_m": [
+        1.2,
+        1.2
+      ],
+      "resolution": "1k jpg",
+      "colour_space": {
+        "diffuse": "sRGB",
+        "normal_gl": "linear (OpenGL +Y)",
+        "roughness": "linear",
+        "ao": "linear"
+      },
+      "files": {
+        "normal_gl": "textures/oak_wood_planks/oak_wood_planks_nor_gl_1k.jpg",
+        "roughness": "textures/oak_wood_planks/oak_wood_planks_rough_1k.jpg",
+        "ao": "textures/oak_wood_planks/oak_wood_planks_ao_1k.jpg",
+        "diffuse": "textures/oak_wood_planks/oak_wood_planks_diff_1k.jpg"
+      },
+      "licence": "CC0 1.0",
+      "source_url": "https://polyhaven.com/a/oak_wood_planks",
+      "authors": [
+        "Dimitrios Savva"
+      ]
+    }
+  ],
+  "not_in_catalogue": [
+    "rug/carpet",
+    "towels",
+    "toilet",
+    "bathtub",
+    "basin/sink",
+    "coat rack",
+    "umbrella stand",
+    "floor lamp",
+    "table/bedside lamp (industrial_pipe_lamp desk lamp used)",
+    "wardrobe (drawer_cabinet used)",
+    "asphalt shingles (grey_roof_01 shingle-like tile used)",
+    "standing-seam metal roofing (corrugated_iron_02 used)"
+  ],
+  "validation": {
+    "method": "JSON parse + every buffers/images uri exists on disk + Poly Haven md5 verified on download; bbox via three.js Matrix4/Box3 through node hierarchy",
+    "problems": []
+  }
+}

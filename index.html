@@ -1,0 +1,152 @@
+<!doctype html>
+<html data-static="1" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>401 Pearl St — from the plan to the front door</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Saira+Stencil+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style.css">
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three.module.js",
+  "three/addons/": "./vendor/addons/",
+  "@sparkjsdev/spark": "./vendor/spark/spark.module.js"
+} }
+</script>
+</head>
+<body>
+<canvas id="gl" aria-label="401 Pearl model"></canvas>
+<div id="roll" aria-hidden="true"><i></i></div>
+
+<div id="loader" role="status" aria-live="polite">
+  <div class="mono place">401 Pearl St · Boulder, Colorado · 2026</div>
+  <div class="story"><p class="line">401 Pearl</p></div>
+  <div class="mono bar"><span>Drawing</span><i><b id="loadbar"></b></i><span id="loadpct">0%</span></div>
+</div>
+
+<header class="top">
+  <div class="mark mono">MARPA <span class="dim">/ 401 Pearl</span></div>
+  <div class="right">
+    <span class="chip mono" id="phase">Existing conditions</span>
+    <span class="scrub mono" data-for="opModel" title="Model opacity: drag the number up/down, scroll, or use the arrows">Model <button type="button" data-d="-10">▾</button><b>100%</b><button type="button" data-d="10">▴</button></span>
+    <span class="scrub mono" data-for="opScan" title="Scan opacity: drag the number up/down, scroll, or use the arrows">Scan <button type="button" data-d="-10">▾</button><b>70%</b><button type="button" data-d="10">▴</button></span>
+    <button class="pill mono" id="editPill" type="button" aria-pressed="false" title="Edit mode: move nodes, push/pull shapes, change colour and material. Off: select and flag only">Edit · off</button>
+    <button class="pill mono" id="issuesPill" type="button" aria-expanded="false" title="Issues flagged as BCF topics">Issues · 0</button>
+    <button class="pill mono" id="splatPill" type="button" aria-pressed="false" title="Show or hide the drone scan of the site">Drone scan</button>
+    <button class="pill mono" id="walkPill" type="button">Walk the house</button>
+  </div>
+</header>
+
+<!-- property facts: records-facts.json in 0001-401-pearl/07_decisions/output/team-orchestration-20261013/claude/A-022/inventory: date built left out: the county says 1920 (F002/F013), the 1988 inventory pre-1900 (F061); style F062, shiplap and wrap-around porch F063, 3 bed / 2 bath F004/F019, ~1,690 sq ft owner-stated F021, lot 4,145 sq ft F036 -->
+<section class="hero" id="hero">
+  <p class="mono kicker">MARPA · 401 Pearl St, Boulder · Sheet A-101</p>
+  <h1 class="stencil">401 Pearl<br>Street<br><em>Boulder.</em></h1>
+  <ul class="lede facts mono">
+    <li>Two flats, one house</li><li>Duplex · 3 bed · 2 bath</li><li>1,690 sq ft · lot 4,145 sq ft</li><li>Corner of 4th &amp; Pearl</li>
+  </ul>
+  <div class="hint mono">Scroll to raise the walls</div>
+  <table class="titleblock mono" aria-label="Title block">
+    <tr><td><small>Project</small>401 Pearl St</td><td><small>Drawing</small>Main level plan</td></tr>
+    <tr><td><small>Scale</small>Metres</td><td><small>Status</small>Existing conditions</td></tr>
+  </table>
+</section>
+
+<section class="chapter" id="chapter" aria-live="polite">
+  <p class="mono kicker" id="chKicker"></p>
+  <h2 class="stencil" id="chTitle"></h2>
+  <p class="story-line" id="chLine"></p>
+  <ul class="mono facts" id="chFacts"></ul>
+</section>
+
+<div class="caption mono" id="caption"></div>
+<div class="tag mono" id="walkTag">Scroll to walk in</div>
+
+<aside class="hud" id="hud" aria-live="polite">
+  <div class="reticle" aria-hidden="true"></div>
+  <div class="mono hudnum" id="hudNum">Room 01</div>
+  <div class="stencil hudtitle" id="hudTitle">Entry</div>
+  <div class="mono hudmeta"><span id="hudMeta"></span> · <button type="button" class="openfile mono" id="openFile">Open file +</button></div>
+  <div class="mono hudpass" id="hudPass"></div>
+</aside>
+
+<nav class="ruler" aria-hidden="true"><div id="rulerTicks"></div><i id="rulerMark"></i></nav>
+<footer class="bottom mono">
+  <nav class="nav"><button type="button" id="navPlan">Plan</button><span>|</span><button type="button" id="navWalk">Walk</button><span>|</span><button type="button" id="navModel">Model</button></nav>
+  <div class="count" id="count">00 / 23 rooms</div>
+</footer>
+
+<div id="tags" aria-label="Flagged elements"></div>
+<div id="handles" aria-label="Shape handles"></div>
+<aside class="issues mono" id="issues" hidden aria-label="Issues (BCF topics)">
+  <div class="ishead"><span>Issues · BCF 3.0</span><button type="button" id="issuesClose" aria-label="Close">×</button></div>
+  <label class="isres"><input type="checkbox" id="issuesResolved"> Show resolved</label>
+  <ol id="issueList"></ol>
+  <p class="ishint">To tag a spot: click it (in the walk, any wall, fixture or object; floors move you, Shift-click selects them), write what is wrong under Flag, then Flag as BCF. The tag is pinned where you clicked. Each tag is a buildingSMART BCF 3.0 topic in the model's bcf folder, with the camera and a snapshot.</p>
+</aside>
+<aside class="issuecard mono" id="issueCard" hidden aria-label="Issue">
+  <button type="button" id="icClose" aria-label="Close">×</button>
+  <div class="ickicker" id="icKicker"></div>
+  <h3 id="icTitle"></h3>
+  <p id="icWhere"></p>
+  <img id="icShot" alt="Snapshot taken when the issue was flagged">
+  <p id="icMeta"></p>
+  <div class="icbtns"><button type="button" class="pill" id="icGo">Go to</button><button type="button" class="pill" id="icFile">Open element file</button><button type="button" class="pill" id="icResolve">Resolve</button></div>
+</aside>
+<aside class="panel" id="panel" hidden aria-label="Element file">
+  <div class="mono kicker">IFCX element</div>
+  <h3 class="stencil" id="pnName">—</h3>
+  <dl class="mono" id="pnMeta"></dl>
+  <form id="pnEdit">
+    <label class="mono" for="pnColor">Colour</label><input type="color" id="pnColor" value="#cccccc">
+    <label class="mono" for="pnMat">Material</label><input type="text" id="pnMat" placeholder="material name">
+    <button type="submit" class="pill mono">Save to 99z</button>
+  </form>
+  <form id="pnFlag">
+    <label class="mono" for="pnTitle">Flag</label><input type="text" id="pnTitle" placeholder="what is wrong here">
+    <button type="submit" class="pill mono">Flag as BCF</button>
+  </form>
+  <div class="pnshape mono" id="pnShape" hidden>
+    <div class="shead">Shape · nodes over the scan</div>
+    <dl id="shVals"></dl>
+    <div class="sbtns"><button type="button" class="pill mono" id="shDraw">Draw shape</button><button type="button" class="pill mono" id="shSave">Save</button><button type="button" class="pill mono" id="shReset">Reset</button></div>
+    <div id="shFeatures"></div>
+  </div>
+  <p class="mono status" id="pnStatus" role="status"></p>
+  <button type="button" class="close mono" id="pnClose" aria-label="Close element file">×</button>
+  <button type="button" class="min mono" id="pnMin" aria-label="Minimise element file" title="Minimise">–</button>
+</aside>
+
+<div class="walkhud" id="walkhud" hidden>
+  <div class="cross" aria-hidden="true"></div>
+  <div class="mono help">WASD move · mouse look · [ ] lens · 1 main · 2 upper · 0 basement · E select · Esc leave</div>
+  <div class="mono where" id="walkWhere"></div>
+</div>
+
+<nav class="navpanel mono" id="navpanel" aria-label="Go to a room and choose layers">
+  <button type="button" class="navtoggle" id="navToggle" aria-expanded="false">Go to · Layers</button>
+  <div class="navbody" id="navBody" hidden>
+    <div class="navrooms" id="navRooms"></div>
+    <div class="navlayers">
+      <div class="navhead">Layers</div>
+      <label><input type="checkbox" id="lyModel" checked> Model (structure)</label>
+      <label><input type="checkbox" id="lySplat"> Drone scan (site)</label>
+      <label><input type="checkbox" id="lyScan"> Ground-floor scan (iPhone)</label>
+      <div id="lyScans"></div>
+      <label class="slider">Model opacity <input type="range" id="opModel" min="0" max="100" value="100"><output id="opModelV">100%</output></label>
+      <label class="slider">Scan opacity <input type="range" id="opScan" min="0" max="100" value="70"><output id="opScanV">70%</output></label>
+    </div>
+    <p class="navhint">Click a room to walk there. In the walk, click any floor or stair to go to it. In the scroll, double-click a floor.</p>
+  </div>
+</nav>
+<div class="toast mono" id="toast" role="status"></div>
+<div id="track" aria-hidden="true"></div>
+<div id="walk"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.27/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
+<script type="module" src="./main.js"></script>
+</body>
+</html>
