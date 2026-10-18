@@ -218,3 +218,6 @@ html[data-static='1'] #pnEdit, html[data-static='1'] #pnFlag, html[data-static='
 body:not(.editing) #pnEdit, body:not(.editing) #pnShape, body:not(.editing) #handles { display: none !important; }
 #editPill.on { background: #1f6bff; color: #fff; border-color: #1f6bff; }
 html[data-static='1'] #editPill { display: none; }
+
+.scrub input[type=color] { width: 16px; height: 16px; border: 0; padding: 0; background: none; cursor: pointer; }
+#navToggle { display: none; }

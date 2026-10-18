@@ -33,7 +33,10 @@
     <button class="pill mono" id="resetPill" type="button" title="Lost? Back to the whole house (R)">Reset view</button>
     <span class="scrub mono" data-for="opModel" title="Model opacity: drag the number up/down, scroll, or use the arrows">Model <button type="button" data-d="-10">▾</button><b>100%</b><button type="button" data-d="10">▴</button></span>
     <span class="scrub mono" data-for="opScan" title="Scan opacity: drag the number up/down, scroll, or use the arrows">Scan <button type="button" data-d="-10">▾</button><b>70%</b><button type="button" data-d="10">▴</button></span>
+    <span class="scrub mono" data-for="opLines" title="Line opacity: drag the number, scroll, or arrows">Lines <button type="button" data-d="-10">▾</button><b>100%</b><button type="button" data-d="10">▴</button><input type="color" id="lineCol" value="#1d1d1f" title="Line colour"></span>
+    <input type="range" id="opLines" min="0" max="100" value="100" hidden>
     <button class="pill mono" id="editPill" type="button" aria-pressed="false" title="Edit mode: move nodes, push/pull shapes, change colour and material. Off: select and flag only">Edit · off</button>
+    <button class="pill mono" id="layersPill" type="button" title="Go to a room · scans and layers">Layers</button>
     <button class="pill mono" id="issuesPill" type="button" aria-expanded="false" title="Issues flagged as BCF topics">Issues · 0</button>
     <button class="pill mono" id="splatPill" type="button" aria-pressed="false" title="Show or hide the drone scan of the site">Drone scan</button>
     <button class="pill mono" id="walkPill" type="button">Walk the house</button>

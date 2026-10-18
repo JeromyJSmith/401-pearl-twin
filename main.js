@@ -855,7 +855,8 @@ uniform sampler2D tND, tW, tColor, tAnn, tRed, tLblA, tLblB, tBloom, tAO, tDof, 
 uniform float uModelOp, uScanOp, uScanTint;
 uniform float uBloom, uAO, uFocus, uAperture;
 uniform vec2 uRes, uAnnMin, uAnnSize, uRedMin, uRedSize;
-uniform vec3 uPaper, uInk, uAccent;
+uniform vec3 uPaper, uInk, uAccent, uEdgeCol;
+uniform float uEdgeOp;
 uniform float uSplat, uPixA, uAnnOp, uRedOp, uLblOp, uFFL, uFFL2, uPx, uInkReal, uSeed, uExposure, uGrid, uTime, uDebug;
 in vec2 vUv;
 out vec4 outColor;
@@ -937,7 +938,7 @@ void main() {
     vec4 a = sampleIn(tRed, (w.xy - uRedMin) / uRedSize);
     col = mix(col, a.rgb, a.a * uRedOp);
   }
-  col = mix(col, uInk, clamp(edge, 0.0, 1.0) * 0.92);
+  col = mix(col, uEdgeCol, clamp(edge, 0.0, 1.0) * 0.92 * uEdgeOp); // line opacity and colour: top bar (owner 2026-10-18)
   // model opacity, then the scans over it: a scan point shows fully where it stands in front of the model (or where
   // there is no model), and through the model as far as the model is faded
   // faded model: the imagery underneath (photo scan where captured, paper elsewhere), the model's own edges kept as
@@ -965,7 +966,7 @@ const CU = {
   tAnn: { value: null }, tRed: { value: redTex }, tLblA: { value: null }, tLblB: { value: null },
   uRes: { value: new THREE.Vector2(W(), H()) }, uAnnMin: { value: new THREE.Vector2() }, uAnnSize: { value: new THREE.Vector2(1, 1) },
   uRedMin: { value: new THREE.Vector2(...redB.min) }, uRedSize: { value: new THREE.Vector2(...redB.size) },
-  uPaper: { value: lin(0xefebe2) }, uInk: { value: lin(0x1d1d1f) }, uAccent: { value: lin(parseInt(ACCENT.slice(1), 16)) },
+  uPaper: { value: lin(0xefebe2) }, uInk: { value: lin(0x1d1d1f) }, uEdgeCol: { value: lin(0x1d1d1f) }, uEdgeOp: { value: 1 }, uAccent: { value: lin(parseInt(ACCENT.slice(1), 16)) },
   uSplat: { value: 0 }, uPixA: { value: 0.001 }, uAnnOp: { value: 1 }, uRedOp: { value: 0 }, uLblOp: { value: 0 }, uFFL: { value: 0 }, uFFL2: { value: 3 },
   uPx: { value: DPR }, uInkReal: { value: 0.12 }, uSeed: { value: 3.1 }, uExposure: { value: 1.25 }, uGrid: { value: 1 }, uTime: { value: 0 }, uDebug: { value: { color: 1, state: 2 }[Q.get('debug')] || 0 },
 };
@@ -2454,3 +2455,8 @@ function resetView() {
 }
 $('resetPill').addEventListener('click', resetView);
 addEventListener('keydown', (ev) => { if ((ev.key === 'r' || ev.key === 'R') && !/INPUT|TEXTAREA/.test(document.activeElement?.tagName || '') && !shape?.drawing) resetView(); });
+
+// ---------- Lines (owner 2026-10-18): the drawn edges have their own opacity and colour in the top bar ----------
+$('opLines').addEventListener('input', (e) => { CU.uEdgeOp.value = e.target.value / 100; render(); });
+$('lineCol').addEventListener('input', (e) => { CU.uEdgeCol.value = lin(parseInt(e.target.value.slice(1), 16)); render(); });
+$('layersPill').addEventListener('click', () => $('navToggle').click()); // Layers sits in the top row (owner 2026-10-18)
