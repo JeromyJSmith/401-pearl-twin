@@ -1691,7 +1691,10 @@ function redrawShape() {
 function buildHandles() {
   const box = $('handles'); box.innerHTML = ''; shape.handles = [];
   const e = shape.e;
+  const main = mainOutline(e);
   for (const [kind, loops] of Object.entries(loopsOf(e))) loops.forEach((ns, li) => ns.forEach((n, ni) => {
+    if (kind === 'o' && li !== main) return; // inner pieces (sashes, frames) follow the outer shape
+    if (kind === 'h' && !shape.wallLike) return; // a window's glass follows its frame; a wall's openings keep their own nodes
     for (const w of n.c ? ['p', 'c'] : ['p']) {
       const ref = [kind, li, ni, w];
       const el = document.createElement('div'); el.className = `hnd ${w === 'c' ? 'r' : 'e'} ${kind === 'f' ? 'f' : ''}`;
@@ -1741,8 +1744,55 @@ const r4 = (x) => Math.round(x * 10000) / 10000;
 function dragNode(ref, ev) {
   const [kind, li, ni, w] = ref, f = kind === 'f' ? shape.e.features[li] : null;
   const q = planeHit(ev, f ? (f.face === 'back' ? shape.e.thickness[0] : shape.e.thickness[1]) : null); if (!q) return;
+  const before = kind === 'o' && li === mainOutline(shape.e) ? loopBox(shape.e.profile.outlines[li]) : null;
   loopRef(kind, li)[ni][w] = [r4(q[0]), r4(q[1])];
+  if (before) {
+    const after = loopBox(shape.e.profile.outlines[li]);
+    const map = (pt) => [r4(after[0] + (pt[0] - before[0]) * (after[2] - after[0]) / ((before[2] - before[0]) || 1)), r4(after[1] + (pt[1] - before[1]) * (after[3] - after[1]) / ((before[3] - before[1]) || 1))];
+    shape.e.profile.outlines.forEach((l, k) => { if (k !== li) for (const n of l) { n.p = map(n.p); if (n.c) n.c = map(n.c); } });
+    if (!shape.wallLike) shape.e.profile.holes.forEach((l) => { for (const n of l) { n.p = map(n.p); if (n.c) n.c = map(n.c); } });
+  }
   redrawShape();
+}
+const loopBox = (l) => { let a = [Infinity, Infinity, -Infinity, -Infinity]; for (const n of l) { a = [Math.min(a[0], n.p[0]), Math.min(a[1], n.p[1]), Math.max(a[2], n.p[0]), Math.max(a[3], n.p[1])]; } return a; };
+const loopArea = (l) => { const b = loopBox(l); return (b[2] - b[0]) * (b[3] - b[1]); };
+const mainOutline = (e) => e.profile.outlines.reduce((best, l, i, all) => (loopArea(l) > loopArea(all[best]) ? i : best), 0);
+// a scanned/meshed loop has many points on every rounded corner: keep the real corners, and turn each run of short
+// segments (a round) into one node with one bend handle at the crossing of the two straight sides (owner 2026-10-18)
+function simplifyLoop(loop) {
+  const P = loop.map((n) => n.p), N = P.length;
+  if (N <= 4) return loop;
+  const len = (i) => Math.hypot(P[(i + 1) % N][0] - P[i][0], P[(i + 1) % N][1] - P[i][1]); // segment i: P[i] -> P[i+1]
+  const LONG = 0.06, isLong = P.map((_, i) => len(i) >= LONG);
+  if (!isLong.some(Boolean)) { const step = Math.ceil(N / 8); return P.filter((_, i) => i % step === 0).map((p) => ({ p })); }
+  const start = isLong.indexOf(true), out = [];
+  let i = start;
+  do {
+    // P[i] -> P[i+1] is long; then a (possibly empty) run of short segments up to the next long one
+    let j = (i + 1) % N;
+    while (!isLong[j]) j = (j + 1) % N;
+    const a0 = P[i], a1 = P[(i + 1) % N], b0 = P[j], b1 = P[(j + 1) % N];
+    if (j === (i + 1) % N) out.push({ p: a1 });
+    else {
+      // a tiny jog at a corner is a corner, not a curve
+      const cc = (() => { const d1 = [a1[0] - a0[0], a1[1] - a0[1]], d2 = [b1[0] - b0[0], b1[1] - b0[1]], den = d1[0] * d2[1] - d1[1] * d2[0]; if (Math.abs(den) < 1e-9) return null; const t = ((b0[0] - a1[0]) * d2[1] - (b0[1] - a1[1]) * d2[0]) / den; return [a1[0] + d1[0] * t, a1[1] + d1[1] * t]; })();
+      if (cc && Math.hypot(cc[0] - a1[0], cc[1] - a1[1]) < 0.035 && Math.hypot(cc[0] - b0[0], cc[1] - b0[1]) < 0.035) { out.push({ p: [r4(cc[0]), r4(cc[1])] }); i = j; continue; }
+      out.push({ p: a1 });
+      // the bend handle: where the two straight sides would meet
+      const d1 = [a1[0] - a0[0], a1[1] - a0[1]], d2 = [b1[0] - b0[0], b1[1] - b0[1]], den = d1[0] * d2[1] - d1[1] * d2[0];
+      let c;
+      if (Math.abs(den) > 1e-9) { const t = ((b0[0] - a1[0]) * d2[1] - (b0[1] - a1[1]) * d2[0]) / den; c = [a1[0] + d1[0] * t, a1[1] + d1[1] * t]; }
+      else { let k = (i + 1) % N, m = 0; const run = []; while (k !== (j + 1) % N) { run.push(P[k]); k = (k + 1) % N; } const mid = run[run.length >> 1]; c = [2 * mid[0] - (a1[0] + b0[0]) / 2, 2 * mid[1] - (a1[1] + b0[1]) / 2]; }
+      out.push({ p: b0, c: [r4(c[0]), r4(c[1])] });
+    }
+    i = j;
+  } while (i !== start);
+  // drop nodes that sit on a straight line between their neighbours (no bend in or out)
+  return out.filter((n, k) => {
+    if (n.c || out[(k + 1) % out.length].c) return true;
+    const a = out[(k - 1 + out.length) % out.length].p, b = out[(k + 1) % out.length].p, p = n.p;
+    return Math.abs((b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0])) / (Math.hypot(b[0] - a[0], b[1] - a[1]) || 1) > 0.004;
+  });
 }
 // the face toward the camera: shapes are drawn there
 function nearFace() {
@@ -1806,7 +1856,9 @@ async function startShapeEdit(mesh) {
   try { e = await getJSON(`api/element-profile?path=${encodeURIComponent(path)}`); } catch (err) { $('shVals').innerHTML = `<dt>Not editable</dt><dd>${err.message}</dd>`; return; }
   if (selected?.mesh !== mesh) return; // the selection moved on while reading
   e = { name: e.name || mesh.userData.e.name, normal: e.normal, thickness: e.thickness, profile: { outlines: e.profile.outlines || [], holes: e.profile.holes || [] }, features: e.features || [] };
-  shape = { path, name: e.name, e, orig: clone(e), group: new THREE.Group(), handles: [], sel: null, drag: null, drawing: null };
+  e.profile.outlines = e.profile.outlines.map(simplifyLoop); e.profile.holes = e.profile.holes.map(simplifyLoop); e.features.forEach((f) => { f.loop = simplifyLoop(f.loop); });
+  const wallLike = /IfcWall|IfcSlab|IfcRoof|IfcCovering/.test(mesh.userData.e.cls || '');
+  shape = { path, name: e.name, e, wallLike, orig: clone(e), group: new THREE.Group(), handles: [], sel: null, drag: null, drawing: null };
   overlay.add(shape.group);
   redrawShape();
 }
@@ -2390,3 +2442,15 @@ $('editPill').addEventListener('click', () => {
   $('editPill').textContent = `Edit · ${EDIT ? 'on' : 'off'}`; $('editPill').setAttribute('aria-pressed', String(EDIT)); $('editPill').classList.toggle('on', EDIT);
   if (EDIT && selected?.mesh) startShapeEdit(selected.mesh); else stopShapeEdit();
 });
+
+// ---------- Reset view (owner 2026-10-18): one click (or R) from anywhere, lost in a wall or in the dark, back to the
+// whole house: leaves the walk, clears the selection and any isolate, model and scan at their defaults ----------
+function resetView() {
+  if (mode === 'walk') leaveWalk();
+  select(null);
+  for (const m of M.meshes) m.visible = true;
+  for (const [id, v] of [['opModel', 100], ['opScan', 70]]) { const r = $(id); r.value = v; r.dispatchEvent(new Event('input')); }
+  goShot('orbit');
+}
+$('resetPill').addEventListener('click', resetView);
+addEventListener('keydown', (ev) => { if ((ev.key === 'r' || ev.key === 'R') && !/INPUT|TEXTAREA/.test(document.activeElement?.tagName || '') && !shape?.drawing) resetView(); });
