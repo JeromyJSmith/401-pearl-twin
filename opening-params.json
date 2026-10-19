@@ -5,18 +5,18 @@
   "Apartment A entry arch wall (N-S at u=-2.03)": {
    "runs_along": "v",
    "thickness": [
-    -2.16,
-    -2.02
+    -2.162991,
+    -2.017991
    ],
    "span": [
-    -6.29,
+    -6.38,
     -4.62
    ],
    "open": [
     -6,
     -4.8
    ],
-   "head": 2.4,
+   "head": 2.35,
    "radius": 0.15,
    "doorways": []
   },
@@ -45,7 +45,7 @@
    ]
   }
  },
- "updated": "2026-10-19T03:40:36.279Z by codex-model-operations-20261018 (drag edit of Apartment A entry arch wall (N-S at u=-2.03))",
+ "updated": "2026-10-19T04:44:02.992Z by codex-model-operations-20261018 (drag edit of Apartment A entry arch wall (N-S at u=-2.03))",
  "reviewed_openings": {
   "schema": "marpa.401_pearl.reviewed_opening_assemblies.v1",
   "baseline_sha256": "097030d2468d1b436e0316fc5ccdada59c1f6d2ff1c67d95ff1d519fa6900a38",
@@ -992,5 +992,1106 @@
   "qualification_note": "In source video, rough apertures have rectangular silhouettes and chipped/unfinished edges; this does not establish a sharp final3Dedge. Existing100mm silhouette radius was a coding interpretation of rounded edges, not a source measurement.",
   "numeric_boolean_clearance_m": 0.00002,
   "numeric_clearance_basis": "20micrometre host cutter tolerance eliminates coplanar micro-skins; all existing declared void geometry and dimensions remain exact. Not a physical rough-opening measurement."
+ },
+ "reviewed_entry_arch_assembly": {
+  "schema": "marpa.reviewed_entry_arch_assembly.v1",
+  "status": "SOURCE_SUPPORTED_NATIVE_PARAMETER_CORRECTION_NOT_CANONICAL_APPLY",
+  "arch_path": "e52df6d8-9a37-544b-a0f4-54379868b00a",
+  "baseline_model": {
+   "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/interior/arch-junction-qualification-v1/baseline-a6-owner-arch-junction.ifcx",
+   "sha256": "a6ceff3f56425140093b6a370f2dfe91f7dcd5e008054cc930b634fc4feee953"
+  },
+  "editable_arch_parameters": {
+   "runs_along": "v",
+   "thickness": [
+    -2.162991,
+    -2.017991
+   ],
+   "span": [
+    -6.38,
+    -4.62
+   ],
+   "open": [
+    -6,
+    -4.8
+   ],
+   "head": 2.35,
+   "radius": 0.15,
+   "doorways": []
+  },
+  "qualified_arch_mesh_sha256": "222e87492793d37e793470129e5952576427a97212343c11e00d0ec88aeaec38",
+  "locked_negative_node_hashes": {
+   "8fd895c5-b2a5-54a4-b5f1-ee4df64be079": "bd60e7ad555d5b7ca4009680a10d648ed30c3ec04a8ea2449435e29d8e70cc27",
+   "d89e408b-0a12-54fb-abcf-4550ec4795bb": "4ce77bb7ed10484ea03a0e4cbe4ce3a44eae9bb7b7173a9b96e89fbf63f469e3",
+   "68795b2d-2786-50c1-a491-ee9908b3c76f": "a328b6b080ca27b0148a32de059f5aa29cd0ddf25153979b8e886888c008df8f",
+   "6e49c0d0-9226-5249-a4ec-fb22c052ca47": "1fd2da429394b9ba16c795f9e53cfcbd676ef87e77e051aaf4b8861a304440d4",
+   "2d1bd50d-0c73-5541-9bfc-f29d08539c9b": "2e93ac206f5c2380184007152bb08c0b8cf6f59f34f9a9008934f04d4ea3fc9d",
+   "3886a384-c0db-5be0-ae7d-2ff7dc33e645": "ff2002ba8e3b3560125fff737022607f159ae590b61735c96a0c65de0580fea1"
+  },
+  "floor_relative_head_supports": [
+   {
+    "source": "sitescape-18.53-core",
+    "measured_clear_head_m": 2.3643852111658603,
+    "local_uncertainty_m": 0.03
+   },
+   {
+    "source": "lidar_stair",
+    "measured_clear_head_m": 2.3416078699255682,
+    "local_uncertainty_m": 0.03
+   }
+  ],
+  "head_measurement_receipt": {
+   "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/interior/arch-junction-qualification-v1/arch-head-floor-relative-v1.json",
+   "sha256": "9fb3a176d3f7e16c400e59de371cf7b96f65abde2ee6e6314be18022725ee477"
+  },
+  "source_refs": [
+   {
+    "path": "/Users/jero/Downloads/401/401-ply/Scan at 18.53_1.ply",
+    "sha256": "e2c95ba0bde6c00072c9081ed2f1afc43d0fb4a0005489340df90fc766dd4094",
+    "role": "Raw independently captured metric session"
+   },
+   {
+    "path": "/Users/jero/Downloads/401/401-ply/Scan at 18.53_5.ply",
+    "sha256": "9be85929394f91e5b0bfa440245d650b6d304525501ad715146a95f3079a414a",
+    "role": "Raw independently captured metric session"
+   },
+   {
+    "path": "/Users/jero/Downloads/401/401-ply/Scan at 18.53_10.ply",
+    "sha256": "7762af6b54dd3b08d3074e5772780eeaaa731a0121f77e4f188b4078994b53c7",
+    "role": "Raw independently captured metric session"
+   },
+   {
+    "path": "/Users/jero/Downloads/401/401-ply/Scan at 19.14_1.ply",
+    "sha256": "1b37df8168689349046aa5f41aa6aedee51fbf276c01871306c02bcecc352a1c",
+    "role": "Raw independently captured metric session"
+   },
+   {
+    "path": "/Users/jero/Downloads/401/401-ply/Scan at 19.14_5.ply",
+    "sha256": "e07f838d937d388bc41b320bfb39221892d43fe2de5a0d651fbcbeee6762bca3",
+    "role": "Raw independently captured metric session"
+   },
+   {
+    "path": "/Users/jero/Downloads/401/401-ply/Scan at 19.14_10.ply",
+    "sha256": "84c8b60882ac12d795794785bf582e34717f2f31b4e1c91b83c1db774d200059",
+    "role": "Raw independently captured metric session"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/09_delivery/twin-presentation/plan-to-walk-20261017/splats/lidar_stair.bin",
+    "sha256": "13d26a036c89d7200dae9e371e42904e6f2b1c347740d0f9caa06e36486d746c",
+    "role": "Independent metric stair capture"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/00_inbox/captures/iphone-walkthrough/IMG_0944.MOV",
+    "sha256": "deba591d12f91bf449c137e0516ea9bab8d8c7a8e03cf341528263fb80eb2bc3",
+    "role": "Originalvideo source, camera placement/calibration notqualified by filehash"
+   },
+   {
+    "path": "/Users/jero/Desktop/401 0001/401 0001-clip1.mp4",
+    "sha256": "2528e02c910930de18ce8066bed468753862dba3bc842a3d5448c2bf46438157",
+    "role": "Originalvideo source, camera placement/calibration notqualified by filehash"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames/401_0001-clip1_00545s.jpg",
+    "sha256": "627c74bd0b530cdb5c53d72b432203e29c702edd8be81f81754a52853bdbb005",
+    "role": "Visualphysicalidentity/junction evidence; approximate existing extraction timecode, no metriccameraqualification"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames/401_0001-clip1_00555s.jpg",
+    "sha256": "8b509945c31ebc78f022d7c2db282f51513c8d81e70eb5187ba16ff36f1f7147",
+    "role": "Visualphysicalidentity/junction evidence; approximate existing extraction timecode, no metriccameraqualification"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames/401_0001-clip1_00565s.jpg",
+    "sha256": "ba63aa8f88402ae3cd294acc7ee7698d36c6e25743f115f04e77518792c59604",
+    "role": "Visualphysicalidentity/junction evidence; approximate existing extraction timecode, no metriccameraqualification"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames_hd/401_0001-clip1_00610s.jpg",
+    "sha256": "77675bc34d565e8ec1b69f7c873c780828468ab7cdf49deca40b384681ffb5d4",
+    "role": "Visualphysicalidentity/junction evidence; approximate existing extraction timecode, no metriccameraqualification"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames_hd/401_0001-clip1_00615s.jpg",
+    "sha256": "d181701928e2d477e1eda4f463c2029ebb1a93dfefb0e300691f990a98e9ca63",
+    "role": "Visualphysicalidentity/junction evidence; approximate existing extraction timecode, no metriccameraqualification"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames_hd/401_0001-clip1_00620s.jpg",
+    "sha256": "88e0672dd4492cff91055e48fca9a13caa45201633959e18410725dd0996437f",
+    "role": "Visualphysicalidentity/junction evidence; approximate existing extraction timecode, no metriccameraqualification"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/IMG_0944/frames/IMG_0944_00290s.jpg",
+    "sha256": "e6a78edce759a9ae30c7b9907471ce7aadedd07a511eee7a8f192633ec4c398d",
+    "role": "Visualphysicalidentity/junction evidence; approximate existing extraction timecode, no metriccameraqualification"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/IMG_0944/frames/IMG_0944_00310s.jpg",
+    "sha256": "a573e354fb60ab29c0acfef2349a60d59c94d9a59b6ae4c8270c9bd8c3672e36",
+    "role": "Visualphysicalidentity/junction evidence; approximate existing extraction timecode, no metriccameraqualification"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/IMG_0944/frames/IMG_0944_00350s.jpg",
+    "sha256": "14358899d2eb993f80ad276699fc63178fcb3a7544635b33b582e4b837850ccc",
+    "role": "Visualphysicalidentity/junction evidence; approximate existing extraction timecode, no metriccameraqualification"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames_hd/401_0001-clip1_00570s.jpg",
+    "sha256": "684f35340d9712efcf3a39f0125c68182798dfb6474fd4738dfe17fbac36dbfc",
+    "role": "Visualreverse/entryface andcorneridentity; not metriccamera"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames_hd/401_0001-clip1_00575s.jpg",
+    "sha256": "ae040729e5b802ce67f9549fe1bc731bda63fb63d847167ebf72b365347fb719",
+    "role": "Visualreverse/entryface andcorneridentity; not metriccamera"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames_hd/401_0001-clip1_00580s.jpg",
+    "sha256": "6ddc6c19578c61b9499c8306e35cd4d911ab5a46b746849c5857cbdb6e4381e4",
+    "role": "Visualreverse/entryface andcorneridentity; not metriccamera"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames_hd/401_0001-clip1_00585s.jpg",
+    "sha256": "c790bedc8d38ffb70c214dc40c7ff79882fd6be4625e7943f46e066e34661b82",
+    "role": "Visualreverse/entryface andcorneridentity; not metriccamera"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames_hd/401_0001-clip1_00590s.jpg",
+    "sha256": "12abf9888b91bfc7d5d96f809aabbe8e4042fd6814d5796a9747656044fbe27b",
+    "role": "Visualreverse/entryface andcorneridentity; not metriccamera"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames_hd/401_0001-clip1_00595s.jpg",
+    "sha256": "f894d005e26a74de176473ad334851845a4369c1cdc89a5bcf66bc772ad9f76f",
+    "role": "Visualreverse/entryface andcorneridentity; not metriccamera"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames_hd/401_0001-clip1_00600s.jpg",
+    "sha256": "c1257d5c6b7008d4ef13e8bfb6d377cbfcb87cb07b962017341d47a5941c0669",
+    "role": "Visualreverse/entryface andcorneridentity; not metriccamera"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames_hd/401_0001-clip1_00605s.jpg",
+    "sha256": "77675bc34d565e8ec1b69f7c873c780828468ab7cdf49deca40b384681ffb5d4",
+    "role": "Visualreverse/entryface andcorneridentity; not metriccamera"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/interior/arch-junction-qualification-v1/arch-source-measurements-v1.json",
+    "sha256": "f472262dcb8db948ab2da6c8bb4b68ffafde4b01854b69152271c79637765e59",
+    "role": "Qualified source/geometry review receipt"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/interior/arch-junction-qualification-v1/arch-head-floor-relative-v1.json",
+    "sha256": "9fb3a176d3f7e16c400e59de371cf7b96f65abde2ee6e6314be18022725ee477",
+    "role": "Qualified source/geometry review receipt"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/interior/arch-junction-qualification-v1/arch-normal-modes-v2.json",
+    "sha256": "e4a0c576fc54369b4cff9e3299105ef3e54ce3a782f664ca0a366739fdd5a83f",
+    "role": "Qualified source/geometry review receipt"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/interior/arch-junction-qualification-v1/arch-normal-modes-metric-bins-v1.json",
+    "sha256": "8ee73e1650b5a9e719731a8e060b8d446142f5cb0363a99fe8e3d1b7457d2733",
+    "role": "Qualified source/geometry review receipt"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/interior/arch-junction-qualification-v1/video-source-binding-v1.json",
+    "sha256": "05cae19df6fcc98ba1fdb68ec2b68a5206d0c31a07468ab3f8917a84f77d957b",
+    "role": "Qualified source/geometry review receipt"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/joined-entry-arch-stair-verifier-v1/baseline-sections-v2-front-profile.json",
+    "sha256": "a0e23e8d4d80d411b2ec2ac3ba9e73b0ee1c80990b3e109c71d08cf72e3690f1",
+    "role": "Qualified source/geometry review receipt"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/joined-entry-arch-stair-verifier-v1/arch-candidate-aperture-controls-v2-actual-baseline.json",
+    "sha256": "f70b838f605e934f09041031534183ed62ac6ddd220c8f66d5f6cea107869fc3",
+    "role": "Qualified source/geometry review receipt"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/lower-stair-owner-2d1bd50d-v1/reviewed-lower-stair-contact-v3-preserve-west-pier.json",
+    "sha256": "3bb403054f009ae1ee7da233f5620d1e6f164abbd80c9ed7a568431b9cfed0d8",
+    "role": "Explicit v3 lower-stair/preserved-peer qualification dependency"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/lower-stair-owner-2d1bd50d-v1/candidate-fix63-v3-preserve-pier/fix63-receipt.json",
+    "sha256": "b5ead1cdd2b84ab22c42c80c5c2d6cd260e78ad933309219bb79dde67737863c",
+    "role": "Explicit v3 lower-stair/preserved-peer qualification dependency"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/joined-entry-arch-stair-verifier-v1/fix63-v3-preserve-pier-independent-preview.json",
+    "sha256": "29d18d791cf4d88cefacdc4544baba582c8c31766beeb2d870d80d4c6d223ec9",
+    "role": "Explicit v3 lower-stair/preserved-peer qualification dependency"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/interior/arch-junction-qualification-v1/native-peer-preservation-v1/qualified-native-peer-serialization-proof-v1.json",
+    "sha256": "895dc1e6ffdae53438221f423eb854c0c6d7f6bcf659acc78eb1b5a661c17df4",
+    "role": "Explicit v3 lower-stair/preserved-peer qualification dependency"
+   }
+  ],
+  "physical_source_scope": {
+   "south_attachment": "Continuity visible in originalclip1_580/585; targetV=-6.38 is retainedphysical frontfinish boundary from15283meshsectionrays, not surveyedabsolute sourcecoordinate.",
+   "common_skins": "Both faces visuallycontinuous in575and615/620; pair inheritedfromexistingweststairpartition rounded6dec. This is nominalrelativeassemblycontinuity, not measured3mmaccuracy.",
+   "head": "Two independent floor-relative supports2.342..2.364m; target2.350 at retainedfloor0.200, localuncertainty20–30mm.",
+   "aperture_width_and_radius": "Owner1.200width/.150nominalradius retained. Actualtessellatedcornerprofile preserved after50mmheadlowering."
+  },
+  "limits": [
+   "No whole-room/whole-model capture validation.",
+   "Metricreverseface/thickness not newlyaccepted; nominalcommonwallplanes inherited fromadjacentphysicalpartition and qualitativebothfacecontinuity.",
+   "Northalreadyclosed, no129mmwallfill. Numericalcontact verifier admits upto1mm, candidateworstnorth0.364mm.",
+   "Actualtessellatedcornerprofile departsfromidealnominalcircleupto7.142mm inbaseline; no exactcircle/physicalradius measurementPASS.",
+   "Entryceiling/perimetercornice remainsunqualified; no ceilinggeometry change.",
+   "Fullpublication requires stagedSTEP/currentIFCX/presentationparity and newfix61archcontrol rebase, no oldhashbypass.",
+   "Lower-stair rebase accepts only qualified north return/notch mesh and immutable node fields; exact current params/input/layer/context and actual IFC readback must independently PASS.",
+   "6e49 remains its previous exact control; no geometry change is admitted for that peer without a new independent derivation review.",
+   "Owning fix63 producer verifies its complete nine-raw-file source closure; check62 binds that current producer receipt/review/context rather than repeating its raw source execution.",
+   "Native6e49 preservation keeps its exact original full node only after exact current owner parameters, f6b7 stair context and qualified native seven-row index serialization are verified. No peer geometry change permission."
+  ],
+  "permitted_provenance_restamps": {
+   "8fd895c5-b2a5-54a4-b5f1-ee4df64be079": {
+    "generator": "fix60",
+    "allowed_attribute_paths": [
+     "attributes.marpa::model.base_sha256"
+    ]
+   },
+   "d89e408b-0a12-54fb-abcf-4550ec4795bb": {
+    "generator": "fix60",
+    "allowed_attribute_paths": [
+     "attributes.marpa::model.base_sha256"
+    ]
+   }
+  },
+  "provenance_restamp_limits": "Exact one-field allowance only when actual fix60 input/review/output receipt and emitted node readback bind that restamp; all mesh/identity/material/semantic/QTO controls remain exact.",
+  "qualified_geometry_rebases": {
+   "2d1bd50d-0c73-5541-9bfc-f29d08539c9b": {
+    "qualified_mesh_sha256": "f6b7e65e1694fae507516f657e48119b07ae49fbcdd6eb165e67fe7801dfc8f7",
+    "immutable_node_sha256": "94608922ab45f29d8916d0e5f5d068a43666d248793e23eff42f36e051b4afee",
+    "review_sha256": "38bfeea0400c682c2d2db8587a99d3e0774749f0a13e0b9d6f2c8469c11345f9",
+    "source_review": {
+     "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/lower-stair-owner-2d1bd50d-v1/reviewed-lower-stair-contact-v3-preserve-west-pier.json",
+     "sha256": "3bb403054f009ae1ee7da233f5620d1e6f164abbd80c9ed7a568431b9cfed0d8"
+    },
+    "previous_locked_node_sha256": "e95c241407c3405ce8e6aa8898206f916094b76d529b042bafa6d0536eb9a052",
+    "qualified_preview_node_sha256": "2e93ac206f5c2380184007152bb08c0b8cf6f59f34f9a9008934f04d4ea3fc9d",
+    "permitted_provenance_fields": [
+     "attributes.marpa::model.base_file",
+     "attributes.marpa::model.base_sha256"
+    ],
+    "scope": "Only qualified first-body north return and inherited pier notch; runtime actual emitted-node/cutter/IFC binding required. Other physical/semantic fields remain exact."
+   }
+  },
+  "reviewed_native_peer_preservation": {
+   "schema": "marpa.401_pearl.reviewed_native_peer_preservation.v1",
+   "host_id": "6e49c0d0-9226-5249-a4ec-fb22c052ca47",
+   "baseline": {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/interior/arch-junction-qualification-v1/baseline-a6-owner-arch-junction.ifcx",
+    "sha256": "a6ceff3f56425140093b6a370f2dfe91f7dcd5e008054cc930b634fc4feee953"
+   },
+   "proof": {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/interior/arch-junction-qualification-v1/native-peer-preservation-v1/qualified-native-peer-serialization-proof-v1.json",
+    "sha256": "895dc1e6ffdae53438221f423eb854c0c6d7f6bcf659acc78eb1b5a661c17df4"
+   },
+   "baseline_mesh_sha256": "a48533dfed4acb8546526faff2ba3818ff60088885d9ce92db3362d3a12f0cee",
+   "generated_mesh_sha256": "92e00b541e25a829a7952242178256fae55a05ce0a8e2ec87c5e8f5492059e6f",
+   "owner_wall_params_sha256": "af8e425a4555ea406f41d958ccffd204d3cce8962fc12332e684dbd4503dee58",
+   "qualified_stair_mesh_sha256": "f6b7e65e1694fae507516f657e48119b07ae49fbcdd6eb165e67fe7801dfc8f7"
+  }
+ },
+ "reviewed_entry_party_wall_continuity": {
+  "status": "SOURCE_SUPPORTED_RELATIVE_CONTINUITY_PROPOSAL_NOT_CANONICAL_APPLY",
+  "model_path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/transaction/eight-corrections-current-ifc-v4/candidate/ifcx-model/401-pearl-composed.ifcx",
+  "model_sha256": "867f666f35b7a0ea7945240ad67f88f85b75e42640f747ba34a9cc69e77351ef",
+  "wall_path": "65984ab6-388a-56d8-a78c-8f1b5a95662f",
+  "target_rule": "Translate entry wall uniformly in house U so its WEST / entry-interior installed face continues the existing north stair party-wall WEST face. This preserves the existing model datum and avoids interpreting source absolute placement as survey truth.",
+  "current_entry_west_face_u_m": -0.4954749980073021,
+  "north_continuation_west_face_u_m": -0.3850534665598562,
+  "translation_uvz_m": [
+   0.11042153144744593,
+   0,
+   0
+  ],
+  "model_current_relative_jog_m": -0.11042153144744593,
+  "target_bounds_uvz_m": [
+   [
+    -0.3850534665598562,
+    -6.237001193434424,
+    0.1995
+   ],
+   [
+    -0.2576517794716049,
+    -4.754999535020583,
+    2.84
+   ]
+  ],
+  "evidence": [
+   {
+    "session": "sitescape-18.53/core",
+    "entry_face": {
+     "axis": 0,
+     "independent_axes": [
+      1,
+      2
+     ],
+     "coefficients_dependent_equals_ax_by_c": [
+      -0.007888491186356619,
+      0.016422683202011953,
+      -0.44334044151038376
+     ],
+     "normal_at_support_center_m": -0.367938460911003,
+     "support_center_independent_axes_m": [
+      -5.294529421505018,
+      2.048150811178762
+     ],
+     "support_bbox_uvz_m": [
+      [
+       -0.4143909273882418,
+       -6.062285258083329,
+       0.500448182844277
+      ],
+      [
+       -0.33291345286432983,
+       -4.800013498150003,
+       2.699998584306443
+      ]
+     ],
+     "point_count": 13949,
+     "10cm_support_cells": 252,
+     "approx_projected_support_m2": 2.52,
+     "median_signed_fit_residual_m": 0.0004269183336003124,
+     "p90_abs_fit_residual_m": 0.018387241196229413,
+     "spatial_checkerboard_holdout_p90_abs_residual_m": 0.018411665432171855,
+     "uncertainty": "22mm source fit band;15mm voxel sampling; source edge/registration/local drift uncertainty additional. No transform to IFC was fitted."
+    },
+    "stair_face": {
+     "axis": 0,
+     "independent_axes": [
+      1,
+      2
+     ],
+     "coefficients_dependent_equals_ax_by_c": [
+      -0.01931733676527648,
+      0.008354358318843392,
+      -0.46671645877330104
+     ],
+     "normal_at_support_center_m": -0.3667490020105348,
+     "support_center_independent_axes_m": [
+      -4.141471141188812,
+      2.389802216133833
+     ],
+     "support_bbox_uvz_m": [
+      [
+       -0.4039024965782601,
+       -4.549965830336152,
+       1.7605454355457046
+      ],
+      [
+       -0.33612443584247675,
+       -3.082062687872044,
+       2.6999973922135103
+      ]
+     ],
+     "point_count": 10313,
+     "10cm_support_cells": 96,
+     "approx_projected_support_m2": 0.96,
+     "median_signed_fit_residual_m": 0.0002685245046282203,
+     "p90_abs_fit_residual_m": 0.01910919677666091,
+     "spatial_checkerboard_holdout_p90_abs_residual_m": 0.019039779770574066,
+     "uncertainty": "22mm source fit band;15mm voxel sampling; source edge/registration/local drift uncertainty additional. No transform to IFC was fitted."
+    },
+    "difference_of_source_plane_center_u_m": -0.001189458900468232,
+    "sources": [
+     {
+      "path": "/Users/jero/Downloads/401/401-ply/Scan at 18.53_1.ply",
+      "header_sha256": "dd45d974d33810c2abc124c0b18934f9e48a1be0e7e4e633287dd16a5b728170",
+      "file_bytes": 359010579,
+      "points": 23934024,
+      "stride": 24,
+      "matrix": [
+       [
+        3.244634,
+        0,
+        0.486031,
+        3058713.17866
+       ],
+       [
+        0.486031,
+        0,
+        -3.244634,
+        1248707.002339
+       ],
+       [
+        0,
+        3.280833,
+        0,
+        5397.771839
+       ],
+       [
+        0,
+        0,
+        0,
+        1
+       ]
+      ],
+      "file_sha256": "e2c95ba0bde6c00072c9081ed2f1afc43d0fb4a0005489340df90fc766dd4094"
+     },
+     {
+      "path": "/Users/jero/Downloads/401/401-ply/Scan at 18.53_5.ply",
+      "header_sha256": "51340701732e333643aab77bde11d2e5c7776bb66d5c4c1b2a74db0afbf9593a",
+      "file_bytes": 359162949,
+      "points": 23944182,
+      "stride": 24,
+      "matrix": [
+       [
+        3.244634,
+        0,
+        0.486031,
+        3058713.17866
+       ],
+       [
+        0.486031,
+        0,
+        -3.244634,
+        1248707.002339
+       ],
+       [
+        0,
+        3.280833,
+        0,
+        5397.771839
+       ],
+       [
+        0,
+        0,
+        0,
+        1
+       ]
+      ],
+      "file_sha256": "9be85929394f91e5b0bfa440245d650b6d304525501ad715146a95f3079a414a"
+     },
+     {
+      "path": "/Users/jero/Downloads/401/401-ply/Scan at 18.53_10.ply",
+      "header_sha256": "2c9d8514a8dc6ff1210eb8e0b27517b5ee0c6df0a2ce878d98de7c5cb7da0d04",
+      "file_bytes": 358819134,
+      "points": 23921261,
+      "stride": 24,
+      "matrix": [
+       [
+        3.244634,
+        0,
+        0.486031,
+        3058713.17866
+       ],
+       [
+        0.486031,
+        0,
+        -3.244634,
+        1248707.002339
+       ],
+       [
+        0,
+        3.280833,
+        0,
+        5397.771839
+       ],
+       [
+        0,
+        0,
+        0,
+        1
+       ]
+      ],
+      "file_sha256": "7762af6b54dd3b08d3074e5772780eeaaa731a0121f77e4f188b4078994b53c7"
+     }
+    ]
+   },
+   {
+    "session": "sitescape-19.14/core",
+    "entry_face": {
+     "axis": 0,
+     "independent_axes": [
+      1,
+      2
+     ],
+     "coefficients_dependent_equals_ax_by_c": [
+      -0.0015675253431542884,
+      -0.017824936813185383,
+      -0.33558795026060934
+     ],
+     "normal_at_support_center_m": -0.3635092299781622,
+     "support_center_independent_axes_m": [
+      -5.313727086566717,
+      2.0337060362276507
+     ],
+     "support_bbox_uvz_m": [
+      [
+       -0.3976082641643047,
+       -6.02390845454997,
+       0.5000940450692534
+      ],
+      [
+       -0.31503375428261915,
+       -4.800071006981799,
+       2.699611921025176
+      ]
+     ],
+     "point_count": 11358,
+     "10cm_support_cells": 271,
+     "approx_projected_support_m2": 2.71,
+     "median_signed_fit_residual_m": 0.00022621385816601336,
+     "p90_abs_fit_residual_m": 0.019021758134964675,
+     "spatial_checkerboard_holdout_p90_abs_residual_m": 0.019063133314002723,
+     "uncertainty": "22mm source fit band;15mm voxel sampling; source edge/registration/local drift uncertainty additional. No transform to IFC was fitted."
+    },
+    "stair_face": {
+     "axis": 0,
+     "independent_axes": [
+      1,
+      2
+     ],
+     "coefficients_dependent_equals_ax_by_c": [
+      -0.012258259296797348,
+      0.00469924537544805,
+      -0.43186862254470343
+     ],
+     "normal_at_support_center_m": -0.37044907410524536,
+     "support_center_independent_axes_m": [
+      -4.092420842704163,
+      2.394765903642463
+     ],
+     "support_bbox_uvz_m": [
+      [
+       -0.40049001878884477,
+       -4.549980992606125,
+       1.7790886094754135
+      ],
+      [
+       -0.3440610725380726,
+       -3.2032979459076207,
+       2.6999025532435237
+      ]
+     ],
+     "point_count": 5917,
+     "10cm_support_cells": 91,
+     "approx_projected_support_m2": 0.91,
+     "median_signed_fit_residual_m": -0.00043030912919117537,
+     "p90_abs_fit_residual_m": 0.0116426180220363,
+     "spatial_checkerboard_holdout_p90_abs_residual_m": 0.011583664488593276,
+     "uncertainty": "22mm source fit band;15mm voxel sampling; source edge/registration/local drift uncertainty additional. No transform to IFC was fitted."
+    },
+    "difference_of_source_plane_center_u_m": 0.00693984412708315,
+    "sources": [
+     {
+      "path": "/Users/jero/Downloads/401/401-ply/Scan at 19.14_1.ply",
+      "header_sha256": "bb2f54535a53fa9b807e81ba8be6bddcd070d6febbc07d7a115885334136f9bd",
+      "file_bytes": 359125824,
+      "points": 23941707,
+      "stride": 24,
+      "matrix": [
+       [
+        3.173585,
+        0,
+        0.832001,
+        3058715.827552
+       ],
+       [
+        0.832001,
+        0,
+        -3.173585,
+        1248706.298389
+       ],
+       [
+        0,
+        3.280833,
+        0,
+        5397.851297
+       ],
+       [
+        0,
+        0,
+        0,
+        1
+       ]
+      ],
+      "file_sha256": "1b37df8168689349046aa5f41aa6aedee51fbf276c01871306c02bcecc352a1c"
+     },
+     {
+      "path": "/Users/jero/Downloads/401/401-ply/Scan at 19.14_5.ply",
+      "header_sha256": "298eb331ef608e3d6016e7f432058dc3ea61a7a720e4e13e92476c2103143b8e",
+      "file_bytes": 240422829,
+      "points": 16028174,
+      "stride": 24,
+      "matrix": [
+       [
+        3.173585,
+        0,
+        0.832001,
+        3058715.827552
+       ],
+       [
+        0.832001,
+        0,
+        -3.173585,
+        1248706.298389
+       ],
+       [
+        0,
+        3.280833,
+        0,
+        5397.851297
+       ],
+       [
+        0,
+        0,
+        0,
+        1
+       ]
+      ],
+      "file_sha256": "e07f838d937d388bc41b320bfb39221892d43fe2de5a0d651fbcbeee6762bca3"
+     },
+     {
+      "path": "/Users/jero/Downloads/401/401-ply/Scan at 19.14_10.ply",
+      "header_sha256": "1e3d04cf712366a737a045f19b036907c1b11d9ac0e448fdae13d15c79a9f291",
+      "file_bytes": 358911759,
+      "points": 23927436,
+      "stride": 24,
+      "matrix": [
+       [
+        3.173585,
+        0,
+        0.832001,
+        3058715.827552
+       ],
+       [
+        0.832001,
+        0,
+        -3.173585,
+        1248706.298389
+       ],
+       [
+        0,
+        3.280833,
+        0,
+        5397.851297
+       ],
+       [
+        0,
+        0,
+        0,
+        1
+       ]
+      ],
+      "file_sha256": "84c8b60882ac12d795794785bf582e34717f2f31b4e1c91b83c1db774d200059"
+     }
+    ]
+   },
+   {
+    "session": "independent_stair_metric",
+    "source": "/Volumes/MARPA/projects/marpa/0001-401-pearl/09_delivery/twin-presentation/plan-to-walk-20261017/splats/lidar_stair.bin",
+    "sha256": "13d26a036c89d7200dae9e371e42904e6f2b1c347740d0f9caa06e36486d746c",
+    "entry_face": {
+     "axis": 0,
+     "independent_axes": [
+      1,
+      2
+     ],
+     "coefficients_dependent_equals_ax_by_c": [
+      -0.01045396208201151,
+      0.007995190116068722,
+      -0.4410967622156022
+     ],
+     "normal_at_support_center_m": -0.37273097157576995,
+     "support_center_independent_axes_m": [
+      -5.169192279491055,
+      1.791983723640442
+     ],
+     "support_bbox_uvz_m": [
+      [
+       -0.40731137431663567,
+       -5.638796186690635,
+       0.5001168251037598
+      ],
+      [
+       -0.33997485317750353,
+       -4.750115289206486,
+       2.6998629570007324
+      ]
+     ],
+     "point_count": 6884,
+     "10cm_support_cells": 220,
+     "approx_projected_support_m2": 2.2,
+     "median_signed_fit_residual_m": -0.0005515673650174913,
+     "p90_abs_fit_residual_m": 0.014829298659552764,
+     "spatial_checkerboard_holdout_p90_abs_residual_m": 0.015044350940831208,
+     "uncertainty": "22mm source fit band;15mm voxel sampling; source edge/registration/local drift uncertainty additional. No transform to IFC was fitted."
+    },
+    "stair_face": {
+     "axis": 0,
+     "independent_axes": [
+      1,
+      2
+     ],
+     "coefficients_dependent_equals_ax_by_c": [
+      -0.0306935203347317,
+      0.06568667332310685,
+      -0.6541230880118466
+     ],
+     "normal_at_support_center_m": -0.37020262478054666,
+     "support_center_independent_axes_m": [
+      -4.080253380170685,
+      2.41575825214386
+     ],
+     "support_bbox_uvz_m": [
+      [
+       -0.46145515488329925,
+       -4.617769595237123,
+       0.7749555706977844
+      ],
+      [
+       -0.3215718481650284,
+       -2.9196428106375745,
+       2.74988055229187
+      ]
+     ],
+     "point_count": 4490,
+     "10cm_support_cells": 129,
+     "approx_projected_support_m2": 1.29,
+     "median_signed_fit_residual_m": 0.0005436642325105934,
+     "p90_abs_fit_residual_m": 0.019833167542884646,
+     "spatial_checkerboard_holdout_p90_abs_residual_m": 0.01992348128713089,
+     "uncertainty": "22mm source fit band;15mm voxel sampling; source edge/registration/local drift uncertainty additional. No transform to IFC was fitted."
+    },
+    "difference_of_source_plane_center_u_m": -0.0025283467952232908
+   }
+  ],
+  "source_session_independence": "18.53 and19.14 are separately captured SiteScape sessions; chunk1/5/10 used per session. stair_metric is a third capture/derived placed source. No source transform was fitted to this model. Same room/site placement remains uncertain; relative continuation comparison is used.",
+  "uncertainty": "Source planes:22mm inlier bands;15mm voxel sampling, spatial holdoutp90 around12–19mm; raw two-session relative continuity 1–7mm, stair source continuity~3mm. These are fitting diagnostics, not certified tolerances. Source spatial drift/side identification remain additional. Model relative jog~110mm is substantially larger and consistently absent from independent captures.",
+  "do_not_change": [
+   "Owner arch geometry and clear width",
+   "north continuation plane or geometry",
+   "south cutout wall geometry/3voids/fix60",
+   "front external door/frame/host geometry",
+   "entry wall thickness, V extents, Z extents, triangle topology, volume or QTO quantities",
+   "unrelated components and meshes"
+  ],
+  "locked_controls": {
+   "entry_east_wall": {
+    "path": "65984ab6-388a-56d8-a78c-8f1b5a95662f",
+    "name": "Apartment A wall 12 (interior N-S at u=-0.43)",
+    "mesh_sha256": "d1c76fb16652ad25c4ea9ff861b03b1c8fe43dc14f5703019081ba85ff60a876",
+    "bounds_uvz_m": [
+     [
+      -0.4954749980073021,
+      -6.237001193434424,
+      0.1995
+     ],
+     [
+      -0.3680733109190508,
+      -4.754999535020583,
+      2.84
+     ]
+    ]
+   },
+   "north_continuation": {
+    "path": "a6a811a1-510b-534b-b4da-81444f2224b0",
+    "name": "Stairwell east wall (party wall, apartment A/B)",
+    "mesh_sha256": "93c3512f2e7699b6bffb8d2769ed43222bcda94855ce12e83d6a9d277cab623e",
+    "bounds_uvz_m": [
+     [
+      -0.3850534665598562,
+      -4.618010885904258,
+      0.195
+     ],
+     [
+      -0.23505307836747547,
+      -2.743016793098062,
+      2.8335
+     ]
+    ]
+   },
+   "owner_arch_locked": {
+    "path": "e52df6d8-9a37-544b-a0f4-54379868b00a",
+    "name": "Apartment A entry arch wall (N-S at u=-2.03)",
+    "mesh_sha256": "222e87492793d37e793470129e5952576427a97212343c11e00d0ec88aeaec38",
+    "bounds_uvz_m": [
+     [
+      -2.1629915498127943,
+      -6.3799997923973635,
+      0.2
+     ],
+     [
+      -2.017990410048526,
+      -4.61999955400616,
+      2.83
+     ]
+    ]
+   },
+   "entry_north_cutout_wall": {
+    "path": "d89e408b-0a12-54fb-abcf-4550ec4795bb",
+    "name": "Stairwell south wall (interior glassless cutouts)",
+    "mesh_sha256": "7c392abef2aeb74ed9f104f916ed88cf2d65ca938a235d30b49c3e37d618785f",
+    "bounds_uvz_m": [
+     [
+      -2.162991334094296,
+      -4.7480124376431005,
+      0.195
+     ],
+     [
+      -0.2349907385855755,
+      -4.618009403528902,
+      2.8335
+     ]
+    ]
+   },
+   "front_wall": {
+    "path": "68795b2d-2786-50c1-a491-ee9908b3c76f",
+    "name": "Apartment A wall 02 (south exterior)",
+    "mesh_sha256": "72ec048a2d232b3c6c36b46f176ca97618c6ca2a0f40f6dee583daba7f9dc7d5",
+    "bounds_uvz_m": [
+     [
+      -5.71100111433096,
+      -6.507000960275447,
+      -0.0595
+     ],
+     [
+      -0.367999852533639,
+      -6.287000196942855,
+      2.834195
+     ]
+    ]
+   }
+  },
+  "linked_nonmesh_reference_scan": [],
+  "semantic_followup": [
+   "Update A12 name/reference with corrected center, retain stableIfcGlobalId/IfcWall/material/classification/zone/system links",
+   "Verify all actual referencing openings/frames/fills before moving; no opening references found is not proof of no geometric neighbor",
+   "Review entry IfcSpace boundary if it follows old wall; avoid introducing a second physical geometry authority",
+   "Solid endpoint connections to north cutout and south exterior wall checked using actualtriangle/Boolean overlap, not only nominal bounds",
+   "No broad floor/ceiling change included; entry ceiling is separate source-qualified local cover candidate"
+  ],
+  "serialization_qualification": {
+   "original_contract_source": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/transaction/nine-corrections-v1/params.json",
+   "original_contract_source_sha256": "64cf756a333fc735ca431eff148cb3750c466e87190ea1014c4d8c0ed47a586e",
+   "scope": "One explicitly source-qualified fix51 regenerated arch serialization; all owner coordinates and other mesh fields exact, all other control hashes exact. Any new variant requires fresh review."
+  },
+  "arch_control_rebase": {
+   "reason": "Source-qualified intentional native parameter correction; prior arch serialization acceptance is not reused.",
+   "previous_contract": {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/interior/entry-A12-continuity-20261018/fix51-serialization-diagnostic-v1/entry-A12-relative-continuity-contract-v2-explicit-serialization.json",
+    "sha256": "fb3f53ee667d9adcaca4182cd574e256a4f1e907fc75eae0468247e936d8799e"
+   },
+   "previous_arch_control": {
+    "path": "e52df6d8-9a37-544b-a0f4-54379868b00a",
+    "name": "Apartment A entry arch wall (N-S at u=-2.03)",
+    "mesh_sha256": "55497539c71f10d65bc8bc5523f0551b3e3d91905839586b03d8776ec0531adb",
+    "bounds_uvz_m": [
+     [
+      -2.1600004693919184,
+      -6.2899997668582355,
+      0.2
+     ],
+     [
+      -2.0199994993738457,
+      -4.746544856451102,
+      2.83
+     ]
+    ],
+    "reviewed_serialization_variants": [
+     {
+      "mesh_sha256": "5aa05b2082df68fa2bc585d76b7371add96d0f14a87d4b73b999588b2079c54e",
+      "proof_path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/interior/entry-A12-continuity-20261018/fix51-serialization-diagnostic-v1/qualified-proof-v3.json",
+      "proof_sha256": "99188cc473e240c50bf12009644d6dad825418bb63b552bd5ea18562b0a7e860"
+     }
+    ]
+   },
+   "review_contract": {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/interior/arch-junction-qualification-v1/entry-arch-assembly-review-contract-v1.json",
+    "sha256": "f4d26c4087b87802d94736d0ac2bfdd2323efb4b849e697e7572374201efab59"
+   },
+   "acceptance_receipt": {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/interior/arch-junction-qualification-v1/check62-candidate-acceptance-v1.json",
+    "sha256": "f27b6460e205003c62f87b0b8fd282b34c37c1558090d3277306aa66f71260bd"
+   }
+  }
+ },
+ "reviewed_lower_stair_contact": {
+  "schema": "marpa.401_pearl.reviewed_lower_stair_contact.v1",
+  "coordinate_frame": "house_uv_m_theta14.6547_z_up",
+  "baseline_sha256": "a6ceff3f56425140093b6a370f2dfe91f7dcd5e008054cc930b634fc4feee953",
+  "stair_id": "2d1bd50d-0c73-5541-9bfc-f29d08539c9b",
+  "north_host_id": "6e49c0d0-9226-5249-a4ec-fb22c052ca47",
+  "action": "CLOSE_NORTH_RETURN_AND_INHERITED_PIER_NOTCH_ONLY",
+  "first_z_bounds_m": [
+   0.1995,
+   0.325
+  ],
+  "numeric_overlap_m": 0.00002,
+  "north_face_expected_v_m": -2.760000661,
+  "expected_component_mesh_hashes": {
+   "2d1bd50d-0c73-5541-9bfc-f29d08539c9b": "bbda4f3702cb551791ce365d4e0b247f83d960e1c816814747cef1f8a81b67c0",
+   "6e49c0d0-9226-5249-a4ec-fb22c052ca47": "7e187f39b41b085a2ec11f6452f237701bd0c532dd2974893c0c07e158ef4d79",
+   "8fd895c5-b2a5-54a4-b5f1-ee4df64be079": "438dbd615b91596bd560dc718a00b373d6a71a580eaa1e872157f8a3e12ed453"
+  },
+  "north_fill_regions": [
+   {
+    "id": "LONG_RETURN",
+    "u_bounds_m": [
+     -3.126073857,
+     -2.1629906
+    ],
+    "existing_back_v_m": -2.79841879
+   },
+   {
+    "id": "INHERITED_PIER_NOTCH",
+    "u_bounds_m": [
+     -2.30618413,
+     -2.17918362
+    ],
+    "existing_back_v_m": -2.86512549
+   }
+  ],
+  "diagnostic_source_contact_band_m": 0.03,
+  "physical_absolute_coordinate_accuracy": "NOT_CALIBRATED",
+  "source_plane_residual_p90_bound_m": 0.01192,
+  "physical_basis": "Native source-only first-top support reaches corresponding source wall neighborhood; original615s video identifies contiguous constructed curved step.30mm is a diagnostic support band, not calibrated accuracy. Numerical1mm target is mesh-interface continuity.",
+  "coverage_limits": {
+   "direct_native_contact_u_m": [
+    -2.9,
+    -2.1
+   ],
+   "west_return_u_m": [
+    -3.126073857,
+    -2.9
+   ],
+   "west_return_basis": "TOPOLOGICAL_CONTINUATION_FROM_CONTIGUOUS_EDGE_AND_VIDEO_NOT_METRIC_EDGE_PROOF"
+  },
+  "preserve": [
+   "CURVED_FRONT_OUTSIDE_NORTH_CONTACT_ZONE",
+   "FIRST_TREAD_HEIGHT",
+   "HIGHER_FOUR_TREADS",
+   "STABLE_ID_RELATIONSHIPS",
+   "ALL_UNRELATED_NODES"
+  ],
+  "unresolved": [
+   "SOUTH_RETURN_SHAPE",
+   "THREE_DIMENSIONAL_NOSING_FILLET_OVERHANG"
+  ],
+  "sources": [
+   {
+    "path": "/Users/jero/Downloads/401/401-ply/Scan at 19.03_2.ply",
+    "sha256": "43939c17d920ff3b6c8f5daf693ed33fe14b661dc760fe617bab8b8aed9ef127",
+    "role": "NATIVE_RAW_PLY"
+   },
+   {
+    "path": "/Users/jero/Downloads/401/401-ply/Scan at 19.03_5.ply",
+    "sha256": "28d578c0259e9a4d077d82d65b438241dcf59cf1974482ae9e03f6baa2dbcd5e",
+    "role": "NATIVE_RAW_PLY"
+   },
+   {
+    "path": "/Users/jero/Downloads/401/401-ply/Scan at 19.03_10.ply",
+    "sha256": "4dda9728f7c4c6df561e11ef44ad00b34a888c21ebddd8d8eaf34e65ea66bbf5",
+    "role": "NATIVE_RAW_PLY"
+   },
+   {
+    "path": "/Users/jero/Downloads/401/401-ply/Scan at 19.03_3.ply",
+    "sha256": "884bd18e4afd059759b04ccf34a705988fe5d252b3cad3393149bde180ca1031",
+    "role": "NATIVE_RAW_PLY"
+   },
+   {
+    "path": "/Users/jero/Downloads/401/401-ply/Scan at 19.03_4.ply",
+    "sha256": "66c0f055acee0ce1e563a32f36debde0ff8c9a769c641e38a48669b31820f039",
+    "role": "NATIVE_RAW_PLY"
+   },
+   {
+    "path": "/Users/jero/Downloads/401/401-ply/Scan at 19.03_6.ply",
+    "sha256": "8a2739fc55560e49422fa40f8414b1f9300b6dbee3bee9e4e2eaf8064f85acf9",
+    "role": "NATIVE_RAW_PLY"
+   },
+   {
+    "path": "/Users/jero/Downloads/401/401-ply/Scan at 19.03_7.ply",
+    "sha256": "9e0ad15122da4c8810b87db406f8da05bf108315040b521bb576470315b32994",
+    "role": "NATIVE_RAW_PLY"
+   },
+   {
+    "path": "/Users/jero/Downloads/401/401-ply/Scan at 19.03_8.ply",
+    "sha256": "dab2b3547fe5f5413a5b5648ff71f728a3a4f524232055bf32e6b71414dc5b0a",
+    "role": "NATIVE_RAW_PLY"
+   },
+   {
+    "path": "/Users/jero/Downloads/401/401-ply/Scan at 19.03_9.ply",
+    "sha256": "91092077f268c3c06febd31d736288f2374e3885de69802ac12a569e075b6b4c",
+    "role": "NATIVE_RAW_PLY"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/reality-capture/placed-clouds/20261011T200000Z/placed_scan_clouds-20261011T195307Z-apply-5d97ff90b45f4e82abff99aa1437fe63/lidar_g2_epsg2876_ftUS_navd88_v2_accept.laz.json",
+    "sha256": "1e881ef8ef4ad6bcb15bc416a3318da3d449781f9d1f38d6b33cbab4bb0095a4",
+    "role": "REGISTRATION_METADATA"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/lower-stair-owner-2d1bd50d-v1/native-lower-stair-source-receipt-v2-all-accepted-chunks.json",
+    "sha256": "476972c274d1b02c5b1fd1a3ca259847e726ebd70236fd71c6df438a3af9584b",
+    "role": "NATIVE_CORE_RECEIPT"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/lower-stair-owner-2d1bd50d-v1/native-lower-stair-accepted-core-v2-all-accepted-chunks.npz",
+    "sha256": "47604b66b610c16aa0974ce053c052994ce4be75bcf466a2429d763271c0361b",
+    "role": "NATIVE_CORE_POINTS"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/lower-stair-owner-2d1bd50d-v1/firststep-rear-contact-source-v2-pier.json",
+    "sha256": "eae73bb0234fc165e90698aa13fe322eacb8189df55883e07a081033b437e6bd",
+    "role": "CONTACT_MEASUREMENT"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/lower-stair-owner-2d1bd50d-v1/measure-firststep-rear-contact-v2-pier.py",
+    "sha256": "98d92224e6349d16aa619cf0edd87b48feeb78a0e49adc3545f385a566032421",
+    "role": "MEASUREMENT_DEFINITION"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/lower-stair-owner-2d1bd50d-v1/extract-native-lower-stair-v2-all-accepted-chunks.py",
+    "sha256": "9da64536e086da63c98b22ed475e469a1df0598e254ad45ba3665e75d9e089eb",
+    "role": "EXTRACTION_DEFINITION"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames_hd/401_0001-clip1_00615s.jpg",
+    "sha256": "d181701928e2d477e1eda4f463c2029ebb1a93dfefb0e300691f990a98e9ca63",
+    "role": "IDENTITY_VIDEO_FRAME"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/00_inbox/captures/owner-entry-arch-stair-junction-20261018/07-owner-junction.jpg",
+    "sha256": "a1a07ce9bcf1a4a2d453f58c4814f887bed9933a70500253e3cc003f36cfc893",
+    "role": "OWNER_SELECTION"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/joined-entry-arch-stair-verifier-v1/independent-native-firststep-contact-v1.json",
+    "sha256": "fd812ddd9764eb9d58cfd9ed5b321e4f64900a9c7db6e5f824cec931386c3ff9",
+    "role": "INDEPENDENT_SOURCE_CHECK"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/joined-entry-arch-stair-verifier-v1/combined-v1-added-stair-westwall-components.json",
+    "sha256": "e0f60bdccd4ea6ce2991a09533975883389fc817f99c30f2a7f357db45acc04a",
+    "role": "FAILED_PRIOR_CANDIDATE_REVIEW"
+   }
+  ],
+  "excluded_region": {
+   "id": "EAST_RETURN",
+   "reason": "FAILED_PRIOR_COMBINED_CANDIDATE_ADDITION_OCCUPIED_EXISTING_WEST_PIER_NO_SUPPORT_TO_CARVE_PIER",
+   "failed_prior_candidate_intersection_m3": 0.000546109,
+   "u_bounds_m": [
+    -2.162991,
+    -2.017991
+   ],
+   "v_bounds_m": [
+    -2.7900107,
+    -2.7600002
+   ],
+   "z_bounds_m": [
+    0.1995,
+    0.325
+   ],
+   "action": "OMIT_EAST_ADDITION_PRESERVE_EXISTING_WALL_PIER_AND_ORIGINAL_STAIR_MATERIAL"
+  },
+  "addition_peer_boundary": "Subtract occupied existing west-pier solid from proposed additive region only, including numerical overlap; never remove wall or original stair material."
  }
 }
