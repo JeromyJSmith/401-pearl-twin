@@ -18,7 +18,7 @@ import { furnish } from './furniture.js';
 import { Post } from './post.js';
 import { layout, sample, channel } from './timeline.js';
 import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
-import { makeObservation, captureTriplet, replayObservation } from './observations.mjs';
+import { makeObservation, captureTriplet, replayObservation, comparisonCapture } from './observations.mjs';
 
 const Q = new URLSearchParams(location.search);
 const REC = Q.has('rec');
@@ -2525,8 +2525,7 @@ const observationAdapter={read:observationState,apply:applyObservationState,
 async function prepareComparison() {
   if (!selected?.mesh.userData.e.id) throw new Error('Choose an element first.');
   if (!Object.entries(layers).some(([k,v])=>k!=='model' && v)) {
-    const room=roomOf(selected.mesh);const phase=selected.mesh.userData.phase;
-    const key=phase===3 || (room?.floorZ ?? M.FFL)>=M.storeys.upper.elevation-.5 ? 'polycamUpper' : (room?.floorZ ?? M.FFL)<M.FFL-.5 ? 'kiriBasement' : room?.apt==='Apartment A' ? 'lidarMain' : 'polycamMain';
+    const {key}=comparisonSource();
     const capture=SCANS.find((sc)=>sc.key===key);layers[key]=true;await ensureScan(capture);
     if (!scanObj[key]) throw new Error('Choose an available capture from Layers.');
   }
@@ -2535,6 +2534,12 @@ async function prepareComparison() {
   applyLayers();render();comparisonEnabled=true;$('pnFlag').querySelector('button[type=submit]').textContent='Save comparison';
   const sources=SCANS.filter((sc)=>layers[sc.key]).map((sc)=>sc.label);if(layers.splat)sources.push('Drone scan');if(layers.scan)sources.push('Interior Gaussian capture');
   $('pnStatus').textContent=`${sources.join(' · ')}. Adjust the view and blend, describe what is wrong, then save the comparison.`;
+}
+function comparisonSource() {
+  const cameraRoom=M.spaces.filter((r)=>pointIn([camera.position.x,camera.position.y],r.poly) && r.floorZ<=camera.position.z && camera.position.z-r.floorZ<3.2)
+    .sort((a,b)=>b.floorZ-a.floorZ || a.area-b.area)[0] || null;
+  return comparisonCapture({cameraRoom,elementRoom:roomOf(selected?.mesh),phase:selected?.mesh.userData.phase,
+    mainFloor:M.FFL,upperFloor:M.storeys.upper.elevation,cameraFloor:mode==='walk'?walk.floor:undefined});
 }
 async function saveComparison() {
   if (comparisonBusy) throw new Error('A comparison is already being saved.');
@@ -2548,7 +2553,9 @@ async function saveComparison() {
       object.updateWorldMatrix(true,false);
       return {...c,visible:object.visible,instance_matrix_world:object.matrixWorld.toArray()};
     });
-    const state=observationState();const e=selected?.mesh.userData.e;const room=selected && roomOf(selected.mesh);
+    const state=observationState();const e=selected?.mesh.userData.e;
+    // An explicitly chosen capture is still usable when a shared wall has no unique room.
+    let room=null;try {room=comparisonSource().room;} catch {}
     const observation=makeObservation({context,state,captures,element:{path:e.id,global_id:e.guid,name:e.name},room:room?{id:room.id,name:room.name || room.label}:null,title:$('pnTitle').value});
     Object.assign(observation,await captureTriplet(observationAdapter));
     // Detect model/capture publication during screenshot capture before persistence.

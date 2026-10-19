@@ -2,6 +2,15 @@
 export const OBSERVATION_SCHEMA = 'marpa.capture-observation.v1';
 export const FRAME_NAMES = ['model', 'capture', 'blend'];
 const copy = (value) => structuredClone(value);
+export function comparisonCapture({cameraRoom,elementRoom,phase,mainFloor,upperFloor,cameraFloor}) {
+  const room=cameraRoom || elementRoom || null;
+  if (phase===3 || (room?.floorZ ?? cameraFloor)>=upperFloor-.5) return {key:'polycamUpper',room:room?.floorZ>=upperFloor-.5 ? room : null};
+  if ((room?.floorZ ?? cameraFloor)<mainFloor-.5) return {key:'kiriBasement',room};
+  if (room && /stair/i.test(room.name || room.label || '')) return {key:'lidarStair',room};
+  if (room?.apt==='Apartment A') return {key:'lidarMain',room};
+  if (room?.apt==='Apartment B') return {key:'polycamMain',room};
+  throw new Error('This wall borders more than one room. Choose its capture in Layers before comparing.');
+}
 export function assertObservationCurrent(observation, context) {
   if (observation?.schema !== OBSERVATION_SCHEMA) throw new Error('This comparison format is not supported.');
   for (const field of ['model_sha256', 'parameter_sha256', 'edits_sha256', 'presentation_sha256']) {
