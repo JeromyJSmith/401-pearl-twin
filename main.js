@@ -2013,8 +2013,37 @@ $('icFile').addEventListener('click', () => { const m = cardFlag && meshOfPath(c
 const walkHud = $('walkhud');
 const keys = new Set();
 const walk = { pos: new THREE.Vector3(), yaw: 90, pitch: 0, floor: 0, fov: 90 };
+let pausedTour = null, insidePose = null;
+function rememberInside() {
+  if (mode === 'walk' && roomUnder(walk.pos.x, walk.pos.y, walk.floor)) {
+    insidePose = { pos: walk.pos.clone(), floor: walk.floor, yaw: walk.yaw, pitch: walk.pitch, fov: walk.fov };
+  }
+}
+function explore(where) {
+  rememberInside();
+  enterWalk(true);
+  walk.glide = null; walk.glideLock = true; keys.clear();
+  if (where === 'inside') {
+    if (insidePose) { walk.pos.copy(insidePose.pos); Object.assign(walk, { floor: insidePose.floor, yaw: insidePose.yaw, pitch: insidePose.pitch, fov: insidePose.fov }); }
+    else {
+      const st = dossiers.filter((d) => d.shot.h0 <= (pausedTour?.p ?? prog) * TOTAL).at(-1)?.st || M.stops[0];
+      const p = solidStand(st);
+      walk.floor = st.floorZ; walk.pos.set(p[0], p[1], st.floorZ + EYE);
+      walk.yaw = Math.atan2(st.look[1] - p[1], st.look[0] - p[0]) / DEG; walk.pitch = 0; walk.fov = 90;
+    }
+  } else {
+    const c = M.center, span = Math.max(M.fp[2] - M.fp[0], M.fp[3] - M.fp[1]);
+    walk.floor = M.FFL; walk.pos.set(c.x, M.fp[1] - Math.max(4, span * 0.65), M.FFL + EYE);
+    walk.yaw = Math.atan2(c.y - walk.pos.y, c.x - walk.pos.x) / DEG; walk.pitch = -8; walk.fov = 75;
+  }
+  $('outsidePill').setAttribute('aria-pressed', String(where === 'outside'));
+  walkPill.setAttribute('aria-pressed', String(where === 'inside'));
+  stepWalk(0); render();
+}
 function enterWalk(keep = false) {
+  if (mode !== 'walk') pausedTour = { p: prog, yaw: insp.yaw, pitch: insp.pitch };
   mode = 'walk';
+  $('resumePill').hidden = false;
   document.body.classList.add('walking');
   walkHud.hidden = false; hud.style.opacity = '0'; chapter.style.opacity = '0'; hero.style.opacity = '0'; caption.style.opacity = '0'; walkTag.style.opacity = '0';
   phaseChip.textContent = ASB ? 'Free walk · as built' : 'Free walk · proposed';
@@ -2034,11 +2063,22 @@ function enterWalk(keep = false) {
   // no pointer lock (owner 2026-10-18): the cursor stays free for the panels, the issue list and Plan | Walk | Model
 }
 function leaveWalk() {
+  rememberInside(); keys.clear(); dragging = null; walk.glide = null;
   mode = 'scroll'; document.body.classList.remove('walking'); walkHud.hidden = true; lenis?.start();
   $('navWalk')?.classList.remove('on');
+  $('resumePill').hidden = true;
+  $('outsidePill').setAttribute('aria-pressed', 'false'); walkPill.setAttribute('aria-pressed', 'false');
+  if (pausedTour) {
+    target = prog = pausedTour.p; insp.yaw = pausedTour.yaw; insp.pitch = pausedTour.pitch;
+    const y = prog * Math.max(1, track.offsetHeight - innerHeight);
+    if (lenis) lenis.scrollTo(y, { immediate: true }); else scrollTo(0, y);
+    navHold = { p: prog, until: performance.now() + 900 }; pausedTour = null; update(prog);
+  }
   if (document.pointerLockElement) document.exitPointerLock();
 }
-walkPill.addEventListener('click', () => enterWalk());
+walkPill.addEventListener('click', () => explore('inside'));
+$('outsidePill').addEventListener('click', () => explore('outside'));
+$('resumePill').addEventListener('click', leaveWalk);
 addEventListener('keydown', (e) => {
   if (mode !== 'walk') return;
   if (e.key === 'Escape') return leaveWalk();
@@ -2412,7 +2452,7 @@ window.__P401 = {
   edit: (path, color, extra = {}) => post('api/edit', { path, color, ...extra }),
   leaveWalk,
   walkTick: (dt, held = []) => { keys.clear(); for (const k of held) keys.add(k); stepWalk(dt); render(); return { x: walk.pos.x, y: walk.pos.y, floor: walk.floor }; },
-  walkState: () => ({ x: +walk.pos.x.toFixed(2), y: +walk.pos.y.toFixed(2), z: +walk.pos.z.toFixed(2), floor: +walk.floor.toFixed(2), yaw: +walk.yaw.toFixed(1) }),
+  walkState: () => ({ mode, progress: prog, pausedProgress: pausedTour?.p ?? null, x: +walk.pos.x.toFixed(2), y: +walk.pos.y.toFixed(2), z: +walk.pos.z.toFixed(2), floor: +walk.floor.toFixed(2), yaw: +walk.yaw.toFixed(1) }),
   stairInfo: () => M.spaces.filter((r) => /stair/i.test(r.name)).map((r) => ({ name: r.name, bbox: r.bbox.map((v) => +v.toFixed(2)), floorZ: r.floorZ })),
 };
 

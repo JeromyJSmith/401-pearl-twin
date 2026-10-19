@@ -34,7 +34,9 @@ body { overflow-x: hidden; }
 /* chrome */
 .top { position: fixed; top: 0; left: 0; right: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; pointer-events: none; }
 .top .mark { font-weight: 500; }
-.top .right { display: flex; gap: 12px; align-items: center; pointer-events: auto; }
+.top .right { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; align-items: center; pointer-events: auto; min-width: 0; }
+.top .mark { flex-shrink: 0; margin-right: 12px; }
+#outsidePill[aria-pressed="true"], #walkPill[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 .chip { padding: 6px 10px; border: 1px solid var(--line); border-radius: 2px; }
 .pill { padding: 8px 14px; border: 1px solid var(--ink); border-radius: 999px; color: var(--ink); text-decoration: none; }
 .pill:hover { background: var(--ink); color: var(--paper); }
@@ -66,6 +68,10 @@ body { overflow-x: hidden; }
 .bottom a { color: var(--ink); text-decoration: none; }
 
 @media (max-width: 760px) {
+  .top { padding: 10px 12px; flex-direction: column; gap: 8px; align-items: stretch; }
+  .top .right { justify-content: flex-start; gap: 6px; }
+  #outsidePill, #walkPill, #resumePill { order: -1; }
+  .top .pill { padding: 7px 10px; letter-spacing: .08em; }
   .hero { width: 100vw; padding: 76px 16px 16px; }
   .hero h1 { font-size: 38px; }
   .titleblock, .hero .lede { display: none; }
@@ -94,7 +100,7 @@ body { overflow-x: hidden; }
 .hud { pointer-events: auto; }
 .ruler #rulerTicks i { position: absolute; right: 0; width: 22px; height: 1px; background: var(--ink); }
 #walkPill { background: var(--paper); cursor: pointer; font: inherit; font-size: 10.5px; letter-spacing: .16em; opacity: 0; pointer-events: none; transition: opacity .4s; }
-#walkPill.on { opacity: 1; pointer-events: auto; }
+#walkPill, #walkPill.on { opacity: 1; pointer-events: auto; }
 
 /* element panel */
 .panel { position: fixed; z-index: 30; left: 24px; bottom: 64px; width: 340px; padding: 18px 20px; background: rgba(239,235,226,.96); border: 1px solid var(--ink); display: flex; flex-direction: column; gap: 10px; }

@@ -39,7 +39,9 @@
     <button class="pill mono" id="layersPill" type="button" title="Go to a room · scans and layers">Layers</button>
     <button class="pill mono" id="issuesPill" type="button" aria-expanded="false" title="Issues flagged as BCF topics">Issues · 0</button>
     <button class="pill mono" id="splatPill" type="button" aria-pressed="false" title="Show or hide the drone scan of the site">Drone scan</button>
-    <button class="pill mono" id="walkPill" type="button">Walk the house</button>
+    <button class="pill mono" id="outsidePill" type="button" aria-pressed="false">Outside</button>
+    <button class="pill mono" id="walkPill" type="button" aria-pressed="false">Inside</button>
+    <button class="pill mono" id="resumePill" type="button" hidden>Resume tour</button>
   </div>
 </header>
 
@@ -124,7 +126,7 @@
 
 <div class="walkhud" id="walkhud" hidden>
   <div class="cross" aria-hidden="true"></div>
-  <div class="mono help">WASD move · mouse look · [ ] lens · 1 main · 2 upper · 0 basement · E select · Esc leave</div>
+  <div class="mono help">WASD move · drag to look · Option + scroll to fly · [ ] lens · 1 main · 2 upper · 0 basement · Esc resume tour</div>
   <div class="mono where" id="walkWhere"></div>
 </div>
 
