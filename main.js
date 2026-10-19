@@ -2221,8 +2221,11 @@ const layers = { model: true, splat: false, scan: false };
 // format: uint32 N, N x 3 float32, N x 3 uint8). Each is loaded the first time it is switched on; one that is not
 // placed yet says so. They render in their own pass (layer 2) and blend with the model by the two opacity sliders.
 const SCANS = [
+  { key: 'lidarUpper', label: 'Upper level · metric LiDAR (g4)', url: 'splats/lidar_upper.bin' },
+  { key: 'lidarStair', label: 'Stairs · metric LiDAR', url: 'splats/lidar_stair.bin' },
+  { key: 'lidarMain', label: 'Apartment A · metric LiDAR', url: 'splats/lidar_apta_main.bin' },
   { key: 'kiriUpper', label: 'Upper level · KIRI c730', url: 'splats/upper_kiri_c730.bin' },
-  { key: 'polycamUpper', label: 'Upper level · Polycam', url: 'splats/polycam_upper.bin' },
+  { key: 'polycamUpper', label: 'Upper level · Polycam (LiDAR aligned)', url: 'splats/polycam_upper_lidar_registered.bin' },
   { key: 'polycamMain', label: 'Apartment B · Polycam', url: 'splats/polycam_main_aptb.bin' },
   { key: 'kiriBasement', label: 'Basement · KIRI (stair direction to confirm)', url: 'splats/kiri_basement.bin' },
 ];

@@ -1,0 +1,23 @@
+{
+ "label": "Upper level \u00b7 metric LiDAR (g4)",
+ "points": 479817,
+ "voxel_m": 0.02,
+ "crop_uv": null,
+ "frame": "model site frame (composed IFCX local metres)",
+ "source_sha256": {
+  "lidar_g4_epsg2876_ftUS_navd88_v2_accept.laz": "e42b5ee9eeb11d4db926a3957553db0988380b4c12549c365d22b694bd0bcd30"
+ },
+ "bbox": [
+  [
+   -5.734000205993652,
+   -6.519000053405762,
+   0.2029999941587448
+  ],
+  [
+   4.7129998207092285,
+   0.8970000147819519,
+   6.25
+  ]
+ ],
+ "sha256": "adde8e6508bc6a06047654d3968a5d5ae6778db51f00724795e684695436bcff"
+}

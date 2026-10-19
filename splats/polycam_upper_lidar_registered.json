@@ -1,0 +1,136 @@
+{
+  "schema": "marpa.capture.metric_lidar_refinement.v1",
+  "frame": "model local metres, z up",
+  "capture": "/Volumes/MARPA/projects/marpa/0001-401-pearl/09_delivery/twin-presentation/plan-to-walk-20261017/splats/polycam_upper.bin",
+  "capture_sha256": "c2f25002a8e8300283b430fceec63de14b9ca46675dc8fb699f4352fd0ba2b7e",
+  "reference": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/building-model/ifcx-model/scans/lidar_g4_epsg2876_ftUS_navd88_v2_accept.laz",
+  "reference_sha256": "e42b5ee9eeb11d4db926a3957553db0988380b4c12549c365d22b694bd0bcd30",
+  "points": 500068,
+  "matrix_previous_placement_to_metric_lidar": [
+    [
+      0.9581846537365774,
+      0.017720756978539233,
+      0.0,
+      0.08905926138516151
+    ],
+    [
+      -0.017720756978539004,
+      0.9581846537365791,
+      0.0,
+      -0.06054216268675801
+    ],
+    [
+      0.0,
+      0.0,
+      0.9583485043991968,
+      0.10911652490887988
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "correction_scale": 0.9583485043991974,
+  "before_fixed_overlap": {
+    "n_matched": 56892,
+    "matched_fraction": 1.0,
+    "median_cm": 4.77,
+    "rms_cm": 9.28,
+    "p90_cm": 15.4
+  },
+  "validation_overlap_points": 56892,
+  "validation_total_points": 93323,
+  "trials": [
+    {
+      "scaled": false,
+      "matrix": [
+        [
+          0.9999992608921686,
+          0.0012158187005865467,
+          0.0,
+          0.07482722842523411
+        ],
+        [
+          -0.0012158187005867262,
+          0.9999992608921688,
+          0.0,
+          0.026785354158858625
+        ],
+        [
+          0.0,
+          0.0,
+          0.9999999999999943,
+          -0.07015990058011153
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "fit": {
+        "n_matched": 60722,
+        "matched_fraction": 0.6507,
+        "median_cm": 3.41,
+        "rms_cm": 11.66,
+        "p90_cm": 20.95
+      },
+      "heldout_fixed_overlap": {
+        "n_matched": 56892,
+        "matched_fraction": 1.0,
+        "median_cm": 3.0,
+        "rms_cm": 8.44,
+        "p90_cm": 14.64
+      }
+    },
+    {
+      "scaled": true,
+      "matrix": [
+        [
+          0.9581846537365774,
+          0.017720756978539233,
+          0.0,
+          0.08905926138516151
+        ],
+        [
+          -0.017720756978539004,
+          0.9581846537365791,
+          0.0,
+          -0.06054216268675801
+        ],
+        [
+          0.0,
+          0.0,
+          0.9583485043991968,
+          0.10911652490887988
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "fit": {
+        "n_matched": 61896,
+        "matched_fraction": 0.6632,
+        "median_cm": 2.26,
+        "rms_cm": 10.46,
+        "p90_cm": 19.33
+      },
+      "heldout_fixed_overlap": {
+        "n_matched": 56892,
+        "matched_fraction": 1.0,
+        "median_cm": 2.11,
+        "rms_cm": 7.45,
+        "p90_cm": 11.65
+      }
+    }
+  ],
+  "chosen_scaled": true,
+  "output_sha256": "23b77581d5acc72411a920cc19186e1907c9e5bf168101cf8f4371b72031a1a9",
+  "coverage_limit": "LiDAR does not cover every room. Fixed overlap validates registration, not all-room geometry or unmeasured features."
+}
