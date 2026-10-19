@@ -16,6 +16,12 @@ export function assertObservationCurrent(observation, context) {
   for (const field of ['model_sha256', 'parameter_sha256', 'edits_sha256', 'presentation_sha256']) {
     if ((observation.revision?.[field] ?? null) !== (context.revision?.[field] ?? null)) throw new Error('This comparison belongs to an earlier model. Save a new comparison.');
   }
+  if (observation.room != null) {
+    if (!observation.room.id || !observation.room.global_id) throw new Error('This identified room comparison has no actual IFC room identity. Preserve it and save a new comparison.');
+    if (!Array.isArray(context.spaces)) throw new Error('Room identities are unavailable. Reload before using this comparison.');
+    const matches = context.spaces.filter((space) => space.id === observation.room.id);
+    if (matches.length !== 1 || !matches[0].global_id || matches[0].global_id !== observation.room.global_id) throw new Error('This comparison room does not match the actual IFC room identity.');
+  }
   if (!/^[a-f0-9]{64}$/.test(observation.revision?.model_sha256 || '')) throw new Error('The model revision is unavailable. Reload before saving.');
   if (!observation.captures?.length) throw new Error('Turn on a capture before saving a comparison.');
   for (const capture of observation.captures) {

@@ -16,7 +16,9 @@ import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 import { drawSheet, sheetBounds, drawRedlines, redlineBounds } from './sheet.js';
 import { furnish } from './furniture.js';
 import { Post } from './post.js';
-import { layout, sample, channel } from './timeline.js';
+import { layout, sample, channel, advanceProgress } from './timeline.js';
+import { buildRoomTransfer, directedPose } from './room-transfer.js';
+import { createGeometryClearance } from './geometry-clearance.js';
 import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 import { makeObservation, captureTriplet, replayObservation, comparisonCapture } from './observations.mjs';
 
@@ -683,7 +685,7 @@ function buildModel(data) {
   M.lblB = floorLabels(M.spaces.filter((r) => upper && r.s.storey === upper.id));
 
   // walk stops (rooms grouped, stand points, origins), then proxy furniture facing each stand point (not in the as-built walk)
-  M.stops = buildStops();
+  M.stops = M.spaces.map(r=>({rooms:[r],stand:[r.cu,r.cv]}));
   M.furn = new THREE.Group();
   const inPoly = (pt, poly) => { let c2 = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if ((yi > pt[1]) !== (yj > pt[1]) && pt[0] < ((xj - xi) * (pt[1] - yi)) / (yj - yi) + xi) c2 = !c2; } return c2; };
   if (!ASB) for (const st of M.stops) for (const r of st.rooms) {
@@ -725,65 +727,6 @@ function buildModel(data) {
 const pointIn = (pt, poly) => { let c2 = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if ((yi > pt[1]) !== (yj > pt[1]) && pt[0] < ((xj - xi) * (pt[1] - yi)) / (yj - yi) + xi) c2 = !c2; } return c2; };
 // the camera is indoors when it stands over the main footprint below the roof
 const cameraIndoors = () => { const q = camera.position; return q.x > M.fp[0] && q.x < M.fp[2] && q.y > M.fp[1] && q.y < M.fp[3] && q.z < M.box.max.z - 0.5 && q.z > (M.storeys.base?.elevation ?? -3) - 0.5; };
-function buildStops() {
-  const byName = (n) => M.spaces.find((r) => r.name === n);
-  const stops = [];
-  let prev = [M.doors.west?.at.x ?? M.center.x, (M.doors.west?.at.y ?? M.fp[1]) - 1];
-  for (const names of ROOM_GROUPS) {
-    if (names[0] === '@basement') {
-      const z = M.storeys.base?.elevation ?? M.FFL - 2.1;
-      const stand = [M.center.x - 1.2, M.center.y - 2.5];
-      stops.push({ key: 'basement', rooms: [], stand, floorZ: z, look: [M.center.x - 1.0, M.center.y + 3.5], fov: 74, title: 'Basement', apt: 'Storage', meta: 'No room data in the model yet · storage dividers only' });
-      prev = stand; continue;
-    }
-    if (names[0] === '@porch-east') {
-      const d = M.doors.east;
-      if (!d) continue;
-      const stand = [d.at.x + 0.2, M.fp[1] - 1.2];
-      stops.push({ key: 'porch-east', rooms: [], stand, floorZ: M.FFL, look: [d.at.x, d.at.y + 2], fov: 56, exterior: true, door: 'east', title: 'Front porch', apt: 'Apartment B', meta: 'Through the east front door' });
-      prev = [d.at.x, d.at.y - 0.4]; continue;
-    }
-    const rooms = names.map(byName).filter(Boolean);
-    if (!rooms.length) continue;
-    const u0 = Math.min(...rooms.map((r) => r.bbox[0])), v0 = Math.min(...rooms.map((r) => r.bbox[1]));
-    const u1 = Math.max(...rooms.map((r) => r.bbox[2])), v1 = Math.max(...rooms.map((r) => r.bbox[3]));
-    const inset = Math.min(0.45, (u1 - u0) * 0.3, (v1 - v0) * 0.3);
-    // stand between the room's centre and the side the walk comes from, inside the footprint
-    const c = (() => { // area centroid of the largest room's polygon
-      const poly = rooms.reduce((a, r) => (r.area > a.area ? r : a), rooms[0]).poly;
-      let A = 0, cx = 0, cy = 0;
-      for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const f = poly[j][0] * poly[i][1] - poly[i][0] * poly[j][1]; A += f; cx += (poly[j][0] + poly[i][0]) * f; cy += (poly[j][1] + poly[i][1]) * f; }
-      return Math.abs(A) > 1e-6 ? [cx / (3 * A), cy / (3 * A)] : [(u0 + u1) / 2, (v0 + v1) / 2];
-    })();
-    const toPrev = [prev[0] - c[0], prev[1] - c[1]], tl = Math.hypot(...toPrev) || 1;
-    const reach = Math.min(Math.max(0.2, Math.min(u1 - u0, v1 - v0) * 0.38), 1.6);
-    let stand = [c[0] + (toPrev[0] / tl) * reach, c[1] + (toPrev[1] / tl) * reach];
-    const insideAny = (pt) => rooms.some((r) => pointIn(pt, r.poly));
-    for (let k = 0; k < 6 && !insideAny(stand); k++) stand = [(stand[0] + c[0]) / 2, (stand[1] + c[1]) / 2];
-    stand = [Math.min(u1 - inset, Math.max(u0 + inset, stand[0])), Math.min(v1 - inset, Math.max(v0 + inset, stand[1]))];
-    const entered = names[0] === 'AptA - Entry' || names[0] === 'AptB - Front Room'; // a front-door room is walked into, never looked at from the porch
-    const small = Math.max(u1 - u0, v1 - v0) < 2.2 && !rooms.some((r) => /stair/i.test(r.name)) && !entered;
-    if (small) stand = [c[0] + (toPrev[0] / tl) * 1.9, c[1] + (toPrev[1] / tl) * 1.9]; // a cupboard-sized room is seen from the room before it
-    const reachF = small ? 0.4 : 1.4;
-    let look = [c[0] + (c[0] - stand[0]) * reachF, c[1] + (c[1] - stand[1]) * reachF];
-    if (Math.hypot(look[0] - stand[0], look[1] - stand[1]) < 0.8) look = [c[0], c[1] + 2];
-    const main = rooms[0];
-    const area = rooms.reduce((s, r) => s + (r.area || 0), 0);
-    stops.push({
-      key: names.join('+'), rooms, stand, floorZ: main.floorZ, look, fov: Math.max(u1 - u0, v1 - v0) < 2.2 ? 90 : 86, // wide first-person lens: tight rooms
-      title: rooms.map((r) => r.label).join(' + '), apt: main.apt, n: main.n,
-      meta: `${(u1 - u0).toFixed(2)} × ${(v1 - v0).toFixed(2)} M · ${area.toFixed(1)} M² · CEILING ${main.height.toFixed(2)}`,
-      door: names[0] === 'AptA - Entry' ? 'west' : names[0] === 'AptB - Front Room' ? 'east' : null,
-    });
-    for (const r of rooms) {
-      U.uOrg.value[r.i].set(stand[0], stand[1], r.floorZ);
-      U.uRad.value[r.i] = Math.hypot(u1 - u0, v1 - v0) + 1.6;
-    }
-    prev = c;
-  }
-  return stops;
-}
-
 // ---------- lights, environment, splats ----------
 const sun = new THREE.DirectionalLight(0xffd9a8, 4.4);
 sun.castShadow = true;
@@ -1027,354 +970,70 @@ const EYE_FOV = 78, VIA_FOV = 72; // owner: a wide first-person lens for tight r
 let shots = [], TOTAL = 1, dossiers = [], revWin = [], extWin = null, ext2Win = null, doorWin = {}, heroShot = null, asbuiltShot = null, rollWin = null;
 const OFF = () => M.box.max.z + 0.4; // a cut above everything = no cut
 function unwrapYaw(prev, y) { if (prev == null) return y; while (y - prev > 180) y -= 360; while (y - prev < -180) y += 360; return y; }
-function sh(o) { // authoring helper: t (Vector3), yaw, pitch, fov, dist|frame, hold, go, cut, focus …
-  const prev = shots.length ? shots[shots.length - 1].yaw : null;
-  const s = { ...o, t: [o.t.x, o.t.y, o.t.z], yaw: unwrapYaw(prev, o.yaw) };
-  shots.push(s);
-  return s;
+const clearance = createGeometryClearance({THREE,meshes:()=>M.meshes,spaces:()=>M.spaces,clipping:()=>({cut:U.uCut.value,phaseCuts:[...U.uPhaseCut.value]})});
+let routeRows = [], transfer = null, pendingNavigation = null, navigationToken = 0, activeRoom = null, targetRoom = null, navigationStage = 'floor-plan-hover';
+function sh(o) {
+  const t=Array.isArray(o.t)?o.t:[o.t.x,o.t.y,o.t.z];
+  const yaw=unwrapYaw(shots.at(-1)?.yaw,o.yaw), pitch=o.pitch;
+  const dist=o.dist??o.frame/(2*Math.tan(o.fov*DEG/2));
+  const dir=[Math.cos(pitch*DEG)*Math.cos(yaw*DEG),Math.cos(pitch*DEG)*Math.sin(yaw*DEG),-Math.sin(pitch*DEG)];
+  const eye=o.eye?(Array.isArray(o.eye)?[...o.eye]:o.eye.toArray()):t.map((v,i)=>v-dir[i]*dist);
+  const q={hold:35,go:70,...o,t,yaw,eye,dist}; shots.push(q); return q;
 }
-const eye = (pos, look, fov, extra = {}) => { // eye at pos, target 2.5 m along the look direction
-  const d = V(look.x - pos.x, look.y - pos.y, look.z - pos.z).normalize();
-  const yaw = Math.atan2(d.y, d.x) / DEG, pitch = -Math.asin(d.z) / DEG;
-  return sh({ t: pos.clone().addScaledVector(d, 2.5), yaw, pitch, fov, dist: 2.5, focus: extra.focus ?? 4.5, ...extra });
-};
-function planShot() {
-  const aspect = innerWidth / innerHeight, fp = M.fp;
-  const frame = Math.max(fp[3] - fp[1] + 10.4, (fp[2] - fp[0] + 7) / (aspect * 0.58));
-  const shift = aspect > 1 ? 0.1 * frame * aspect : 0;
-  return { t: V(M.center.x - shift, M.center.y - 1.75, M.FFL), yaw: 90, pitch: 89.4, fov: 3, frame };
+function flightAltitude() {
+  const size=M.box.getSize(new THREE.Vector3()), aspect=Math.max(.2,innerWidth/innerHeight);
+  return M.box.max.z+Math.max(3,Math.max(size.y+3,(size.x+3)/aspect)/(2*Math.tan(16*DEG)));
 }
-// the same flat plan, centred and as large as the screen allows (owner 2026-10-18: "come into the middle ... as big as it
-// can be in that flat 2D", then hold so it can be grabbed and turned before the tilt)
 function planShotCentred() {
-  const aspect = innerWidth / innerHeight, fp = M.fp;
-  const frame = Math.max(fp[3] - fp[1] + 2.2, (fp[2] - fp[0] + 2.2) / aspect);
-  return { t: V(M.center.x, M.center.y, M.FFL), yaw: 90, pitch: 89.4, fov: 3, frame };
+  return directedPose([M.center.x,M.center.y,flightAltitude()],90,89,32,{cut:M.FFL+1.2,id:'plan-centre',hold:60,go:80,navigationStage:'floor-plan-hover'});
+}
+const planShot=planShotCentred;
+function qualifiedStop(r,n) {
+  const q=clearance.target(r), eye=q.eye||[r.cu,r.cv,flightAltitude()];
+  const row={...q,key:r.name,room:r.name,name:r.name,storey:r.storey,apt:r.apt,spaceID:r.s.id};
+  routeRows.push(row);
+  return {key:r.name,title:r.label||r.name,apt:r.apt,meta:`${r.area.toFixed(1)} m² · ${r.storey}`,rooms:[r],floorZ:r.floorZ,stand:eye.slice(0,2),look:[r.cu,r.cv],qualification:row,n};
+}
+function floorCenterFor(key){const room=M.spaces.find(r=>r.name===key),peers=room?M.spaces.filter(r=>Math.abs(r.floorZ-room.floorZ)<.3):M.spaces;return [(Math.min(...peers.map(r=>r.bbox[0]))+Math.max(...peers.map(r=>r.bbox[2])))/2,(Math.min(...peers.map(r=>r.bbox[1]))+Math.max(...peers.map(r=>r.bbox[3])))/2];}
+function roomPose(st) {
+  const q=st.qualification,r=st.rooms[0], pos=q.eye||[r.cu,r.cv,flightAltitude()];
+  return directedPose(pos,90,q.status==='SAFE_ROOM'?0:89,q.status==='SAFE_ROOM'?72:32,{roomKey:st.key,cut:q.status==='SAFE_ROOM'?OFF():r.floorZ+1.2});
 }
 function buildTimeline() {
-  if (ASB) return buildTimelineAB();
-  shots = []; dossiers = []; revWin = [];
-  const FFL = M.FFL, CUT0 = FFL + CUT_ABOVE_FLOOR, c = M.center, top = M.box.max.z;
-  const doorW = M.doors.west?.at || V(c.x, M.fp[1], FFL), doorE = M.doors.east?.at || doorW;
-  const cutIn = (z) => z + 2.35; // "3.52" analogue: just under the ceiling, rooms open from above
-  const byKey = (k) => M.stops.find((s) => s.key === k);
-  const groups = (pred) => M.stops.filter(pred);
-  // 1 sheet
-  heroShot = sh({ id: 'hero', ...planShot(), hold: 40, go: 150, cut: CUT0 });
-  if (Q.get('chapters') === 'CB') { /* the permit clock and construction chapters stay available behind this switch */ }
-  // 2 descent with the cut rising, 3 the orbit (owner: circle around) while the outside sweeps to as found
-  sh({ id: 'lens', t: V(doorW.x, doorW.y + 3, FFL), yaw: 90, pitch: 64, fov: 36, dist: 26, go: 120, cut: cutIn(FFL) });
-  const R = 24, oz = FFL + 1.5;
-  const orbit = [[60, 32], [-30, 30], [-120, 28], [-210, 26]];
-  const o0 = shots.length;
-  for (const [yaw, pitch] of orbit) sh({ id: 'orbit', t: V(c.x, c.y, oz), yaw, pitch, fov: 34, dist: R, go: 75, cut: OFF() });
-  sh({ id: 'approach', t: V(doorW.x, doorW.y, FFL + 1.7), yaw: 90, pitch: 13.6, fov: 44, dist: 12.35, go: 100, cut: OFF() });
-  const doorShot = sh({ id: 'door', t: V(doorW.x, doorW.y + 2.6, FFL + 1.75), yaw: 90, pitch: -3, fov: 56, dist: 7.6, hold: 90, go: 110, cut: OFF(), focus: 7 });
-  // rooms: dossier holds in walk order; overhead interludes before the first big room, the floor change and Apartment B
-  const holdFor = (st, n, extra = {}) => {
-    const z = st.floorZ + EYE;
-    const s = eye(V(st.stand[0], st.stand[1], z), V(st.look[0], st.look[1], z - 0.12), st.fov <= 80 ? EYE_FOV : st.fov, { hold: 120, go: 100, cut: OFF(), id: st.key, ...extra });
-    lastStand = V(st.stand[0], st.stand[1], z);
-    dossiers.push({ shot: s, st, n });
-    return s;
-  };
-  let lastStand = null;
-  const viaInto = (st) => { // threshold via: halfway from the last stand point to this room's, looking the way we walk
-    const z = st.floorZ + EYE, a = V(st.stand[0], st.stand[1], z), b = V(st.look[0], st.look[1], z - 0.1);
-    const from = lastStand && Math.abs(lastStand.z - z) < 0.5 ? lastStand.clone().lerp(a, 0.5) : a.clone();
-    const lookAt = from.distanceTo(a) > 0.4 ? a.clone().addScaledVector(b.clone().sub(a).normalize(), 1.5) : b;
-    return eye(from, lookAt, VIA_FOV, { go: 95, cut: OFF(), id: `${st.key}-via` });
-  };
-  const overhead = (st, zf) => {
-    const rs = st.rooms.length ? st.rooms : [];
-    const bb = rs.length ? [Math.min(...rs.map((r) => r.bbox[0])), Math.min(...rs.map((r) => r.bbox[1])), Math.max(...rs.map((r) => r.bbox[2])), Math.max(...rs.map((r) => r.bbox[3]))] : [st.stand[0] - 2, st.stand[1] - 2, st.stand[0] + 2, st.stand[1] + 2];
-    const rc = V((bb[0] + bb[2]) / 2, (bb[1] + bb[3]) / 2, zf);
-    const side = Math.max(bb[2] - bb[0], bb[3] - bb[1]);
-    sh({ id: 'rise', t: rc.clone().add(V(0, -1, 0)), yaw: shots[shots.length - 1].yaw, pitch: 62, fov: 30, dist: 14, go: 120, cut: cutIn(zf) });
-    sh({ id: `${st.key}-top`, t: rc, yaw: 90, pitch: 89.4, fov: 4, frame: side + 1.5, hold: 90, go: 120, cut: cutIn(zf) });
-    const toward = Math.atan2(st.look[1] - st.stand[1], st.look[0] - st.stand[0]) / DEG;
-    sh({ id: 'drop', t: V(st.stand[0], st.stand[1], zf + 0.5), yaw: toward, pitch: 50, fov: 44, dist: 8, go: 110, cut: cutIn(zf) });
-  };
-  let n = 0;
-  const A = groups((s) => /^AptA - (Entry)$/.test(s.key))[0];
-  if (A) holdFor(A, ++n, { hold: 110, go: 140 });
-  const aRooms = ['AptA - Front room', 'AptA - Living area', 'AptA - Kitchen w/ bar', 'AptA - Pantry+AptA - Refrigerator', 'AptA - Bathroom'];
-  aRooms.forEach((k, i) => {
-    const st = byKey(k); if (!st) return;
-    if (i === 0) overhead(st, st.floorZ); else viaInto(st);
-    holdFor(st, ++n, /Pantry/.test(k) ? { hold: 90 } : {});
-  });
-  const up = byKey('Upper - Stairs+Upper - Hallway');
-  const stairsUp = byKey('AptA - Stairs up');
-  const stairVia = (st) => { // a stair is read from above, the cut lowered into its well
-    const r0 = st.rooms[0]; const c2 = V((r0.bbox[0] + r0.bbox[2]) / 2, (r0.bbox[1] + r0.bbox[3]) / 2, st.floorZ + 0.8);
-    return sh({ id: `${st.key}-stair`, t: c2, yaw: shots[shots.length - 1].yaw, pitch: 58, fov: 46, dist: 6.5, go: 110, cut: st.floorZ + 2.4 });
-  };
-  if (stairsUp) { const s = stairVia(stairsUp); dossiers.push({ shot: s, st: stairsUp, n: ++n, via: true }); }
-  if (up) { overhead(up, up.floorZ); holdFor(up, ++n); }
-  for (const k of ['Upper - Room 2+Upper - Closet', 'Upper - Room 1', 'Upper - Toilet+Upper - Shower', 'Upper - Room 3+Upper - Room 3 closet']) {
-    const st = byKey(k); if (!st) continue; viaInto(st); holdFor(st, ++n);
+  shots=[]; dossiers=[]; revWin=[]; routeRows=[]; clearance.refresh();
+  M.stops=M.spaces.map((r,i)=>qualifiedStop(r,i+1)); buildNav();
+  heroShot=sh({...planShotCentred(),id:'hero'});
+  sh({...planShotCentred(),id:'plan-centre'});
+  const orbit=directedPose([M.center.x,M.box.min.y-8,Math.max(M.box.max.z+3,8)],90,25,50,{id:'orbit',hold:70,cut:OFF(),navigationStage:'outside'});
+  // Exterior and every interior use the identical stationary-cut / overhead route.
+  for(const pose of buildRoomTransfer(shots.at(-1),orbit,{flightZ:flightAltitude(),targetCut:OFF()})) sh({...pose,go:pose.go||70});
+  for(const st of M.stops) {
+    const destination=roomPose(st), route=buildRoomTransfer(shots.at(-1),destination,{flightZ:flightAltitude(),roomKey:st.key,targetCut:destination.cut,floorCenter:floorCenterFor(st.key)});
+    for(const pose of route){const q=sh({...pose,go:pose.go||65});if(q.navigationStage==='floor-plan-hover')q.id=`floor-plan:${st.key}`;}
+    const first=shots.at(-1); first.id=`room:${st.key}`; first.hold=65;
+    const last=sh({...destination,yaw:destination.yaw+18,hold:55,go:75,navigationStage:'room-pan'});
+    dossiers.push({shot:first,last,st,n:st.n});
   }
-  const down = byKey('AptA - Stairs to basement'), base = byKey('basement');
-  if (down) { const s = stairVia(down); dossiers.push({ shot: s, st: down, n: ++n, via: true }); }
-  if (base) { viaInto(base); holdFor(base, ++n, { hold: 90 }); }
-  // out, round to the porch, in through Apartment B's own door
-  sh({ id: 'out', t: V(c.x, c.y, FFL + 1), yaw: shots[shots.length - 1].yaw, pitch: 40, fov: 34, dist: 20, go: 110, cut: OFF() });
-  sh({ id: 'approachB', t: V(doorE.x, doorE.y, FFL + 1.7), yaw: 90, pitch: 12, fov: 44, dist: 11, go: 100, cut: OFF() });
-  const doorBShot = sh({ id: 'doorB', t: V(doorE.x, doorE.y + 2.4, FFL + 1.75), yaw: 90, pitch: -3, fov: 56, dist: 6.8, hold: 90, go: 110, cut: OFF(), focus: 6.5 });
-  ['AptB - Front Room', 'AptB - Kitchen', 'AptB - Nook', 'AptB - Bathroom', 'AptB - Bedroom'].forEach((k, i) => {
-    const st = byKey(k); if (!st) return;
-    if (i === 0) overhead(st, st.floorZ); else viaInto(st);
-    holdFor(st, ++n);
-  });
-  // lift and the second orbit (the proposed exterior), then the as-built sheet spinning in
-  const e0 = shots.length;
-  sh({ id: 'lift', t: V(c.x, c.y, FFL + 1), yaw: shots[shots.length - 1].yaw, pitch: 60, fov: 30, dist: 40, go: 150, cut: OFF() });
-  for (const [yaw, pitch] of [[200, 34], [110, 32], [20, 40]]) sh({ id: 'orbit2', t: V(c.x, c.y, oz), yaw, pitch, fov: 34, dist: R + 4, go: 70, cut: OFF() });
-  const pl = planShot();
-  asbuiltShot = sh({ id: 'asbuilt', ...pl, yaw: unwrapYaw(shots[shots.length - 1].yaw, pl.yaw) - 360, hold: 150, go: 0, cut: CUT0 });
-  TOTAL = layout(shots);
-  // windows (vh)
-  extWin = [shots[o0].h0 - 10, shots[o0 + orbit.length - 1].g1];
-  ext2Win = [shots[e0 + 1].h0, shots[e0 + 3].g1];
-  doorWin = { west: [doorShot.h0 + 8, doorShot.h1 - 6], east: [doorBShot.h0 + 8, doorBShot.h1 - 6] };
-  let prevEnd = doorShot.h1;
-  for (const d of dossiers) {
-    const s = d.shot;
-    const h0 = s.h0, h1 = d.via ? s.g1 : s.h1;
-    for (const r of d.st.rooms) revWin.push({ i: r.i, e: [prevEnd - 30, h0 + 30], p: [lerp(h0, h1, 0.5), h1 + 15] });
-    d.win = [h0 - 20, h1 + 16];
-    prevEnd = h1 + 10;
-  }
-  rollWin = [asbuiltShot.h0 + 4, asbuiltShot.h1 - 24];
-  document.getElementById('track').style.height = `${TOTAL + 120}vh`;
+  const final=planShotCentred();
+  for(const pose of buildRoomTransfer(shots.at(-1),final,{flightZ:flightAltitude(),targetCut:final.cut})) sh({...pose,go:pose.go||70});
+  asbuiltShot=sh({...final,id:'asbuilt',hold:100,go:0});
+  TOTAL=layout(shots); extWin=[0,1];ext2Win=[TOTAL+1,TOTAL+2];doorWin={west:[TOTAL+1,TOTAL+2],east:[TOTAL+1,TOTAL+2]};rollWin=[TOTAL+1,TOTAL+2];
+  for(const d of dossiers) {d.win=[d.shot.h0,d.last.h1]; for(const r of d.st.rooms)revWin.push({i:r.i,e:[0,1],p:[TOTAL+1,TOTAL+2]});}
+  document.getElementById('track').style.height=`${TOTAL+120}vh`; buildRuler();
 }
-// ---------- as-built timeline (owner 2026-10-18): every wall of every room, doorways not walls, stairs at eye level ----------
-let splatWins = null;
-const wallRay = new THREE.Raycaster();
-const camBlockers = () => M.meshes.filter((m) => /^(IfcWall|IfcWindow|IfcColumn|IfcBuildingElementProxy|IfcRailing)$/.test(m.userData.e?.cls || ''));
-function lineClear(a, b, z, walls) { // eye-height line a→b free of walls (doors count as open)
-  const d = V(b[0] - a[0], b[1] - a[1], 0); const L = d.length(); if (L < 1e-3) return true;
-  wallRay.set(V(a[0], a[1], z), d.normalize()); wallRay.near = 0; wallRay.far = L;
-  return wallRay.intersectObjects(walls, false).length === 0;
-}
-function doorway(from, st, z, walls) { // null: the straight line is clear; {out, in}: through an opening; false: none found
-  if (lineClear(from, st.stand, z, walls)) return null;
-  let best = false;
-  for (const r of st.rooms) {
-    const P = r.poly;
-    for (let i = 0; i < P.length; i++) {
-      const a = P[i], b = P[(i + 1) % P.length], L = Math.hypot(b[0] - a[0], b[1] - a[1]); if (L < 0.5) continue;
-      const nx = -(b[1] - a[1]) / L, ny = (b[0] - a[0]) / L, steps = Math.floor(L / 0.1);
-      for (let k = 2; k < steps - 1; k++) {
-        const t = k / steps, p = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
-        for (const sgn of [1, -1]) {
-          const pin = [p[0] + nx * 0.35 * sgn, p[1] + ny * 0.35 * sgn], pout = [p[0] - nx * 0.35 * sgn, p[1] - ny * 0.35 * sgn];
-          if (!pointIn(pin, r.poly) || pointIn(pout, r.poly)) continue;
-          const len = Math.hypot(pout[0] - from[0], pout[1] - from[1]) + Math.hypot(st.stand[0] - pin[0], st.stand[1] - pin[1]);
-          if (best && len >= best.len) continue;
-          if (lineClear(pout, pin, z, walls) && lineClear(from, pout, z, walls) && lineClear(pin, st.stand, z, walls)) best = { len, out: pout, in: pin };
-        }
-      }
-    }
-  }
-  return best;
-}
-function treads(filter, z0, z1) { // tread tops (upward faces) of the matching meshes, one point per level, ordered by height
-  const pts = [], A = new THREE.Vector3(), B = new THREE.Vector3(), C = new THREE.Vector3(), e1 = new THREE.Vector3(), e2 = new THREE.Vector3();
-  for (const m of M.meshes) {
-    if (!filter(m.userData.e || {})) continue;
-    m.updateMatrixWorld();
-    const pos = m.geometry.attributes.position, idx = m.geometry.index, n = idx ? idx.count : pos.count;
-    for (let i = 0; i + 2 < n; i += 3) {
-      const ia = idx ? idx.getX(i) : i, ib = idx ? idx.getX(i + 1) : i + 1, ic = idx ? idx.getX(i + 2) : i + 2;
-      A.fromBufferAttribute(pos, ia).applyMatrix4(m.matrixWorld); B.fromBufferAttribute(pos, ib).applyMatrix4(m.matrixWorld); C.fromBufferAttribute(pos, ic).applyMatrix4(m.matrixWorld);
-      const nr = e1.subVectors(B, A).cross(e2.subVectors(C, A)); const area = nr.length() / 2; if (area < 0.004) continue;
-      if (Math.abs(nr.z / (2 * area)) < 0.9) continue;
-      const z = Math.max(A.z, B.z, C.z); if (z < z0 - 0.05 || z > z1 + 0.05) continue;
-      pts.push({ x: (A.x + B.x + C.x) / 3, y: (A.y + B.y + C.y) / 3, z, a: area });
-    }
-  }
-  pts.sort((p, q) => p.z - q.z);
-  const lv = [];
-  for (const p of pts) {
-    const L = lv[lv.length - 1];
-    if (L && p.z - L.z0 < 0.07) { L.x += p.x * p.a; L.y += p.y * p.a; L.a += p.a; L.z = Math.max(L.z, p.z); }
-    else lv.push({ x: p.x * p.a, y: p.y * p.a, a: p.a, z: p.z, z0: p.z });
-  }
-  return lv.filter((l) => l.a > 0.04).map((l) => ({ x: l.x / l.a, y: l.y / l.a, z: l.z }));
-}
-function buildTimelineAB() {
-  shots = []; dossiers = []; revWin = [];
-  const FFL = M.FFL, CUT0 = FFL + CUT_ABOVE_FLOOR, c = M.center;
-  const doorW = M.doors.west?.at || V(c.x, M.fp[1], FFL), doorE = M.doors.east?.at || doorW;
-  const byKey = (k) => M.stops.find((s) => s.key === k);
-  const walls = camBlockers();
-  let lastStand = null, n = 0;
-  heroShot = sh({ id: 'hero', ...planShot(), hold: 40, go: 120, cut: CUT0 });
-  sh({ id: 'plan-centre', ...planShotCentred(), hold: 80, go: 110, cut: CUT0 });
-  sh({ id: 'lens', t: V(doorW.x, doorW.y + 3, FFL), yaw: 90, pitch: 64, fov: 36, dist: 26, go: 100, cut: FFL + 2.35 });
-  // the upper floor, open, before the roof closes (owner 2026-10-18): rise to its plan cut, hold, then roof on and orbit
-  const UFL = M.storeys.upper?.elevation;
-  if (UFL != null) {
-    const up = M.spaces.filter((r) => Math.abs(r.floorZ - UFL) < 0.6);
-    const ub = up.length ? [Math.min(...up.map((r) => r.bbox[0])), Math.min(...up.map((r) => r.bbox[1])), Math.max(...up.map((r) => r.bbox[2])), Math.max(...up.map((r) => r.bbox[3]))] : null;
-    const uc = ub ? V((ub[0] + ub[2]) / 2, (ub[1] + ub[3]) / 2, UFL) : V(c.x, c.y, UFL);
-    sh({ id: 'upper-plan', t: uc, yaw: 90, pitch: 70, fov: 34, dist: 22, hold: 60, go: 110, cut: UFL + CUT_ABOVE_FLOOR });
-    sh({ id: 'upper-tilt', t: uc, yaw: 40, pitch: 48, fov: 36, dist: 20, hold: 30, go: 80, cut: UFL + CUT_ABOVE_FLOOR });
-  }
-  const R = 24, oz = FFL + 1.5, o0 = shots.length;
-  const orbit = [[60, 32], [-30, 30], [-120, 28], [-210, 26]];
-  for (const [yaw, pitch] of orbit) sh({ id: 'orbit', t: V(c.x, c.y, oz), yaw, pitch, fov: 34, dist: R, go: 70, cut: OFF() });
-  const appr = sh({ id: 'approach', t: V(doorW.x, doorW.y, FFL + 1.7), yaw: 90, pitch: 13.6, fov: 44, dist: 12.35, go: 90, cut: OFF() });
-  const doorShot = sh({ id: 'door', t: V(doorW.x, doorW.y + 2.6, FFL + 1.75), yaw: 90, pitch: -3, fov: 56, dist: 7.6, hold: 60, go: 90, cut: OFF(), focus: 7 });
-  lastStand = V(doorW.x, doorW.y - 0.6, FFL + EYE);
-  const look = (p, yaw, z, extra) => eye(V(p[0], p[1], z), V(p[0] + Math.cos(yaw * DEG) * 2.5, p[1] + Math.sin(yaw * DEG) * 2.5, z - 0.12), EYE_FOV, { cut: OFF(), ...extra });
-  // through the front door on foot: the threshold, then a step inside, before the entry's own look
-  look([doorW.x, doorW.y - 0.9], 90, FFL + EYE, { go: 45, id: 'threshold' });
-  look([doorW.x, doorW.y + 0.45], 90, FFL + EYE, { go: 40, id: 'threshold-in' });
-  lastStand = V(doorW.x, doorW.y + 0.45, FFL + EYE);
-  const moveTo = (st, z) => {
-    if (!lastStand || Math.abs(lastStand.z - z) > 0.6) return;
-    const from = [lastStand.x, lastStand.y];
-    const d = doorway(from, st, z - 0.15, walls);
-    if (d === null) return;
-    if (d) {
-      const dir = Math.atan2(d.in[1] - d.out[1], d.in[0] - d.out[0]) / DEG;
-      look(d.out, dir, z, { go: 40, id: `${st.key}-door` });
-      look(d.in, dir, z, { go: 40, id: `${st.key}-door` });
-    } else { // no opening found at eye height: a short lift over the walls with the cut at the ceiling
-      const mid = [(from[0] + st.stand[0]) / 2, (from[1] + st.stand[1]) / 2];
-      sh({ id: `${st.key}-lift`, t: V(mid[0], mid[1], st.floorZ), yaw: shots[shots.length - 1].yaw, pitch: 68, fov: 40, dist: 6.5, go: 70, cut: st.floorZ + 2.3 });
-    }
-  };
-  const pan = (st) => { // three turns from the entry side, then the wall behind from the far side
-    const z = st.floorZ + EYE, A = st.stand;
-    const rs = st.rooms;
-    const bb = rs.length ? [Math.min(...rs.map((r) => r.bbox[0])), Math.min(...rs.map((r) => r.bbox[1])), Math.max(...rs.map((r) => r.bbox[2])), Math.max(...rs.map((r) => r.bbox[3]))] : [A[0] - 3, A[1] - 3, A[0] + 3, A[1] + 3];
-    const cc = [(bb[0] + bb[2]) / 2, (bb[1] + bb[3]) / 2];
-    const y0 = Math.atan2(st.look[1] - A[1], st.look[0] - A[0]) / DEG;
-    moveTo(st, z);
-    if (Math.max(bb[2] - bb[0], bb[3] - bb[1]) < 2.4) { // a cupboard-sized room: one wide look in from where we stand
-      const only = eye(V(A[0], A[1], z), V(A[0] + Math.cos(y0 * DEG) * 2.5, A[1] + Math.sin(y0 * DEG) * 2.5, z - 0.35), 90, { hold: 40, go: 45, cut: OFF(), id: st.key });
-      dossiers.push({ shot: only, st, n: ++n, last: only }); lastStand = V(A[0], A[1], z); return;
-    }
-    const first = look(A, y0, z, { hold: 34, go: 40, id: st.key });
-    const d = { shot: first, st, n: ++n };
-    dossiers.push(d);
-    look(A, y0 + 62, z, { hold: 26, go: 45, id: `${st.key}-pan` });
-    let last = look(A, y0 - 62, z, { hold: 26, go: 45, id: `${st.key}-pan` });
-    let at = A;
-    if (Math.max(bb[2] - bb[0], bb[3] - bb[1]) > 2.6) {
-      let Bp = [cc[0] + (cc[0] - A[0]) * 0.7, cc[1] + (cc[1] - A[1]) * 0.7];
-      if (rs.length && !rs.some((r) => pointIn(Bp, r.poly))) Bp = cc;
-      if (!rs.length || lineClear(A, Bp, z - 0.15, walls)) { last = look(Bp, y0 + 180, z, { hold: 30, go: 45, id: `${st.key}-back` }); at = Bp; }
-    }
-    d.last = last;
-    lastStand = V(at[0], at[1], z);
-  };
-  const stairRun = (lv, dir, key, cut = null, zMax = Infinity) => { // eye-level climb (dir +1) or descent (−1) over the tread tops
-    const L = dir > 0 ? lv : [...lv].reverse();
-    for (let k = 0; k < L.length; k += 2) {
-      const p0 = L[k], q = L[Math.min(L.length - 1, k + 3)];
-      if (p0.z > zMax - 0.25) continue; // the stair is a solid block: no eye point below its own tread surface
-      const p = { ...p0, z: Math.min(p0.z, zMax - EYE) };
-      const ahead = Math.hypot(q.x - p.x, q.y - p.y) > 0.2 ? [q.x, q.y, p.z + EYE + (q.z - p.z) * 0.35 - (dir > 0 ? 0 : 0.45)] : [p.x + 1, p.y, p.z + EYE];
-      eye(V(p.x, p.y, p.z + EYE), V(...ahead), 80, { go: 24, cut: cut ?? OFF(), id: `${key}-${dir > 0 ? 'up' : 'down'}` });
-    }
-    const end = L[L.length - 1];
-    lastStand = V(end.x, end.y, end.z + EYE);
-  };
-  const stairStop = (key, foot, toward) => { // a held look at the stair from its foot or head (the HUD names it)
-    const st0 = byKey(key); if (!st0) return;
-    const st = { ...st0, stand: [foot.x, foot.y], look: [toward.x, toward.y] };
-    moveTo(st, foot.z + EYE);
-    const yaw = Math.atan2(toward.y - foot.y, toward.x - foot.x) / DEG;
-    const s = eye(V(foot.x, foot.y, foot.z + EYE), V(toward.x, toward.y, toward.z + EYE), 80, { hold: 40, go: 30, cut: OFF(), id: key });
-    dossiers.push({ shot: s, st, n: ++n, last: s });
-    lastStand = V(foot.x, foot.y, foot.z + EYE);
-    return yaw;
-  };
-  for (const k of ['AptA - Entry', 'AptA - Front room', 'AptA - Living area', 'AptA - Kitchen w/ bar', 'AptA - Pantry+AptA - Refrigerator', 'AptA - Bathroom']) { const st = byKey(k); if (st) pan(st); }
-  const upperZ = M.storeys.upper?.elevation ?? FFL + 2.89, baseZ = M.storeys.base?.elevation ?? FFL - 2.14;
-  const main = treads((e) => e.cls === 'IfcStairFlight', FFL + 0.05, upperZ + 0.02);
-  if (main.length > 3) {
-    stairStop('AptA - Stairs up', { x: main[0].x, y: main[0].y, z: FFL }, main[Math.min(4, main.length - 1)]);
-    stairRun(main, 1, 'main-stair');
-  }
-  for (const k of ['Upper - Stairs+Upper - Hallway', 'Upper - Room 2+Upper - Closet', 'Upper - Room 1', 'Upper - Toilet+Upper - Shower', 'Upper - Room 3+Upper - Room 3 closet']) { const st = byKey(k); if (st) pan(st); }
-  if (main.length > 3) {
-    const top = main[main.length - 1];
-    const st0 = byKey('Upper - Stairs+Upper - Hallway');
-    if (st0) moveTo({ ...st0, stand: [top.x, top.y] }, upperZ + EYE);
-    stairRun(main, -1, 'main-stair');
-  }
-  const bst = treads((e) => e.cls === 'IfcStair' && /basement/i.test(e.name || ''), baseZ - 0.05, FFL + 0.02);
-  if (bst.length > 3) {
-    const head = bst[bst.length - 1];
-    const below = FFL - 0.02; // the basement stair sits under the main stair: cut away the main floor and all above it
-    const st0 = byKey('AptA - Stairs to basement');
-    if (st0) moveTo({ ...st0, stand: [head.x, head.y] }, FFL + EYE);
-    const look0 = bst[Math.max(0, bst.length - 6)];
-    const start = [...bst].reverse().find((t) => t.z <= FFL - 0.7) || bst[0];
-    const s = eye(V(start.x, start.y, FFL - 0.45), V(bst[0].x, bst[0].y, bst[0].z + 0.6), 84, { hold: 40, go: 50, cut: below, id: 'AptA - Stairs to basement' });
-    if (st0) dossiers.push({ shot: s, st: { ...st0, stand: [head.x, head.y], look: [look0.x, look0.y] }, n: ++n, last: s });
-    stairRun(bst, -1, 'basement-stair', below, FFL - 0.45);
-  }
-  { const st = byKey('basement'); if (st) { const k0 = shots.length; pan(st); for (let k = k0; k < shots.length; k++) shots[k].cut = FFL - 0.02; } }
-  sh({ id: 'out', t: V(c.x, c.y, FFL + 1), yaw: shots[shots.length - 1].yaw, pitch: 55, fov: 34, dist: 26, hold: 18, go: 100, cut: OFF() });
-  sh({ id: 'approachB', t: V(doorE.x, doorE.y, FFL + 1.7), yaw: 90, pitch: 12, fov: 44, dist: 11, go: 90, cut: OFF() });
-  const doorBShot = sh({ id: 'doorB', t: V(doorE.x, doorE.y + 2.4, FFL + 1.75), yaw: 90, pitch: -3, fov: 56, dist: 6.8, hold: 60, go: 90, cut: OFF(), focus: 6.5 });
-  lastStand = V(doorE.x, doorE.y - 0.6, FFL + EYE);
-  for (const k of ['AptB - Front Room', 'AptB - Kitchen', 'AptB - Nook', 'AptB - Bathroom', 'AptB - Bedroom']) { const st = byKey(k); if (st) pan(st); }
-  const e0 = shots.length;
-  sh({ id: 'lift', t: V(c.x, c.y, FFL + 1), yaw: shots[shots.length - 1].yaw, pitch: 60, fov: 34, dist: 34, hold: 18, go: 120, cut: OFF() });
-  for (const [yaw, pitch] of [[200, 40], [110, 50], [20, 44]]) sh({ id: 'orbit2', t: V(c.x, c.y, oz), yaw, pitch, fov: 34, dist: R + 6, go: 70, cut: OFF() });
-  const pl = planShot();
-  asbuiltShot = sh({ id: 'asbuilt', ...pl, yaw: unwrapYaw(shots[shots.length - 1].yaw, pl.yaw) - 360, hold: 120, go: 0, cut: CUT0 });
-  TOTAL = layout(shots);
-  extWin = [shots[o0].h0 - 10, shots[o0 + orbit.length - 1].g1];
-  ext2Win = [shots[e0 + 1].h0, shots[e0 + 3].g1];
-  splatWins = [[shots[o0].h0 - 10, appr.h0 + 20], [shots[e0].h0, asbuiltShot.h0 - 30]];
-  doorWin = { west: [doorShot.h0 + 8, doorShot.h1 - 6], east: [doorBShot.h0 + 8, doorBShot.h1 - 6] };
-  let prevEnd = doorShot.h1;
-  for (const d of dossiers) {
-    const h0 = d.shot.h0, h1 = (d.last || d.shot).h1;
-    for (const r of d.st.rooms) revWin.push({ i: r.i, e: [prevEnd - 30, h0 + 20], p: [h1, h1 + 20] });
-    d.win = [h0 - 20, h1 + 16];
-    prevEnd = h1 + 10;
-  }
-  rollWin = [asbuiltShot.h0 + 4, asbuiltShot.h1 - 24];
-  document.getElementById('track').style.height = `${TOTAL + 120}vh`;
-}
-
+let splatWins=null;
 let camCut = 99, camSample = null;
 const insp = { yaw: 0, pitch: 0, drag: null, told: false };
+function poseCamera(c) {
+  const yaw=(c.yaw+insp.yaw)*DEG,pitch=Math.max(-89.8,Math.min(89.8,c.pitch+insp.pitch))*DEG;
+  camera.position.fromArray(c.eye);camera.fov=c.fov;camera.near=.05;camera.far=2000;camera.updateProjectionMatrix();
+  camera.lookAt(camera.position.clone().add(new THREE.Vector3(Math.cos(pitch)*Math.cos(yaw),Math.cos(pitch)*Math.sin(yaw),-Math.sin(pitch))));
+  camera.updateMatrixWorld(); CU.uPixA.value=2*Math.tan(camera.fov*DEG/2)/H();
+}
 function placeCamera(s) {
-  const c = sample(shots, s);
-  camSample = c;
-  // inspect: a drag while the walk holds orbits an outside shot round its target, or turns an inside (eye) shot in place
-  const orbitShot = c.dist > 3;
-  const yaw = (c.yaw + (orbitShot ? insp.yaw : 0)) * DEG, pitch = Math.max(-80, Math.min(85, c.pitch + (orbitShot ? insp.pitch : 0))) * DEG;
-  const dir = new THREE.Vector3(Math.cos(pitch) * Math.cos(yaw), Math.cos(pitch) * Math.sin(yaw), -Math.sin(pitch));
-  const t = new THREE.Vector3(c.x, c.y, c.z);
-  // aspect fit: frames widen on narrow screens, distance keeps the authored fov
-  const aspect = innerWidth / innerHeight;
-  const vfov = 2 * Math.atan(Math.tan((c.fov * DEG) / 2) * Math.max(1, 1.5 / aspect) ** 0.6) / DEG;
-  camera.position.copy(t).addScaledVector(dir, -c.dist);
-  camera.fov = vfov;
-  camera.near = Math.min(30, Math.max(0.05, 0.02 * c.dist));
-  camera.far = Math.max(2000, 6 * c.dist);
-  camera.updateProjectionMatrix();
-  camera.lookAt(t);
-  if (!orbitShot && (insp.yaw || insp.pitch)) {
-    const ly = (c.yaw + insp.yaw) * DEG, lp = Math.max(-80, Math.min(80, c.pitch + insp.pitch)) * DEG;
-    camera.lookAt(camera.position.clone().add(new THREE.Vector3(Math.cos(lp) * Math.cos(ly), Math.cos(lp) * Math.sin(ly), -Math.sin(lp))));
-  }
-  { // cut follows the shot index (snaps per shot, like the reference), smoothed inside each segment
-    const i = Math.floor(c.index), f = c.index - i, A2 = shots[Math.max(0, Math.min(shots.length - 1, i))], B2 = shots[Math.max(0, Math.min(shots.length - 1, i + 1))];
-    camCut = lerp(A2.cut ?? 99, B2.cut ?? 99, ease(f)); }
-  CU.uPixA.value = 2 * Math.tan((vfov * DEG) / 2) / H();
+  const c=sample(shots,s);camSample=c;poseCamera(c);camCut=channel(shots,s,'cut',OFF());
+  navigationStage=c.moving?(c.to.navigationStage||'room-pan'):(c.from.navigationStage||'room-pan');
+  activeRoom=c.from.roomKey??activeRoom;targetRoom=c.to.roomKey??activeRoom;
 }
 
 // ---------- page chrome ----------
@@ -1425,9 +1084,9 @@ function update(p) {
   U.uExtRev1.value = cubic(band(s, extWin[0], extWin[1])) * asBuilt;
   U.uExtRev2.value = cubic(band(s, ext2Win[0], ext2Win[1])) * asBuilt;
   // as built: once inside, the whole house is revealed at once: no half-drawn paper walls seen through a doorway
-  U.uAll.value = ASB && splatWins && s > splatWins[0][1] - 20 && s < asbuiltShot.h0 - 40 ? 1 : 0;
-  if (M.doors.west) M.doors.west.pivot.rotation.z = M.doors.west.sign * cubic(band(s, ...doorWin.west)) * 95 * DEG;
-  if (M.doors.east) M.doors.east.pivot.rotation.z = M.doors.east.sign * cubic(band(s, ...doorWin.east)) * 95 * DEG;
+  U.uAll.value = 1;
+  if (M.doors.west) M.doors.west.pivot.rotation.z = 0;
+  if (M.doors.east) M.doors.east.pivot.rotation.z = 0;
   // floor annotations: the plan sheet on the sheet shots; big room labels while rooms are paper
   // the sheet (room names, sizes, dimensions) stays until the big floor labels have taken over (owner 2026-10-18)
   CU.uAnnOp.value = Math.max(1 - band(s, shots[1].g1 + 40, shots[1].g1 + 100), band(s, asbuiltShot.h0 - 40, asbuiltShot.h0));
@@ -1510,7 +1169,7 @@ function render() {
   renderer.render(scene, camera);
   if (ghost) { for (const m of M.meshes) m.visible = m.userData._vis; for (const d of Object.values(M.doors || {})) d.pivot.visible = layers.model; }
   for (const m of [...M.meshes, ...ctxGroup.children]) m.material = m === sel ? PRE_SEL : m.userData.pre;
-  ground.material = ground.userData.pre; ground.visible = true;
+  ground.material = ground.userData.pre; ground.visible = U.uCut.value >= ground.position.z; // The decorative sheet cannot occlude a basement cutaway.
   camera.layers.set(0);
   U.uNear.value = camera.near;
   SCAN_MAT.uniforms.uScale.value = H() / (2 * Math.tan((camera.fov * DEG) / 2));
@@ -1603,6 +1262,7 @@ $('pnEdit').addEventListener('submit', async (ev) => {
 });
 $('pnFlag').addEventListener('submit', async (ev) => {
   ev.preventDefault();
+  if(transfer||mode==='transfer'){$('pnStatus').textContent='Wait for the room change to finish before saving a comparison or flag.';return;}
   const e = selected?.mesh.userData.e; if (!e?.id) return;
   let observation = null;
   try { if (STATIC && !comparisonEnabled) await prepareComparison(); if (comparisonEnabled) observation = await saveComparison(); }
@@ -1990,17 +1650,10 @@ function openIssue(f) {
   $('issueCard').hidden = false;
 }
 function goToIssue(f) {
-  const p = fwdModel(f.camera?.position), d = fwdModel(f.camera?.direction);
-  $('issueCard').hidden = true; $('issues').hidden = true; $('issuesPill').classList.remove('on');
-  if (mode !== 'walk') enterWalk();
-  walk.glide = null; walk.glideLock = true;
-  if (p && d && p.every(Number.isFinite)) {
-    walk.pos.set(p[0], p[1], p[2]); walk.floor = p[2] - EYE;
-    walk.yaw = Math.atan2(d[1], d[0]) / DEG; walk.pitch = -Math.asin(Math.max(-1, Math.min(1, d[2]))) / DEG;
-  } else {
-    const m = meshOfPath(f.path);
-    if (m) { const c = new THREE.Box3().setFromObject(m).getCenter(new THREE.Vector3()); const r = roomOf(m); glideTo(c.x - 1.5, c.y - 1.5, r ? r.floorZ : M.FFL); }
-  }
+  $('issueCard').hidden=true;$('issues').hidden=true;$('issuesPill').classList.remove('on');
+  const p=fwdModel(f.camera?.position),m=meshOfPath(f.path),r=m&&roomOf(m);
+  const room=r||(p&&roomUnder(p[0],p[1],p[2]-EYE));
+  if(room)navigateRoom(room.name,p);else goShot('orbit');
 }
 $('issuesPill').addEventListener('click', () => { const h = !$('issues').hidden; $('issues').hidden = h; $('issuesPill').classList.toggle('on', !h); $('issuesPill').setAttribute('aria-expanded', String(!h)); });
 $('issuesClose').addEventListener('click', () => { $('issues').hidden = true; $('issuesPill').classList.remove('on'); });
@@ -2016,91 +1669,66 @@ $('icResolve').addEventListener('click', async () => {
 });
 // Plan | Walk | Model work in every mode (owner 2026-10-18): Plan = the plan of the floor you are on, Walk = the free
 // walk where you left it, Model = the whole model from outside; the panel minimises out of the way
+function syncTourPosition(p) {
+  target=prog=p;navHold={p,until:performance.now()+900};
+  const y=p*Math.max(1,track.offsetHeight-innerHeight);if(lenis)lenis.scrollTo(y,{immediate:true});else scrollTo(0,y);
+}
+function currentPose() {
+  const dir=camera.getWorldDirection(new THREE.Vector3());
+  return directedPose(camera.position.toArray(),Math.atan2(dir.y,dir.x)/DEG,-Math.asin(Math.max(-1,Math.min(1,dir.z)))/DEG,camera.fov,{cut:U.uCut.value});
+}
+function requestTransfer(destination, {key=null,finishMode='walk',resumeProgress=null,qualification=null,resumeInspection=null}={}) {
+  if(comparisonBusy){say('Finish the capture comparison before changing rooms.');return {error:'COMPARISON_IN_PROGRESS'};}
+  const request={destination,key,finishMode,resumeProgress,qualification,resumeInspection};
+  if(transfer){pendingNavigation=request;return {queued:true,token:transfer.token};}
+  if(mode==='scroll'&&!pausedTour)pausedTour={p:prog,yaw:insp.yaw,pitch:insp.pitch};
+  const from=currentPose();insp.yaw=insp.pitch=insp.desiredYaw=insp.desiredPitch=0;insp.drag=null;keys.clear();dragging=null;
+  const sequence=buildRoomTransfer(from,destination,{flightZ:Math.max(flightAltitude(),from.eye[2],destination.eye[2]),roomKey:key,targetCut:destination.cut??OFF(),floorCenter:floorCenterFor(key)});
+  transfer={...request,shots:sequence,total:layout(sequence),progress:0,token:++navigationToken};targetRoom=key;
+  mode='transfer';document.body.classList.add('walking');walkHud.hidden=false;$('resumePill').hidden=false;
+  hero.style.opacity=chapter.style.opacity=hud.style.opacity=caption.style.opacity=walkTag.style.opacity='0';
+  U.uAll.value=1;U.uPhaseCut.value.fill(99);CU.uAnnOp.value=CU.uLblOp.value=0;lenis?.stop();
+  return {queued:false,token:transfer.token};
+}
+function navigateRoom(key, preferredEye=null, {finishMode='scroll',pose=null}={}) {
+  const st=M.stops.find(s=>s.key===key||s.rooms[0]?.s.id===key);if(!st)return {error:'Unknown room'};
+  let destination=roomPose(st),qualification=st.qualification;
+  if(preferredEye&&finishMode==='walk'){const q=clearance.target(st.rooms[0],preferredEye);if(q.status==='SAFE_ROOM'){qualification=q;destination=directedPose(q.eye,pose?.yaw??90,pose?.pitch??0,pose?.fov??72,{cut:OFF(),roomKey:st.key});}}
+  const dossier=dossiers.find(d=>d.st.key===st.key),resumeProgress=dossier?(dossier.shot.h0+dossier.shot.h1)/2/TOTAL:prog;
+  requestTransfer(destination,{key:st.key,qualification,finishMode,resumeProgress});
+  return qualification;
+}
 function goShot(id) {
-  const q = shots.find((x) => x.id === id); if (!q) return;
-  const p = ((q.h0 + q.h1) / 2) / TOTAL;
-  target = prog = p;
-  navHold = { p, until: performance.now() + 900 };
-  const y = p * Math.max(1, track.offsetHeight - innerHeight);
-  if (lenis) lenis.scrollTo(y, { immediate: true }); else scrollTo(0, y);
-  update(p);
+  const q=shots.find(x=>x.id===id)||shots.find(x=>x.id==='plan-centre');if(!q)return;
+  const p=(q.h0+q.h1)/2/TOTAL,c=sample(shots,p*TOTAL);
+  return requestTransfer({...q,eye:c.eye,yaw:c.yaw,pitch:c.pitch,fov:c.fov},{key:q.roomKey??null,finishMode:'scroll',resumeProgress:p});
 }
-$('navPlan').addEventListener('click', () => {
-  const upper = mode === 'walk' && M.storeys.upper && walk.floor > M.FFL + 1.5;
-  if (mode === 'walk') leaveWalk();
-  goShot(upper ? 'upper-plan' : 'plan-centre');
-});
-$('navModel').addEventListener('click', () => { if (mode === 'walk') leaveWalk(); goShot('orbit'); });
-$('navWalk').addEventListener('click', () => { if (mode !== 'walk') enterWalk(true); });
-$('pnMin').addEventListener('click', () => panel.classList.toggle('min'));
-$('icFile').addEventListener('click', () => { const m = cardFlag && meshOfPath(cardFlag.path); $('issueCard').hidden = true; if (m) select(m); });
+$('navPlan').addEventListener('click',()=>goShot(activeRoom?`floor-plan:${activeRoom}`:'plan-centre'));
+$('navModel').addEventListener('click',()=>explore('outside'));
+$('navWalk').addEventListener('click',()=>explore('inside'));
+$('pnMin').addEventListener('click',()=>panel.classList.toggle('min'));
+$('icFile').addEventListener('click',()=>{const m=cardFlag&&meshOfPath(cardFlag.path);$('issueCard').hidden=true;if(m)select(m);});
 
-// ---------- free walk (WASD, mouse look, 1.6 m eye, no collision) ----------
-const walkHud = $('walkhud');
-const keys = new Set();
-const walk = { pos: new THREE.Vector3(), yaw: 90, pitch: 0, floor: 0, fov: 90 };
-let pausedTour = null, insidePose = null;
-function rememberInside() {
-  if (mode === 'walk' && roomUnder(walk.pos.x, walk.pos.y, walk.floor)) {
-    insidePose = { pos: walk.pos.clone(), floor: walk.floor, yaw: walk.yaw, pitch: walk.pitch, fov: walk.fov };
-  }
-}
+const walkHud=$('walkhud'),keys=new Set();
+const walk={pos:new THREE.Vector3(),yaw:90,pitch:0,floor:0,fov:72,pending:[0,0],desiredYaw:90,desiredPitch:0,desiredFov:72};
+let pausedTour=null,insidePose=null;
+function rememberInside(){if(mode==='walk'&&roomUnder(walk.pos.x,walk.pos.y,walk.floor))insidePose={key:roomUnder(walk.pos.x,walk.pos.y,walk.floor).name,pos:walk.pos.clone(),floor:walk.floor,yaw:walk.yaw,pitch:walk.pitch,fov:walk.fov};}
 function explore(where) {
+  if(transfer){pendingNavigation={explore:where};return;}
   rememberInside();
-  enterWalk(true);
-  walk.glide = null; walk.glideLock = true; keys.clear();
-  if (where === 'inside') {
-    if (insidePose) { walk.pos.copy(insidePose.pos); Object.assign(walk, { floor: insidePose.floor, yaw: insidePose.yaw, pitch: insidePose.pitch, fov: insidePose.fov }); }
-    else {
-      const st = dossiers.filter((d) => d.shot.h0 <= (pausedTour?.p ?? prog) * TOTAL).at(-1)?.st || M.stops[0];
-      const p = solidStand(st);
-      walk.floor = st.floorZ; walk.pos.set(p[0], p[1], st.floorZ + EYE);
-      walk.yaw = Math.atan2(st.look[1] - p[1], st.look[0] - p[0]) / DEG; walk.pitch = 0; walk.fov = 90;
-    }
-  } else {
-    const c = M.center, span = Math.max(M.fp[2] - M.fp[0], M.fp[3] - M.fp[1]);
-    walk.floor = M.FFL; walk.pos.set(c.x, M.fp[1] - Math.max(4, span * 0.65), M.FFL + EYE);
-    walk.yaw = Math.atan2(c.y - walk.pos.y, c.x - walk.pos.x) / DEG; walk.pitch = -8; walk.fov = 75;
+  if(where==='inside') {
+    const st=M.stops.find(s=>s.key===(insidePose?.key??activeRoom))||dossiers.filter(d=>d.shot.h0<=prog*TOTAL).at(-1)?.st||M.stops.find(s=>s.key==='AptA - Entry'&&s.qualification.status==='SAFE_ROOM')||M.stops.find(s=>s.qualification.status==='SAFE_ROOM')||M.stops[0];
+    return navigateRoom(st.key,insidePose?.pos.toArray(),{finishMode:'walk',pose:insidePose});
   }
-  $('outsidePill').setAttribute('aria-pressed', String(where === 'outside'));
-  walkPill.setAttribute('aria-pressed', String(where === 'inside'));
-  stepWalk(0); render();
+  const z=Math.max(M.FFL+EYE,M.box.min.z+EYE),pos=[M.center.x,M.box.min.y-5,z];
+  const dest=directedPose(pos,90,-5,72,{cut:OFF()});
+  return requestTransfer(dest,{key:null});
 }
-function enterWalk(keep = false) {
-  if (mode !== 'walk') pausedTour = { p: prog, yaw: insp.yaw, pitch: insp.pitch };
-  mode = 'walk';
-  $('resumePill').hidden = false;
-  document.body.classList.add('walking');
-  walkHud.hidden = false; hud.style.opacity = '0'; chapter.style.opacity = '0'; hero.style.opacity = '0'; caption.style.opacity = '0'; walkTag.style.opacity = '0';
-  phaseChip.textContent = ASB ? 'Free walk · as built' : 'Free walk · proposed';
-  roll.classList.remove('outro'); roll.style.transition = 'none'; roll.style.width = '0';
-  if (!keep || !walk.visited) {
-    const st = M.stops[0];
-    walk.floor = M.FFL;
-    walk.pos.set(st.stand[0], st.stand[1], walk.floor + EYE);
-    walk.yaw = Math.atan2(st.look[1] - st.stand[1], st.look[0] - st.stand[0]) / DEG; walk.pitch = 0;
-  }
-  walk.visited = true;
-  $('navWalk')?.classList.add('on');
-  U.uAll.value = 1; U.uCut.value = 99; U.uPhaseCut.value.fill(99);
-  CU.uAnnOp.value = 0; CU.uRedOp.value = 0; CU.uLblOp.value = 0; CU.uSplat.value = splat && layers.splat ? 1 : 0; envMat.opacity = 0;
-  if (interior) interior.visible = layers.scan;
-  lenis?.stop();
-  // no pointer lock (owner 2026-10-18): the cursor stays free for the panels, the issue list and Plan | Walk | Model
-}
-function leaveWalk() {
-  rememberInside(); keys.clear(); dragging = null; walk.glide = null;
-  mode = 'scroll'; document.body.classList.remove('walking'); walkHud.hidden = true; lenis?.start();
-  $('navWalk')?.classList.remove('on');
-  $('resumePill').hidden = true;
-  $('outsidePill').setAttribute('aria-pressed', 'false'); walkPill.setAttribute('aria-pressed', 'false');
-  if (pausedTour) {
-    target = prog = pausedTour.p; insp.yaw = pausedTour.yaw; insp.pitch = pausedTour.pitch;
-    const y = prog * Math.max(1, track.offsetHeight - innerHeight);
-    if (lenis) lenis.scrollTo(y, { immediate: true }); else scrollTo(0, y);
-    navHold = { p: prog, until: performance.now() + 900 }; pausedTour = null; update(prog);
-  }
-  if (document.pointerLockElement) document.exitPointerLock();
+function enterWalk(){return explore('inside');}
+function leaveWalk(){
+  rememberInside();const p=pausedTour?.p??prog,c=sample(shots,p*TOTAL),inspection={yaw:pausedTour?.yaw??0,pitch:pausedTour?.pitch??0};
+  const destination={...c,t:[c.x,c.y,c.z],yaw:c.yaw+inspection.yaw,pitch:Math.max(-89.8,Math.min(89.8,c.pitch+inspection.pitch)),cut:channel(shots,p*TOTAL,'cut',OFF())};
+  return requestTransfer(destination,{key:c.from.roomKey??null,finishMode:'scroll',resumeProgress:p,resumeInspection:inspection});
 }
 walkPill.addEventListener('click', () => explore('inside'));
 $('outsidePill').addEventListener('click', () => explore('outside'));
@@ -2108,22 +1736,17 @@ $('resumePill').addEventListener('click', leaveWalk);
 addEventListener('keydown', (e) => {
   if (mode !== 'walk') return;
   if (e.key === 'Escape') return leaveWalk();
-  if (e.key === '1') walk.floor = M.FFL;
-  if (e.key === '2' && M.storeys.upper) walk.floor = M.storeys.upper.elevation;
-  if (e.key === '0' && M.storeys.base) walk.floor = M.storeys.base.elevation;
-  if (e.key.toLowerCase() === 'e') select(pick(new THREE.Vector2(0, 0)));
-  if (e.key === '[') walk.fov = Math.max(60, walk.fov - 5);
-  if (e.key === ']') walk.fov = Math.min(110, walk.fov + 5);
+  if(['0','1','2'].includes(e.key)){const z=e.key==='0'?M.storeys.base?.elevation:e.key==='2'?M.storeys.upper?.elevation:M.FFL;const st=M.stops.find(s=>Math.abs(s.floorZ-z)<.3);if(st)navigateRoom(st.key);return;}
+  if(e.key.toLowerCase()==='e')select(pick(new THREE.Vector2(0,0)));
+  if(e.key==='[')walk.desiredFov=Math.max(60,walk.desiredFov-5);
+  if(e.key===']')walk.desiredFov=Math.min(90,walk.desiredFov+5);
   keys.add(e.key.toLowerCase());
 });
 addEventListener('keyup', (e) => keys.delete(e.key.toLowerCase()));
 // walk mouse (owner 2026-10-18): left or right drag looks around, middle drag slides sideways and forward/back,
-// the wheel walks forward/back, Option + wheel flies along the view (up and down too)
+// the wheel requests bounded forward/back movement at the current level.
 let dragging = null;
-function moveWalk(mx, my) {
-  walk.glide = null;
-  if (!blocked(walk.pos.x, walk.pos.y, walk.pos.x + mx, walk.pos.y + my, walk.pos.z)) { walk.pos.x += mx; walk.pos.y += my; }
-}
+function moveWalk(mx,my){if(mode!=='walk')return;walk.pending[0]+=mx;walk.pending[1]+=my;const n=Math.hypot(...walk.pending);if(n>1)walk.pending=walk.pending.map(v=>v/n);}
 canvas.addEventListener('contextmenu', (e) => { if (mode === 'walk') e.preventDefault(); });
 canvas.addEventListener('mousedown', (e) => { if (mode === 'walk') { dragging = { x: e.clientX, y: e.clientY, b: e.button }; if (e.button === 1) e.preventDefault(); } });
 canvas.addEventListener('mousemove', (e) => {
@@ -2133,7 +1756,7 @@ canvas.addEventListener('mousemove', (e) => {
   if (dragging.b === 1) {
     const y = walk.yaw * DEG, f = [Math.cos(y), Math.sin(y)], r = [Math.sin(y), -Math.cos(y)], k = 0.012;
     moveWalk(-dx * k * r[0] + dy * k * f[0], -dx * k * r[1] + dy * k * f[1]);
-  } else { walk.yaw -= dx * 0.15; walk.pitch = Math.max(-80, Math.min(80, walk.pitch + dy * 0.15)); }
+  } else { walk.desiredYaw -= dx * 0.15; walk.desiredPitch = Math.max(-80, Math.min(80, walk.desiredPitch + dy * 0.15)); }
 });
 addEventListener('mouseup', () => { dragging = null; });
 canvas.addEventListener('wheel', (e) => {
@@ -2141,15 +1764,11 @@ canvas.addEventListener('wheel', (e) => {
   e.preventDefault();
   const step = -Math.sign(e.deltaY) * Math.min(0.6, Math.abs(e.deltaY) * 0.004);
   const y = walk.yaw * DEG, p = walk.pitch * DEG;
-  if (e.altKey) {
-    walk.glide = null; walk.glideLock = true;
-    walk.pos.x += Math.cos(p) * Math.cos(y) * step; walk.pos.y += Math.cos(p) * Math.sin(y) * step; walk.pos.z -= Math.sin(p) * step;
-    walk.floor = walk.pos.z - EYE;
-  } else moveWalk(Math.cos(y) * step, Math.sin(y) * step);
+  moveWalk(Math.cos(y)*step,Math.sin(y)*step);
 }, { passive: false });
 const roomUnder = (x, y, z) => M.spaces.find((r) => Math.abs(r.floorZ - z) < 1.2 && (() => { let c2 = false; const poly = r.poly; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c2 = !c2; } return c2; })());
-// free walk physics: floor following (step-up 0.45 m, so stair treads carry you up), a ramp fallback inside the stair
-// rooms (you always reach the top), and walls that block with sliding
+// Manual movement keeps its qualified level and checks actual support and swept body clearance.
+// Floor changes use the same overhead room route as the navigator.
 const downRay = new THREE.Raycaster(), sideRay = new THREE.Raycaster();
 const STEP_UP = 0.45, RADIUS = 0.28;
 const walkables = () => M.meshes.filter((m) => /IfcSlab|IfcStair|IfcStairFlight/.test(m.userData.e?.cls || '') || /foundation/i.test(m.userData.e?.name || ''));
@@ -2160,86 +1779,28 @@ function floorBelow(x, y, from) {
   const hit = downRay.intersectObjects(walkables(), false).find((h) => (h.face ? Math.abs(h.face.normal.clone().transformDirection(h.object.matrixWorld).z) > 0.5 : true));
   return hit ? hit.point.z : null;
 }
-function stairRamp(x, y) { // inside a stair room: the floor rises with the run from the lower to the upper level
-  const up = M.storeys.upper?.elevation;
-  if (up == null) return null;
-  for (const r of M.spaces) {
-    if (!/stair/i.test(r.name) || /basement/i.test(r.name) || !pointIn([x, y], r.poly)) continue;
-    const [u0, v0, u1, v1] = r.bbox, alongV = v1 - v0 >= u1 - u0;
-    const t = alongV ? (y - v0) / (v1 - v0) : (x - u0) / (u1 - u0);
-    return { lo: M.FFL, hi: up, t: Math.min(1, Math.max(0, t)) };
-  }
-  return null;
-}
-function blocked(x0, y0, x1, y1, z) {
-  const d = new THREE.Vector3(x1 - x0, y1 - y0, 0); const L = d.length();
-  if (L < 1e-5) return false;
-  d.normalize();
-  for (const hz of [z - 0.9, z - 0.2]) {
-    sideRay.set(new THREE.Vector3(x0, y0, hz), d); sideRay.far = L + RADIUS;
-    if (sideRay.intersectObjects(blockers(), false).length) return true;
-  }
-  return false;
-}
-// stairs: stepping into a stair room glides you to the other floor (the owner: "force the upstairs")
-function glideTarget(x, y, floorZ) {
-  const inRoom = (name) => { const r = M.spaces.find((q) => q.name === name); return r && pointIn([x, y], r.poly) ? r : null; };
-  const stopBy = (k) => M.stops.find((s) => s.key === k);
-  const up = stopBy('Upper - Stairs+Upper - Hallway'), entry = stopBy('AptA - Entry'), base = stopBy('basement');
-  const onMain = Math.abs(floorZ - M.FFL) < 1, onUpper = M.storeys.upper && Math.abs(floorZ - M.storeys.upper.elevation) < 1.2;
-  const onBase = M.storeys.base && Math.abs(floorZ - M.storeys.base.elevation) < 1;
-  const well = ['AptA - Stairs up', 'Upper - Stairs'].map((n) => M.spaces.find((q) => q.name === n)).filter(Boolean);
-  const mid = well.length ? [well.reduce((s, r) => s + r.cu, 0) / well.length, well.reduce((s, r) => s + r.cv, 0) / well.length] : [x, y];
-  const hall = M.spaces.find((q) => q.name === 'Upper - Hallway');
-  if (onMain && inRoom('AptA - Stairs up') && up) return { to: hall ? [hall.cu, hall.cv, hall.floorZ] : [up.stand[0], up.stand[1], up.floorZ], mid: [mid[0], mid[1], (M.FFL + up.floorZ) / 2] };
-  if (onUpper && inRoom('Upper - Stairs') && entry) return { to: [entry.stand[0], entry.stand[1], M.FFL], mid: [mid[0], mid[1], (M.FFL + M.storeys.upper.elevation) / 2] };
-  if (onMain && inRoom('AptA - Stairs to basement') && base) return { to: [base.stand[0], base.stand[1], base.floorZ], mid: [x, y, (M.FFL + base.floorZ) / 2] };
-  if (onBase && entry) { const r = M.spaces.find((q) => q.name === 'AptA - Stairs to basement'); if (r && pointIn([x, y], r.poly)) return { to: [entry.stand[0], entry.stand[1], M.FFL], mid: [x, y, (M.FFL + floorZ) / 2] }; }
-  return null;
-}
+function blocked(x0,y0,x1,y1,z){return clearance.collision([x1,y1,z],{previous:[x0,y0,z]}).length>0;}
 function stepWalk(dt) {
-  if (walk.glide) { // a guided run up or down the stair
-    const g = walk.glide; g.t = Math.min(1, g.t + dt / g.dur);
-    const k = ease(g.t), a = g.from, m = g.mid, b = g.to;
-    const q = (i) => (1 - k) * (1 - k) * a[i] + 2 * (1 - k) * k * m[i] + k * k * b[i];
-    const nx = q(0), ny = q(1);
-    if (Math.hypot(nx - walk.pos.x, ny - walk.pos.y) > 1e-4) walk.yaw = lerp(walk.yaw, Math.atan2(ny - walk.pos.y, nx - walk.pos.x) / DEG, 0.08);
-    walk.pos.x = nx; walk.pos.y = ny; walk.floor = q(2); walk.pos.z = walk.floor + EYE;
-    if (g.t >= 1) { if (g.endYaw != null) walk.yaw = g.endYaw; walk.glide = null; walk.glideLock = true; }
+  dt=Math.max(0,Math.min(.05,dt));
+  const cap=(a,b,n)=>a+Math.max(-n,Math.min(n,b-a));
+  const angular=Math.hypot(walk.desiredYaw-walk.yaw,walk.desiredPitch-walk.pitch),turn=Math.min(1,22*dt/(angular||1));walk.yaw+=(walk.desiredYaw-walk.yaw)*turn;walk.pitch+=(walk.desiredPitch-walk.pitch)*turn;walk.fov=cap(walk.fov,walk.desiredFov,12*dt);
+  const f=[Math.cos(walk.yaw*DEG),Math.sin(walk.yaw*DEG)],r=[Math.sin(walk.yaw*DEG),-Math.cos(walk.yaw*DEG)];
+  let dx=(keys.has('w')||keys.has('arrowup')?1:0)-(keys.has('s')||keys.has('arrowdown')?1:0),dy=(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0);
+  let mx=f[0]*dx+r[0]*dy+walk.pending[0]*4,my=f[1]*dx+r[1]*dy+walk.pending[1]*4;
+  const n=Math.hypot(mx,my),speed=(keys.has('shift')?1.6:1.4)*dt;
+  if(n&&!walk.overheadOnly){mx=mx/n*Math.min(n*dt,speed);my=my/n*Math.min(n*dt,speed);
+    const next=walk.pos.clone().add(new THREE.Vector3(mx,my,0));
+    // Keep the current level; a different level is always an overhead route.
+    const support=floorBelow(next.x,next.y,walk.floor),supported=activeRoom===null||(support!==null&&Math.abs(support-walk.floor)<=.2);
+    const bodyContacts=clearance.bodyCollision(next,{previous:walk.pos,floorZ:walk.floor});
+    if(supported&&!bodyContacts.length)walk.pos.copy(next);
   }
-  const sp = (walk.glide ? 0 : keys.has('shift') ? 3 : 1.4) * dt;
-  const f = [Math.cos(walk.yaw * DEG), Math.sin(walk.yaw * DEG)], r = [Math.sin(walk.yaw * DEG), -Math.cos(walk.yaw * DEG)];
-  let mx = 0, my = 0;
-  if (keys.has('w') || keys.has('arrowup')) { mx += f[0]; my += f[1]; }
-  if (keys.has('s') || keys.has('arrowdown')) { mx -= f[0]; my -= f[1]; }
-  if (keys.has('d') || keys.has('arrowright')) { mx += r[0]; my += r[1]; }
-  if (keys.has('a') || keys.has('arrowleft')) { mx -= r[0]; my -= r[1]; }
-  const ml = Math.hypot(mx, my);
-  if (ml > 0) {
-    mx = (mx / ml) * sp; my = (my / ml) * sp;
-    const x0 = walk.pos.x, y0 = walk.pos.y, z = walk.pos.z;
-    if (!walk.ghost && blocked(x0, y0, x0 + mx, y0 + my, z)) { // slide along the wall
-      if (!blocked(x0, y0, x0 + mx, y0, z)) my = 0; else if (!blocked(x0, y0, x0, y0 + my, z)) mx = 0; else mx = my = 0;
-    }
-    walk.pos.x += mx; walk.pos.y += my;
-  }
-  if (walk.glideLock && !glideTarget(walk.pos.x, walk.pos.y, walk.floor)) walk.glideLock = false; // re-arm once off the stair
-  if (!walk.glide && !walk.glideLock && ml > 0) { const gt = glideTarget(walk.pos.x, walk.pos.y, walk.floor); if (gt) walk.glide = { from: [walk.pos.x, walk.pos.y, walk.floor], mid: gt.mid, to: gt.to, t: 0, dur: 3.2 }; }
-  // floor under the feet: stair ramp if in a stair room, else the highest walkable surface within the step-up
-  const ramp = walk.glide ? null : stairRamp(walk.pos.x, walk.pos.y);
-  const hit = walk.glide ? null : floorBelow(walk.pos.x, walk.pos.y, walk.floor);
-  if (ramp && (hit == null || Math.abs(hit - walk.floor) > STEP_UP)) walk.floor = lerp(ramp.lo, ramp.hi, ramp.t);
-  else if (hit != null) walk.floor = hit;
-  if (!walk.glide) walk.pos.z = lerp(walk.pos.z, walk.floor + EYE, Math.min(1, dt * 8));
-  const dir = new THREE.Vector3(Math.cos(walk.pitch * DEG) * Math.cos(walk.yaw * DEG), Math.cos(walk.pitch * DEG) * Math.sin(walk.yaw * DEG), -Math.sin(walk.pitch * DEG));
-  camera.position.copy(walk.pos); camera.fov = walk.fov; camera.near = 0.03; camera.far = 600; camera.updateProjectionMatrix();
-  camera.lookAt(walk.pos.clone().add(dir));
-  CU.uPixA.value = 2 * Math.tan((walk.fov / 2) * DEG) / H();
-  const r0 = roomUnder(walk.pos.x, walk.pos.y, walk.floor);
-  if (splat) splat.visible = layers.splat && !cameraIndoors();
-  $('walkWhere').textContent = r0 ? `${r0.label.toUpperCase()} · ${r0.area.toFixed(1)} M² · ${r0.apt.toUpperCase()}` : walk.floor < M.FFL - 1 ? 'BASEMENT' : 'OUTSIDE';
+  const decay=Math.max(0,1-dt*8);walk.pending=walk.pending.map(v=>v*decay);
+  poseCamera({eye:walk.pos.toArray(),yaw:walk.yaw,pitch:walk.pitch,fov:walk.fov});
+  const room=roomUnder(walk.pos.x,walk.pos.y,walk.floor);if(room)activeRoom=room.name;
+  $('walkWhere').textContent=walk.overheadOnly?`Floor plan · ${room?.label||activeRoom||''}`:room?`${room.label} · ${room.apt}`:'Outside';
+  applyLayers();
 }
-
 
 // ---------- navigator (owner 2026-10-18): click a room or a floor to go there; capture layers on and off ----------
 const layers = { model: true, splat: false, scan: false };
@@ -2283,40 +1844,14 @@ async function ensureScan(sc) {
   scanBusy[sc.key] = false;
   applyLayers();
 } // drone scan off until asked for (owner 2026-10-18)
-function glideTo(x, y, floorZ, lookYaw = null, dur = 1.6) {
-  if (mode !== 'walk') { enterWalk(); walk.pos.set(x, y, floorZ + EYE); walk.floor = floorZ; if (lookYaw != null) walk.yaw = lookYaw; return; }
-  const a = [walk.pos.x, walk.pos.y, walk.floor], b = [x, y, floorZ];
-  walk.glide = { from: a, mid: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2], to: b, t: 0, dur: Math.max(0.6, Math.min(dur, Math.hypot(b[0] - a[0], b[1] - a[1]) / 2.2)), endYaw: lookYaw };
-  walk.glideLock = true;
-}
-function solidStand(st) { // a stand point with real floor at the room's level (not over a stairwell opening)
-  const ok = (p) => { const z = floorBelow(p[0], p[1], st.floorZ); return z != null && Math.abs(z - st.floorZ) < 0.25; };
-  if (ok(st.stand)) return st.stand;
-  let best = null, bd = 1e9;
-  for (const r of st.rooms.length ? st.rooms : []) {
-    for (let u = r.bbox[0] + 0.3; u < r.bbox[2] - 0.3; u += 0.25) for (let v = r.bbox[1] + 0.3; v < r.bbox[3] - 0.3; v += 0.25) {
-      if (!pointIn([u, v], r.poly) || !ok([u, v])) continue;
-      const d = Math.hypot(u - st.stand[0], v - st.stand[1]); if (d < bd) { bd = d; best = [u, v]; }
-    }
-  }
-  return best || st.stand;
-}
-function goToStop(st0) {
-  const st = { ...st0, stand: solidStand(st0) };
-  const yaw = Math.atan2(st.look[1] - st.stand[1], st.look[0] - st.stand[0]) / DEG;
-  const sameFloor = mode === 'walk' && Math.abs(walk.floor - st.floorZ) < 0.6;
-  if (sameFloor) glideTo(st.stand[0], st.stand[1], st.floorZ, yaw);
-  else { if (mode !== 'walk') enterWalk(); walk.glide = null; walk.pos.set(st.stand[0], st.stand[1], st.floorZ + EYE); walk.floor = st.floorZ; walk.yaw = yaw; walk.pitch = 0; walk.glideLock = true; }
-  say(st.title || st.key);
-}
-function buildNav() {
-  const box = $('navRooms'); box.innerHTML = '';
-  const groups = [['Apartment A', (s) => /^AptA/.test(s.key)], ['Upper level', (s) => /^Upper/.test(s.key)], ['Basement', (s) => s.key === 'basement'], ['Apartment B', (s) => /^AptB/.test(s.key)]];
-  for (const [title, test] of groups) {
-    const list = M.stops.filter(test); if (!list.length) continue;
-    const h = document.createElement('div'); h.className = 'navhead'; h.textContent = title; box.appendChild(h);
-    for (const st of list) { const b = document.createElement('button'); b.type = 'button'; b.textContent = st.title || st.key; b.addEventListener('click', () => goToStop(st)); box.appendChild(b); }
-  }
+function glideTo(x,y,floorZ){const r=roomUnder(x,y,floorZ);if(r)return navigateRoom(r.name,[x,y,floorZ+EYE]);return goShot('plan-centre');}
+function solidStand(st){return st.qualification?.eye?.slice(0,2)||st.stand;}
+function goToStop(st){return navigateRoom(st.key);}
+function buildNav(){
+  const box=$('navRooms');box.innerHTML='';const groups=new Map();
+  for(const st of M.stops){const title=`${st.apt} · ${st.rooms[0]?.storey||'Floor'}`;if(!groups.has(title))groups.set(title,[]);groups.get(title).push(st);}
+  for(const [title,stops] of groups){const head=document.createElement('div');head.className='navhead';head.textContent=title;box.appendChild(head);
+    for(const st of stops){const b=document.createElement('button');b.type='button';b.textContent=st.title+(st.qualification?.status==='BLOCKED_OVERHEAD_ONLY'?' · Floor plan':'');b.addEventListener('click',()=>goToStop(st));box.appendChild(b);}}
 }
 $('navToggle').addEventListener('click', () => { const body = $('navBody'); body.hidden = !body.hidden; $('navToggle').setAttribute('aria-expanded', String(!body.hidden)); });
 function applyLayers() {
@@ -2363,13 +1898,13 @@ const ndcOf = (ev) => { const r = canvas.getBoundingClientRect(); return new THR
 let downAt = null;
 canvas.addEventListener('pointerdown', (ev) => {
   downAt = [ev.clientX, ev.clientY];
-  if (mode !== 'walk' && ev.button === 0) { insp.drag = [ev.clientX, ev.clientY]; canvas.setPointerCapture(ev.pointerId); }
+  if (mode === 'scroll' && !transfer && ev.button === 0) { insp.drag = [ev.clientX, ev.clientY]; canvas.setPointerCapture(ev.pointerId); }
 });
 canvas.addEventListener('pointermove', (ev) => {
-  if (!insp.drag || mode === 'walk') return;
+  if (!insp.drag || mode !== 'scroll' || transfer) return;
   const dx = ev.clientX - insp.drag[0], dy = ev.clientY - insp.drag[1]; insp.drag = [ev.clientX, ev.clientY];
   const inside = camSample && camSample.dist <= 3;
-  insp.yaw += dx * (inside ? -0.18 : -0.3); insp.pitch = Math.max(-75, Math.min(75, insp.pitch + dy * (inside ? 0.15 : 0.22)));
+  insp.desiredYaw = (insp.desiredYaw??insp.yaw)+dx*(inside?-.18:-.3); insp.desiredPitch = Math.max(-75,Math.min(75,(insp.desiredPitch??insp.pitch)+dy*.15));
   target = prog; // hold the walk where it is while inspecting
 });
 const endDrag = () => { insp.drag = null; };
@@ -2385,7 +1920,7 @@ canvas.addEventListener('click', (ev) => {
 canvas.addEventListener('dblclick', (ev) => {
   if (mode === 'walk') return;
   const h = floorHit(ndcOf(ev));
-  if (h) { const yaw = camSample ? camSample.yaw : 90; enterWalk(); walk.glide = null; walk.pos.set(h.point.x, h.point.y, h.point.z + EYE); walk.floor = h.point.z; walk.yaw = yaw; walk.pitch = 0; walk.glideLock = true; }
+  if(h)glideTo(h.point.x,h.point.y,h.point.z);
 });
 
 // ---------- live model: server-sent build events rebuild in place, keeping the scroll ----------
@@ -2434,23 +1969,40 @@ rebuild(data0, build0);
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 if (!Q.has('at')) scrollTo(0, 0);
 if (Q.has('at')) target = prog = Number(Q.get('at'));
-let last = performance.now();
-function frame(now) {
-  const dt = Math.min(0.05, (now - last) / 1000); last = now;
-  if (comparisonBusy) { requestAnimationFrame(frame); return; }
-  if (mode === 'walk') { if (!REC) stepWalk(dt); } // in recording the hooks drive the walk deterministically
-  else {
-    if (Math.abs(target - prog) > 2e-4 && !insp.drag) { const k = Math.exp(-dt * 3.0); insp.yaw *= k; insp.pitch *= k; if (Math.abs(insp.yaw) + Math.abs(insp.pitch) < 0.05) insp.yaw = insp.pitch = 0; } // scrolling on: back onto the route
-    if (!insp.told && camSample?.held && !REC) { insp.told = true; say('Paused: drag to turn and look around · scroll to walk on'); }
-    prog += (target - prog) * (REC ? 1 : 1 - Math.exp(-dt * 2.0)); // camera catches up with a ~0.5 s time constant
-    if (Math.abs(target - prog) < 1e-5) prog = target;
-    update(prog);
+let last=performance.now(),rafPaused=false;
+function finishTransfer(t){
+  transfer=null;activeRoom=t.key;targetRoom=t.key;navigationStage=t.finishMode==='walk'?'room-pan':'floor-plan-hover';
+  if(t.finishMode==='scroll'){
+    mode='scroll';insp.yaw=insp.desiredYaw=t.resumeInspection?.yaw??0;insp.pitch=insp.desiredPitch=t.resumeInspection?.pitch??0;syncTourPosition(t.resumeProgress);pausedTour=null;document.body.classList.remove('walking');walkHud.hidden=true;$('resumePill').hidden=true;lenis?.start();update(prog);
+  }else{
+    mode='walk';walk.pos.fromArray(t.destination.eye);walk.floor=t.qualification?.floorZ??(t.destination.eye[2]-EYE);
+    walk.yaw=walk.desiredYaw=t.destination.yaw;walk.pitch=walk.desiredPitch=t.destination.pitch;walk.fov=walk.desiredFov=t.destination.fov;walk.pending=[0,0];walk.overheadOnly=t.qualification?.status==='BLOCKED_OVERHEAD_ONLY';
+    U.uCut.value=t.destination.cut??OFF();U.uPhaseCut.value.fill(99);stepWalk(0);
   }
-  render();
-  updateTags();
-  placeHandles();
-  requestAnimationFrame(frame);
+  if(pendingNavigation){const next=pendingNavigation;pendingNavigation=null;if(next.explore)explore(next.explore);else requestTransfer(next.destination,next);}
 }
+function advanceApplication(dt){
+  if(!Number.isFinite(dt))throw new RangeError('Finite frame time required');dt=Math.max(0,Math.min(.05,dt));
+  if(comparisonBusy)return;
+  if(transfer){
+    const t=transfer;t.progress=advanceProgress(t.shots,t.progress,1,dt);const s=t.progress*t.total,c=sample(t.shots,s);
+    poseCamera(c);U.uCut.value=channel(t.shots,s,'cut',OFF());U.uPhaseCut.value.fill(99);U.uAll.value=1;
+    navigationStage=c.moving?(c.to.navigationStage||'restore'):(c.from.navigationStage||'restore');
+    const destinationStop=M.stops.find(q=>q.key===t.key),stageTitle=({'open-cutaway':'Leaving room',rise:'Leaving room','floor-plan-hover':'Floor plan',align:'Moving above destination',descend:'Entering room',restore:'Entering room'})[navigationStage]||'Floor plan';
+    $('walkWhere').textContent=`${stageTitle}${destinationStop?' · '+destinationStop.title+' · '+destinationStop.apt+' · '+destinationStop.rooms[0].storey:''}`;
+    // Existing floor-label textures cover main/upper only; never project main-floor annotations onto basement.
+    CU.uAnnOp.value=0;CU.uLblOp.value=navigationStage==='floor-plan-hover'&&destinationStop&&Math.abs(destinationStop.floorZ-M.FFL)<.3?1:navigationStage==='floor-plan-hover'&&destinationStop&&M.storeys.upper&&Math.abs(destinationStop.floorZ-M.storeys.upper.elevation)<.3?1:0;
+    if(t.progress>=1-1e-10)finishTransfer(t);
+  }else if(mode==='walk')stepWalk(dt);
+  else{
+    const moving=Math.abs(target-prog)>1e-7;
+    if(moving&&!insp.drag)insp.desiredYaw=insp.desiredPitch=0;
+    const dy=(insp.desiredYaw??0)-insp.yaw,dp=(insp.desiredPitch??0)-insp.pitch,limit=Math.min(1,11*dt/(Math.hypot(dy,dp)||1));insp.yaw+=dy*limit;insp.pitch+=dp*limit;
+    prog=advanceProgress(shots,prog,target,dt,{maxAngularSpeed:11});update(prog);
+  }
+  render();updateTags();placeHandles();
+}
+function frame(now){const dt=(now-last)/1000;last=now;if(!rafPaused)advanceApplication(dt);requestAnimationFrame(frame);}
 await Promise.race([splatReady, new Promise((r) => setTimeout(r, 45000))]);
 update(prog); render();
 await new Promise((r) => setTimeout(r, Math.max(0, 3200 - (performance.now() - loadStart))));
@@ -2479,10 +2031,11 @@ replayButton.type='button'; replayButton.className='pill'; replayButton.id='icCo
 $('icGo').parentElement.appendChild(replayButton);
 async function currentObservationContext() {
   const context=await getJSON(STATIC ? 'observation-context.json' : 'api/observation-context');
-  if (context.revision.model_sha256 !== M.build?.model_sha256 || (context.revision.parameter_sha256 ?? null) !== (M.build?.parameter_sha256 ?? null)) throw new Error('The model changed. Reload before saving a comparison.');
+  if (context.revision.build_id !== M.build?.id || context.revision.model_sha256 !== M.build?.model_sha256 || (context.revision.parameter_sha256 ?? null) !== (M.build?.parameter_sha256 ?? null) || (context.revision.edits_sha256 ?? null) !== (M.build?.edits_sha256 ?? null)) throw new Error('The model changed. Reload before saving a comparison.');
   return context;
 }
 function observationState() {
+  if(transfer||mode==='transfer')throw new Error('Wait for the room change to finish before making a comparison.');
   camera.updateMatrixWorld(true);
   return {mode,progress:prog,target,pausedTour:structuredClone(pausedTour),selectedElement:selected?.mesh.userData.e.id || null,
     camera:{position:camera.position.toArray(),quaternion:camera.quaternion.toArray(),up:camera.up.toArray(),
@@ -2498,7 +2051,7 @@ function observationState() {
 }
 function applyObservationState(state) {
   mode=state.mode; prog=state.progress; target=state.target; pausedTour=structuredClone(state.pausedTour);
-  insp.yaw=state.inspection.yaw; insp.pitch=state.inspection.pitch;
+  insp.yaw=insp.desiredYaw=state.inspection.yaw; insp.pitch=insp.desiredPitch=state.inspection.pitch;
   walk.pos.fromArray(state.walk.position); Object.assign(walk,state.walk.extra,{floor:state.walk.floor,yaw:state.walk.yaw,pitch:state.walk.pitch,fov:state.walk.fov});keys.clear();for(const key of state.heldKeys) keys.add(key);
   Object.assign(layers,state.layers); CU.uModelOp.value=state.opacity.model; CU.uScanOp.value=state.opacity.capture;
   applyLayers(); CU.uSplat.value=splat && layers.splat ? 1 : 0;
@@ -2522,7 +2075,13 @@ function applyObservationState(state) {
 const observationAdapter={read:observationState,apply:applyObservationState,
   settle:()=>new Promise((resolve)=>requestAnimationFrame(()=>requestAnimationFrame(resolve))),
   snapshot:()=>{render();return canvas.toDataURL('image/png');}};
+function requireStableComparisonView(){
+  if(transfer||mode==='transfer')throw new Error('Wait for the room change to finish before making a comparison.');
+  if(comparisonBusy)throw new Error('A comparison is already being saved or restored.');
+}
 async function prepareComparison() {
+  requireStableComparisonView();comparisonBusy=true;
+  try {
   if (!selected?.mesh.userData.e.id) throw new Error('Choose an element first.');
   if (!Object.entries(layers).some(([k,v])=>k!=='model' && v)) {
     const {key}=comparisonSource();
@@ -2534,6 +2093,7 @@ async function prepareComparison() {
   applyLayers();render();comparisonEnabled=true;$('pnFlag').querySelector('button[type=submit]').textContent='Save comparison';
   const sources=SCANS.filter((sc)=>layers[sc.key]).map((sc)=>sc.label);if(layers.splat)sources.push('Drone scan');if(layers.scan)sources.push('Interior Gaussian capture');
   $('pnStatus').textContent=`${sources.join(' · ')}. Adjust the view and blend, describe what is wrong, then save the comparison.`;
+  }finally{comparisonBusy=false;}
 }
 function comparisonSource() {
   const cameraRoom=M.spaces.filter((r)=>pointIn([camera.position.x,camera.position.y],r.poly) && r.floorZ<=camera.position.z && camera.position.z-r.floorZ<3.2)
@@ -2542,6 +2102,7 @@ function comparisonSource() {
     mainFloor:M.FFL,upperFloor:M.storeys.upper.elevation,cameraFloor:mode==='walk'?walk.floor:undefined});
 }
 async function saveComparison() {
+  requireStableComparisonView();
   if (comparisonBusy) throw new Error('A comparison is already being saved.');
   if (shape) throw new Error('Close the shape editor before saving a comparison. Your edits stay in the editor.');
   comparisonBusy=true;
@@ -2556,7 +2117,9 @@ async function saveComparison() {
     const state=observationState();const e=selected?.mesh.userData.e;
     // An explicitly chosen capture is still usable when a shared wall has no unique room.
     let room=null;try {room=comparisonSource().room;} catch {}
-    const observation=makeObservation({context,state,captures,element:{path:e.id,global_id:e.guid,name:e.name},room:room?{id:room.id,name:room.name || room.label}:null,title:$('pnTitle').value});
+    const roomGlobalId=room?(context.spaces?.find(s=>s.id===room.s.id)?.global_id??room.s.guid??null):null;
+    if(room&&!roomGlobalId)throw new Error('Room identity is unavailable. Reload before saving this comparison.');
+    const observation=makeObservation({context,state,captures,element:{path:e.id,global_id:e.guid,name:e.name},room:room?{id:room.s.id,global_id:roomGlobalId,name:room.name||room.label,storey:room.storey,storey_id:room.s.storey,apartment:room.apt}:null,title:$('pnTitle').value});
     Object.assign(observation,await captureTriplet(observationAdapter));
     // Detect model/capture publication during screenshot capture before persistence.
     const after=await currentObservationContext();
@@ -2565,24 +2128,24 @@ async function saveComparison() {
   } finally {comparisonBusy=false;}
 }
 async function replayComparison(observation) {
-  const context=await currentObservationContext();
-  // Stale revisions are checked before loading captures or changing the view.
-  await replayObservation(observation,context,{read:()=>null,apply:()=>{}});
-  const previous=observationState();
-  comparisonBusy=true;
+  requireStableComparisonView();comparisonBusy=true;let previous=null;
   try {
-    for (const capture of observation.captures) {
-      const sc=SCANS.find((c)=>c.key===capture.key);if (sc) await ensureScan(sc);
-      if (loadedCaptureHashes[capture.key]!==capture.sha256) throw new Error('Reload to use the capture saved with this comparison.');
+    const context=await currentObservationContext();
+    // Stale revisions are checked before loading captures or changing the view.
+    await replayObservation(observation,context,{read:()=>null,apply:()=>{}});
+    if(observation.state?.mode==='transfer')throw new Error('A comparison from an unfinished room change cannot be restored.');
+    previous=observationState();
+    for(const capture of observation.captures){
+      const sc=SCANS.find(c=>c.key===capture.key);if(sc)await ensureScan(sc);
+      if(loadedCaptureHashes[capture.key]!==capture.sha256)throw new Error('Reload to use the capture saved with this comparison.');
       const object=capture.key==='splat'?splat:capture.key==='scan'?interior:scanObj[capture.key];object.updateWorldMatrix(true,false);
-      if (object.matrixWorld.toArray().some((v,i)=>Math.abs(v-capture.instance_matrix_world[i])>1e-9)) throw new Error('The capture placement differs from the saved comparison.');
+      if(object.matrixWorld.toArray().some((v,i)=>Math.abs(v-capture.instance_matrix_world[i])>1e-9))throw new Error('The capture placement differs from the saved comparison.');
     }
     await replayObservation(observation,context,observationAdapter);
-    // Continue walking from this precise camera rather than re-entering the old tour.
-    if (mode==='walk') {walk.pos.fromArray(observation.state.camera.position);walk.fov=observation.state.camera.fov;}
+    if(mode==='walk'){walk.pos.fromArray(observation.state.camera.position);walk.fov=observation.state.camera.fov;}
     comparisonEnabled=true;$('pnFlag').querySelector('button[type=submit]').textContent='Save comparison';
     return observationState();
-  } catch(err) {applyObservationState(previous);throw err;} finally {comparisonBusy=false;}
+  }catch(err){if(previous)applyObservationState(previous);throw err;}finally{comparisonBusy=false;}
 }
 compareButton.addEventListener('click',()=>prepareComparison().catch((err)=>$('pnStatus').textContent=err.message));
 replayButton.addEventListener('click',async()=>{
@@ -2593,6 +2156,15 @@ replayButton.addEventListener('click',async()=>{
 // deterministic hooks for recording and checks
 window.__P401 = {
   ready: true,
+  routeAudit:()=>routeRows.map(r=>({...r,targetEye:r.eye})),
+  rawShots:()=>shots.map(q=>({...q,progress:q.h0/TOTAL})),
+  navigate:navigateRoom,
+  inspectHeading(yaw,pitch=0){if(transfer)return false;if(mode==='walk'){walk.desiredYaw=yaw;walk.desiredPitch=pitch;}else{insp.desiredYaw=unwrapYaw(camSample.yaw,yaw)-camSample.yaw;insp.desiredPitch=pitch-camSample.pitch;target=prog;}return true;},
+  navigationState:()=>({camera:{position:camera.position.toArray(),quaternion:camera.quaternion.toArray(),fov:camera.fov,near:camera.near,aspect:camera.aspect},worldMatrix:world.matrixWorld.toArray(),clipping:{cut:U.uCut.value,phaseCuts:[...U.uPhaseCut.value]},modelVisible:M.group.visible,mode,stage:navigationStage,transferActive:!!transfer,token:transfer?.token??navigationToken,activeRoom,targetRoom,meshes:M.meshes.map(m=>({instanceID:m.uuid,sourceID:m.userData.e?.id,id:m.userData.e?.id,guid:m.userData.e?.guid,phase:m.userData.phase,visible:m.visible,matrixWorld:m.matrixWorld.toArray()}))}),
+  advance(dt){rafPaused=true;advanceApplication(dt);return this.navigationState();},
+  resumeRAF(){rafPaused=false;last=performance.now();},
+  cameraCollision:()=>clearance.collision(camera.position),
+  geometrySnapshot:()=>M.meshes.map(m=>{m.updateWorldMatrix(true,false);return {instanceID:m.uuid,sourceID:m.userData.e?.id,ifcGUID:m.userData.e?.guid,name:m.userData.e?.name,cls:m.userData.e?.cls,positions:Array.from(m.geometry.attributes.position.array),indices:m.geometry.index?Array.from(m.geometry.index.array):Array.from({length:m.geometry.attributes.position.count},(_,i)=>i),matrixWorld:m.matrixWorld.toArray(),phase:m.userData.phase,visible:m.visible};}),
   observation:{state:observationState,prepare:prepareComparison,capture:saveComparison,replay:replayComparison,context:currentObservationContext},
   axisDeg: AXIS, get ffl() { return M.FFL; }, get build() { return M.build; }, builds,
   get stops() { return dossiers.map((d) => ({ key: d.st.key, n: d.n, via: !!d.via, h0: +d.shot.h0.toFixed(1), h1: +d.shot.h1.toFixed(1), p: +((d.shot.h0 + d.shot.h1) / 2 / TOTAL).toFixed(4), rooms: d.st.rooms.map((r) => r.name) })); },
@@ -2613,17 +2185,13 @@ window.__P401 = {
   scanInfo: () => Object.fromEntries(Object.entries(scanObj).map(([k, o]) => [k, { n: o.geometry.attributes.position.count, vis: o.visible, mask: o.layers.mask, parent: o.parent?.type, size: SCAN_MAT.uniforms.uScale.value }])),
   isolate: (q) => { for (const m of M.meshes) m.visible = !q || (m.userData.e.name || '').includes(q); render(); },
   meshInfo: (q) => M.meshes.filter((m) => (m.userData.e.name || '').includes(q)).map((m) => { const b = new THREE.Box3().setFromObject(m); return { name: m.userData.e.name, vis: m.visible, parent: m.parent?.type, phase: m.userData.phase, min: b.min.toArray().map((v) => +v.toFixed(2)), max: b.max.toArray().map((v) => +v.toFixed(2)) }; }),
-  setProgress(p) { if (mode === 'walk') leaveWalk(); target = prog = p; update(p); render(); },
+  setProgress(p) { transfer=null;pendingNavigation=null;mode='scroll';target=prog=Math.max(0,Math.min(1,p));insp.yaw=insp.pitch=0;update(prog);render(); },
   roll(w) { roll.style.transition = 'none'; roll.style.width = w; },
-  walk(x, y, yaw, floorKey = 'main', pitch = 0) {
-    if (mode !== 'walk') enterWalk();
-    walk.floor = floorKey === 'upper' ? M.storeys.upper.elevation : floorKey === 'base' ? M.storeys.base.elevation : M.FFL;
-    walk.pos.set(x, y, walk.floor + EYE); walk.yaw = yaw; walk.pitch = pitch; stepWalk(0); render();
-  },
+  walk(x,y,yaw,floorKey='main',pitch=0){const floor=floorKey==='upper'?M.storeys.upper.elevation:floorKey==='base'?M.storeys.base.elevation:M.FFL;return glideTo(x,y,floor);},
   selectByName(name) { const m = M.meshes.find((x) => x.userData.e.name === name); select(m || null); return m?.userData.e.id; },
   edit: (path, color, extra = {}) => post('api/edit', { path, color, ...extra }),
   leaveWalk,
-  walkTick: (dt, held = []) => { keys.clear(); for (const k of held) keys.add(k); stepWalk(dt); render(); return { x: walk.pos.x, y: walk.pos.y, floor: walk.floor }; },
+  walkTick: (dt, held = []) => { rafPaused=true;keys.clear();for(const k of held)keys.add(k);advanceApplication(dt);return {x:camera.position.x,y:camera.position.y,floor:walk.floor}; },
   walkState: () => ({ mode, progress: prog, pausedProgress: pausedTour?.p ?? null, x: +walk.pos.x.toFixed(2), y: +walk.pos.y.toFixed(2), z: +walk.pos.z.toFixed(2), floor: +walk.floor.toFixed(2), yaw: +walk.yaw.toFixed(1) }),
   stairInfo: () => M.spaces.filter((r) => /stair/i.test(r.name)).map((r) => ({ name: r.name, bbox: r.bbox.map((v) => +v.toFixed(2)), floorZ: r.floorZ })),
 };
@@ -2659,7 +2227,6 @@ $('editPill').addEventListener('click', () => {
 // ---------- Reset view (owner 2026-10-18): one click (or R) from anywhere, lost in a wall or in the dark, back to the
 // whole house: leaves the walk, clears the selection and any isolate, model and scan at their defaults ----------
 function resetView() {
-  if (mode === 'walk') leaveWalk();
   select(null);
   for (const m of M.meshes) m.visible = true;
   for (const [id, v] of [['opModel', 100], ['opScan', 70]]) { const r = $(id); r.value = v; r.dispatchEvent(new Event('input')); }
