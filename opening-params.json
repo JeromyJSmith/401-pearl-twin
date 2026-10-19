@@ -45,5 +45,952 @@
    ]
   }
  },
- "updated": "2026-10-18T23:00:00.199Z by claude-preview (drag edit of Apartment A entry arch wall (N-S at u=-2.03))"
+ "updated": "2026-10-19T03:40:36.279Z by codex-model-operations-20261018 (drag edit of Apartment A entry arch wall (N-S at u=-2.03))",
+ "reviewed_openings": {
+  "schema": "marpa.401_pearl.reviewed_opening_assemblies.v1",
+  "baseline_sha256": "097030d2468d1b436e0316fc5ccdada59c1f6d2ff1c67d95ff1d519fa6900a38",
+  "coordinate_frame": "house_uv_m_theta14.6547_z_up",
+  "opening_assemblies": [
+   {
+    "id": "E-U1",
+    "visible_surround_bounds_m": [
+     -3.44120731423434,
+     -2.51050464572708,
+     4.388062976666634,
+     5.018375441139227
+    ],
+    "axis": "v",
+    "host": "87bc53eb-9867-5bce-b504-5ba41011afb2",
+    "fill": "9f2030bc-858e-5756-b316-6cf357420b28",
+    "void": "fc51e71d-791b-5d36-84aa-d50f10e27d8e",
+    "glass": "90d59335-5890-5412-9866-158f450ce850",
+    "wtype": "slider",
+    "source_path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/tooling-opening-audit-20261018/openings-upper/E-U1-sharp-photo-measurements.json",
+    "source_sha256": "16b502de92da5e2efcc2a0c95c408356e4e0f7e3623b8b47a23db249ac7c53b8",
+    "expected_component_hashes": [
+     {
+      "path": "9f2030bc-858e-5756-b316-6cf357420b28",
+      "name": "E-U1 East cross-gable bedroom window (horizontal slider, 2 lites, upper level)",
+      "class": "IfcWindow",
+      "mesh_sha256": "349f5d0143a47d16d0161891ad02a78bf0a37a00b03530c706ccb67c969287c5",
+      "node_sha256": "adedf5448f4a18a4f2830a94cb688d72a39d12bef2278eb32f8999f6109957a2",
+      "children": {
+       "agg_0fA6IoSozJZODXSxa7wUi4": "90d59335-5890-5412-9866-158f450ce850"
+      },
+      "SourceLayer": "114-fix42-upper-and-main-plan-completion"
+     },
+     {
+      "path": "fc51e71d-791b-5d36-84aa-d50f10e27d8e",
+      "name": "E-U1 East cross-gable bedroom window (horizontal slider, 2 lites, upper level) opening",
+      "class": "IfcOpeningElement",
+      "mesh_sha256": "cca3fcb982ad307b7a9ca28adda80709b4010a54d9097b17460999b42e1e1e87",
+      "node_sha256": "4c92d237aad543ce501a5a2699ae055549ec4c304feb070d09edbbce45a62224",
+      "children": {
+       "fill_2OpEamWnXNk9TKmrj1XVec": "9f2030bc-858e-5756-b316-6cf357420b28"
+      },
+      "SourceLayer": "114-fix42-upper-and-main-plan-completion"
+     },
+     {
+      "path": "90d59335-5890-5412-9866-158f450ce850",
+      "name": "E-U1 glazing (2 panes)",
+      "class": "IfcPlate",
+      "mesh_sha256": "fc513cd1221cfd4c2276b09593eb353e12f34503bde83915ba9650c8d9d0fedc",
+      "node_sha256": "0c6f926a21ba9135052c23c2a66c988e9148e2bb6ce08f7291be44db57f81ba8",
+      "children": {},
+      "SourceLayer": "114-fix42-upper-and-main-plan-completion"
+     },
+     {
+      "path": "87bc53eb-9867-5bce-b504-5ba41011afb2",
+      "name": "Upper level wall 08 (east exterior)",
+      "class": "IfcWall",
+      "mesh_sha256": "542ee55a767d7477ec00ac5b37609839413b3f2edf4f9debf9d330b77c0c7e02",
+      "node_sha256": "98db011907eebf833db142cfd2ef8e707ec2855cb1d603e3fc31c06599655146",
+      "children": {
+       "void_0uSfgagkDGR9t_47Ni1YNh": "fc51e71d-791b-5d36-84aa-d50f10e27d8e"
+      },
+      "SourceLayer": "140b-fix56-photo-east-gable"
+     }
+    ],
+    "feature_definition": "Visible outer white surround, excluding shutters and glass; not concealed rough opening",
+    "proxy_margins_m": {
+     "jamb": 0.04,
+     "head": 0.04,
+     "sill": 0.05
+    },
+    "concealed_rough_opening_status": "UNRESOLVED",
+    "uncertainty": "Pixel-only bounds are in source receipt; additionally boundary ambiguity about 20 mm and absolute site placement RMS 143 mm. No model-fit source transform.",
+    "note": "Source triangulation in calibrated photo component; canonical normal plane retained.",
+    "constraint_basis": "MEASURED_VISIBLE_SURROUND_BOUNDS"
+   },
+   {
+    "id": "S-W2",
+    "visible_surround_bounds_m": [
+     2.0488894310408168,
+     2.767307363904287,
+     0.5556524006101184,
+     2.4825561304086077
+    ],
+    "axis": "u",
+    "host": "c1dc31b8-27a8-5ef9-9ca4-a4a503093914",
+    "fill": "61a34f6b-f2df-54dd-9813-94e66ca17384",
+    "void": "98199108-017a-54a7-8070-3772fa53ea52",
+    "glass": "34e8ba0f-8758-55e7-ac25-8a51314e61d8",
+    "wtype": "dh",
+    "source_path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/tooling-opening-audit-20261018/openings-south-north-photo/sharp-photo-surround-measurements.json",
+    "source_sha256": "bf223eb049f237de07ef5edb8fa211008fb253f4fae3d4620ec97fa2877b5651",
+    "expected_component_hashes": [
+     {
+      "path": "61a34f6b-f2df-54dd-9813-94e66ca17384",
+      "name": "S-W2 South porch window east of doors (tall double-hung)",
+      "class": "IfcWindow",
+      "mesh_sha256": "53a0d8263558ec7edad0aa9539c41f95d0e59be073ae2b77892996d578b4f632",
+      "node_sha256": "e5dc28abaff8dbcb3c40f56f393a5193ed7e71e19e05d6be593b2a01125a1161",
+      "children": {
+       "agg_39_8rm93DQmR2XLwuWxLwq": "34e8ba0f-8758-55e7-ac25-8a51314e61d8"
+      },
+      "SourceLayer": "105-fix34-openings-rebuild"
+     },
+     {
+      "path": "98199108-017a-54a7-8070-3772fa53ea52",
+      "name": "S-W2 South porch window east of doors (tall double-hung) opening",
+      "class": "IfcOpeningElement",
+      "mesh_sha256": "e547b6b239a06c4397682ffa6c45aa41cc7989fbf42b89ce3172455f83714c4a",
+      "node_sha256": "fe3463fd6ec7fdd4416d706b49c3cb4d138199d2a6b04d21c62d51245b8a5998",
+      "children": {
+       "fill_2vgHuyn_TJfhRZnbx0MEdo": "61a34f6b-f2df-54dd-9813-94e66ca17384"
+      },
+      "SourceLayer": "105-fix34-openings-rebuild"
+     },
+     {
+      "path": "34e8ba0f-8758-55e7-ac25-8a51314e61d8",
+      "name": "S-W2 glazing (2 panes)",
+      "class": "IfcPlate",
+      "mesh_sha256": "56cca3ec2f8c6465b12e88f80253cca1e2ec7c537c96430b5db615ba0824d12f",
+      "node_sha256": "b9ba3c625f932ced2e4dfb20444443878c81bde9c29e1481d7e9814eb2de69d1",
+      "children": {},
+      "SourceLayer": "105-fix34-openings-rebuild"
+     },
+     {
+      "path": "c1dc31b8-27a8-5ef9-9ca4-a4a503093914",
+      "name": "Apartment B wall 02 (south exterior)",
+      "class": "IfcWall",
+      "mesh_sha256": "ccb17aad10a62ff7409bb5bc99ec5f6f4a35066a54d03a9bc8f6e98fa594f0b8",
+      "node_sha256": "d7f5774c8ad183051cc22910624d2337ec07b83c4a69d23822347b6c2f7d68f7",
+      "children": {
+       "void_3bWXBtuKDHDvGoiAU3teaq": "234a6014-ee06-5579-aaea-fe80ef005131",
+       "void_0TUNfoyW9RkxZ2FEX4j17C": "98199108-017a-54a7-8070-3772fa53ea52"
+      },
+      "SourceLayer": "108-fix36-roof-junctions-and-stair-trim"
+     }
+    ],
+    "feature_definition": "Visible outer white surround, excluding shutters and glass; not concealed rough opening",
+    "proxy_margins_m": {
+     "jamb": 0.04,
+     "head": 0.04,
+     "sill": 0.05
+    },
+    "concealed_rough_opening_status": "UNRESOLVED",
+    "uncertainty": "Pixel-only bounds are in source receipt; additionally boundary ambiguity about 20 mm and absolute site placement RMS 143 mm. No model-fit source transform.",
+    "note": "S-W2 left lower corner occluded: visible three-corner rectangle, not arithmetic three-corner centroid.",
+    "constraint_basis": "MEASURED_VISIBLE_SURROUND_BOUNDS"
+   },
+   {
+    "id": "W-W1",
+    "visible_surround_bounds_m": [
+     -1.4607983936473745,
+     0.198860273299232,
+     0.9435945630500113,
+     2.1404044059919114
+    ],
+    "axis": "v",
+    "host": "6cb8f5f4-15d6-5f1c-a000-a89393eb606d",
+    "fill": "cc800973-96d8-5d4c-a12d-225868de0128",
+    "void": "e615fb19-40c8-5c12-8c1e-16881c683bf2",
+    "glass": "ef0072bb-dc2a-5c39-88b2-548dad661362",
+    "wtype": "slider",
+    "source_path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/tooling-opening-audit-20261018/openings-main-exterior-basement/sharp-frame-measurements-v2.json",
+    "source_sha256": "631bdf843657fbdf67c58c71093709a021ea195596823849182391665c7f33fe",
+    "expected_component_hashes": [
+     {
+      "path": "cc800973-96d8-5d4c-a12d-225868de0128",
+      "name": "W-W1 West window north (horizontal slider, 2 lites)",
+      "class": "IfcWindow",
+      "mesh_sha256": "8e9203f894c023bcc6192669d55e1b719adb17d3b07305e4999b6fe77a4d47c6",
+      "node_sha256": "09245be3d6fc4745bab1103eb8f6a0a2f9fc522c18d3e133dbc799fc1d187cd5",
+      "children": {
+       "agg_25KMUdByvR1PoTG3TldZa3": "ef0072bb-dc2a-5c39-88b2-548dad661362"
+      },
+      "SourceLayer": "105-fix34-openings-rebuild"
+     },
+     {
+      "path": "e615fb19-40c8-5c12-8c1e-16881c683bf2",
+      "name": "W-W1 West window north (horizontal slider, 2 lites) opening",
+      "class": "IfcOpeningElement",
+      "mesh_sha256": "39202b5d8ee55af323aae8d12538f482cbabc8e5114f73d94f1a8df76eb3a36c",
+      "node_sha256": "3cbb3ea0466bed856498b00bb84e81d2fb8b07dc1ab03c6cd3641264e1e8d435",
+      "children": {
+       "fill_1byb5ZA9rV08yEN3gmR8uE": "cc800973-96d8-5d4c-a12d-225868de0128"
+      },
+      "SourceLayer": "105-fix34-openings-rebuild"
+     },
+     {
+      "path": "ef0072bb-dc2a-5c39-88b2-548dad661362",
+      "name": "W-W1 glazing (2 panes)",
+      "class": "IfcPlate",
+      "mesh_sha256": "dd52239ca326467e683c077ff1efa4ceec70d0c182c38108dfb2bab4ba410754",
+      "node_sha256": "cbfbbf5ed42f8efe02cb359ac42bc0bdf475939b5b09b72e278abe30886faab9",
+      "children": {},
+      "SourceLayer": "105-fix34-openings-rebuild"
+     },
+     {
+      "path": "6cb8f5f4-15d6-5f1c-a000-a89393eb606d",
+      "name": "Apartment A wall 01 (west exterior)",
+      "class": "IfcWall",
+      "mesh_sha256": "03e7350f130d45d564a951b60f2f4be8629fd3b17ba4678b8aed15c2ce317dba",
+      "node_sha256": "5d0fa19b3799cf4377c3a1809b85666eb22e1656e433f6e283d8c8ab6e2a4a99",
+      "children": {
+       "void_025L2Z4KfUeBBOVQs2uR_c": "cbeba5a4-eed6-5dcf-b83b-a9b0e4d9443d",
+       "void_1wS8MTYJjJReh4IxOb_tUE": "e615fb19-40c8-5c12-8c1e-16881c683bf2",
+       "void_24vDcLtuPIoByjTTcfzl63": "40e144e9-7c99-54a4-94f1-732b190a5945"
+      },
+      "SourceLayer": "108-fix36-roof-junctions-and-stair-trim"
+     }
+    ],
+    "feature_definition": "Visible outer white surround, excluding shutters and glass; not concealed rough opening",
+    "proxy_margins_m": {
+     "jamb": 0.04,
+     "head": 0.04,
+     "sill": 0.05
+    },
+    "concealed_rough_opening_status": "UNRESOLVED",
+    "uncertainty": "Pixel-only bounds are in source receipt; additionally boundary ambiguity about 20 mm and absolute site placement RMS 143 mm. No model-fit source transform.",
+    "note": "Source triangulation in calibrated photo component; canonical normal plane retained.",
+    "constraint_basis": "MEASURED_VISIBLE_SURROUND_BOUNDS"
+   },
+   {
+    "id": "E-W3",
+    "visible_surround_bounds_m": [
+     0.4582408279562837,
+     1.3718186723225607,
+     1.43112035006025,
+     1.9974266604007616
+    ],
+    "axis": "v",
+    "host": "1a16362b-af72-5c77-97df-6b8c0a4ca597",
+    "fill": "dd12f03b-fadd-5571-b872-33f6b8cbfa61",
+    "void": "7c4c26bd-947e-5bd8-a128-df0ea9b2c3a5",
+    "glass": "63cec43d-fe32-53c3-9155-ac8cf630d05a",
+    "wtype": "slider",
+    "source_path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/tooling-opening-audit-20261018/openings-main-exterior-basement/sharp-frame-measurements-v2.json",
+    "source_sha256": "631bdf843657fbdf67c58c71093709a021ea195596823849182391665c7f33fe",
+    "expected_component_hashes": [
+     {
+      "path": "dd12f03b-fadd-5571-b872-33f6b8cbfa61",
+      "name": "E-W3 East wing window south (small slider, 2 lites)",
+      "class": "IfcWindow",
+      "mesh_sha256": "afcd758b3df32838a96f97057aac61cb307c2203af9dd4bee7abfe418d82418d",
+      "node_sha256": "8deaa014c5aec9944223b532362b3c5a5532c0bd8fd5cbf7982c3e49f0a68b2b",
+      "children": {
+       "agg_17I9AnJCjUa88ILsgQtr1I": "63cec43d-fe32-53c3-9155-ac8cf630d05a"
+      },
+      "SourceLayer": "105-fix34-openings-rebuild"
+     },
+     {
+      "path": "7c4c26bd-947e-5bd8-a128-df0ea9b2c3a5",
+      "name": "E-W3 East wing window south (small slider, 2 lites) opening",
+      "class": "IfcOpeningElement",
+      "mesh_sha256": "0b2e50a77f20b1e549bc9028d0d6d50b757366d38fe9e60cc5db0bc24d88829c",
+      "node_sha256": "2b0834f1eb0b54defe30e14e7ab551d0d445a9c6aa0ce90ad07e81295f098d8a",
+      "children": {
+       "fill_3_aY7pwSTPbQ90jgAXq0VH": "dd12f03b-fadd-5571-b872-33f6b8cbfa61"
+      },
+      "SourceLayer": "105-fix34-openings-rebuild"
+     },
+     {
+      "path": "63cec43d-fe32-53c3-9155-ac8cf630d05a",
+      "name": "E-W3 glazing (2 panes)",
+      "class": "IfcPlate",
+      "mesh_sha256": "32a53c4ac08287a58e50f0c6ae77c3583458067ba7e8efbb817b37bcc45de7e9",
+      "node_sha256": "ba9ae9a3fda86f82a90f339f3c59930b873e107d643e5cf88e1d78fe48f53dba",
+      "children": {},
+      "SourceLayer": "105-fix34-openings-rebuild"
+     },
+     {
+      "path": "1a16362b-af72-5c77-97df-6b8c0a4ca597",
+      "name": "Apartment B wall 03 (east exterior)",
+      "class": "IfcWall",
+      "mesh_sha256": "1eeaafb7e5b5d047d0b4115e3142c2750b3a1173eedf41c5cc0503d0c0ebff36",
+      "node_sha256": "b4c06a24701350e3c27316183ef68f8d428c51c8060633f96e0d99fa2d0187c0",
+      "children": {
+       "void_3d3oK5y1XRGxOvan_hJtVx": "6cc21590-68ed-5819-a25f-fc459f8e8c2a",
+       "void_1LG9sTW79SUxiaoAb3DXou": "718e541d-c474-5b4a-b15c-5a7813f72707",
+       "void_2Wr_N1wgnLWutFqlcNApOz": "7c4c26bd-947e-5bd8-a128-df0ea9b2c3a5",
+       "void_0usIW4NGXKRAkqPVdUFRnv": "3eb18f97-24cf-5c5d-a190-ea30117d0a78"
+      },
+      "SourceLayer": "140-fix53-scan-roofs-and-north-gable"
+     }
+    ],
+    "feature_definition": "Visible outer white surround, excluding shutters and glass; not concealed rough opening",
+    "proxy_margins_m": {
+     "jamb": 0.04,
+     "head": 0.04,
+     "sill": 0.05
+    },
+    "concealed_rough_opening_status": "UNRESOLVED",
+    "uncertainty": "Pixel-only bounds are in source receipt; additionally boundary ambiguity about 20 mm and absolute site placement RMS 143 mm. No model-fit source transform.",
+    "note": "Source triangulation in calibrated photo component; canonical normal plane retained.",
+    "constraint_basis": "MEASURED_VISIBLE_SURROUND_BOUNDS"
+   },
+   {
+    "id": "E-W4",
+    "constraint_basis": "SOURCE_ASPECT_RATIO_EXISTING_WIDTH_AND_CENTER",
+    "visible_surround_bounds_m": [
+     2.5800001161154276,
+     3.340000426510742,
+     1.3100972205223953,
+     2.159902779477605
+    ],
+    "preserved_visible_width_m": 0.7600003103953141,
+    "preserved_visible_center_sz_m": [
+     2.960000271313085,
+     1.735
+    ],
+    "source_aspect_ratio": 1.1181647524764602,
+    "source_aspect_90pct_bounds": [
+     1.0783849136234336,
+     1.1588675114159293
+    ],
+    "physical_absolute_height_status": "UNQUALIFIED_RATIO_ONLY_REPRESENTATION",
+    "axis": "v",
+    "host": "1a16362b-af72-5c77-97df-6b8c0a4ca597",
+    "fill": "412f4ee3-33ac-5fc5-9d0e-fbff5732cba9",
+    "void": "3eb18f97-24cf-5c5d-a190-ea30117d0a78",
+    "glass": "828195de-bed0-5b8d-86cb-4eea289688e2",
+    "wtype": "dh",
+    "source_path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/exterior/E-W4-source-sensitivity.json",
+    "source_sha256": "bfd6bf9bf71f9f434036c22cf4ee15fee5314975b1d672bb078188761c510240",
+    "expected_component_hashes": [
+     {
+      "path": "412f4ee3-33ac-5fc5-9d0e-fbff5732cba9",
+      "name": "E-W4 East wing window north (small single-hung, 2 lites stacked)",
+      "class": "IfcWindow",
+      "mesh_sha256": "a307900c80fbfa88f34038166a567daac326c6b35ed1ab36009c0448dab0317e",
+      "node_sha256": "5f4b9aac7adb2f5d7385f429e8d5827433b0b2ee54773b318e0f26524b033695",
+      "children": {
+       "agg_0uDNVHGJ9LMOL58pDS3oCa": "828195de-bed0-5b8d-86cb-4eea289688e2"
+      },
+      "SourceLayer": "105-fix34-openings-rebuild"
+     },
+     {
+      "path": "3eb18f97-24cf-5c5d-a190-ea30117d0a78",
+      "name": "E-W4 East wing window north (small single-hung, 2 lites stacked) opening",
+      "class": "IfcOpeningElement",
+      "mesh_sha256": "d782e64f7ad5d55a965a0f18db18a807a7c614db291966e28913b2e053f2ad69",
+      "node_sha256": "b29ed829e86867236328360d9f996f2d753786aa5a8d081c9e39fd4a741d9da1",
+      "children": {
+       "fill_3qHIwlTKDNUu9M_Pyn5P8u": "412f4ee3-33ac-5fc5-9d0e-fbff5732cba9"
+      },
+      "SourceLayer": "105-fix34-openings-rebuild"
+     },
+     {
+      "path": "828195de-bed0-5b8d-86cb-4eea289688e2",
+      "name": "E-W4 glazing (2 panes)",
+      "class": "IfcPlate",
+      "mesh_sha256": "28f12c863e1994f1b7d87ea15d974276e463a69dd4364610776c7674a4b0f91d",
+      "node_sha256": "6e718929077a6ca7cf0de0ff8d1814e3925b6777f178af72305d0fd24b781cd3",
+      "children": {},
+      "SourceLayer": "105-fix34-openings-rebuild"
+     },
+     {
+      "path": "1a16362b-af72-5c77-97df-6b8c0a4ca597",
+      "name": "Apartment B wall 03 (east exterior)",
+      "class": "IfcWall",
+      "mesh_sha256": "1eeaafb7e5b5d047d0b4115e3142c2750b3a1173eedf41c5cc0503d0c0ebff36",
+      "node_sha256": "b4c06a24701350e3c27316183ef68f8d428c51c8060633f96e0d99fa2d0187c0",
+      "children": {
+       "void_3d3oK5y1XRGxOvan_hJtVx": "6cc21590-68ed-5819-a25f-fc459f8e8c2a",
+       "void_1LG9sTW79SUxiaoAb3DXou": "718e541d-c474-5b4a-b15c-5a7813f72707",
+       "void_2Wr_N1wgnLWutFqlcNApOz": "7c4c26bd-947e-5bd8-a128-df0ea9b2c3a5",
+       "void_0usIW4NGXKRAkqPVdUFRnv": "3eb18f97-24cf-5c5d-a190-ea30117d0a78"
+      },
+      "SourceLayer": "140-fix53-scan-roofs-and-north-gable"
+     }
+    ],
+    "feature_definition": "Source visible outer white surround height/width ratio only; installed model width and center held, not measured physical dimensions",
+    "proxy_margins_m": {
+     "jamb": 0.04,
+     "head": 0.04,
+     "sill": 0.05
+    },
+    "concealed_rough_opening_status": "UNRESOLVED",
+    "uncertainty": "Source height/width1.11816, pixel90%1.07838..1.15887; four heldout views1.1010..1.1304 and6.75..12.01px; uniform scale cancels. Absolute physical width/height/placement and concealed rough unqualified. Original model width and center are representation constraints, never source measurements.",
+    "note": "Owner-approved conservative ratio correction. Existing width/center/normal planes preserved; source-derived relative height only."
+   }
+  ],
+  "policy": "Candidate visible-surround corrections. Core aperture uses existing 40/40/50 mm casing law only as fit proxy. No unsupported new openings or concealed rough measurement claims. E-W4 is ratio-only representation correction; width/center retained from installed baseline, not metric capture truth.",
+  "revision": "v2_add_E-W4_source_aspect_existing_width_and_center"
+ },
+ "reviewed_upper_openings": {
+  "lidar": {
+   "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/09_delivery/twin-presentation/plan-to-walk-20261017/splats/lidar_upper.bin",
+   "sha256": "adde8e6508bc6a06047654d3968a5d5ae6778db51f00724795e684695436bcff"
+  },
+  "polycam_registered": {
+   "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/09_delivery/twin-presentation/plan-to-walk-20261017/splats/polycam_upper_lidar_registered.bin",
+   "sha256": "23b77581d5acc72411a920cc19186e1907c9e5bf168101cf8f4371b72031a1a9"
+  },
+  "head_m": 4.97,
+  "source": "Accepted metric upper LiDAR and independently LiDAR-registered Polycam, central northentry clear-head boundary; modeledvisibleunderside, concealedroughconstruction/leaf/swing unresolved",
+  "source_edge_bounds_m": [
+   4.94,
+   5
+  ],
+  "evidence_receipt": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/interior/fix58-candidate-05/fix58-receipt.json",
+  "frozen_base_sha256": "097030d2468d1b436e0316fc5ccdada59c1f6d2ff1c67d95ff1d519fa6900a38",
+  "qualified_layer": "145-fix58-reviewed-upper-openings",
+  "tests_log": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/interior/fix58-tests-06.log",
+  "candidate_check": {
+   "solids": 153,
+   "not_solid": [],
+   "clash_count": 0,
+   "uncovered_area_m2": 0
+  },
+  "new_opening_path": "b75c925f-ed1c-5cd0-9d89-d09fb48f9722",
+  "expected_existing_host_mesh_sha256": "65ba9ff736e38cddb06d47cb77025b9e05ec1c5e609332bd1d547dff43c1b2c8",
+  "source_definitions": [
+   {
+    "path": "/Users/jero/worktrees/marpa-desk/codex-model-operations-401/scripts/fix58_reviewed_upper_openings.py",
+    "sha256": "57f7532c51aecf7b212b22e0a17cdaf2d1c43cb67fe8791ad6706acca2ac6242"
+   },
+   {
+    "path": "/Users/jero/worktrees/marpa-desk/codex-model-operations-401/tests/test_fix58_upper_openings.py",
+    "sha256": "e0604afc6626f4a18d31a2323e360fd2fa53237c89bbce3e39dda73f32c0d2d3"
+   }
+  ]
+ },
+ "reviewed_door_panels": {
+  "schema": "marpa.401_pearl.reviewed_door_panel_detail.v1",
+  "id": "W-D1",
+  "fill_path": "fa3ddc26-e716-5bea-b8c1-0ebda9706071",
+  "baseline_mesh_sha256": "537762d8b1a7cff4e46612e9321ec940fc01ffac0a8480010cf05e80d0546abd",
+  "baseline_sha256": "097030d2468d1b436e0316fc5ccdada59c1f6d2ff1c67d95ff1d519fa6900a38",
+  "coordinate_frame": "house_uv_m_theta14.6547_z_up",
+  "source_evidence_path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/exterior/remaining-source-frame-measurements.json",
+  "source_evidence_sha256": "6a643cf4d2a0c6655ac1205449304f21bc261eab53c38b04a80a7fca9edfe37a",
+  "source_photos": [
+   {
+    "path": "/Users/jero/Downloads/401/work/20260715-003/frames8k/frame_00383.jpg",
+    "sha256": "e364fc416045aa12c6368226ef4a30524e1983c019d0d1e2deb79cd039eeca11"
+   },
+   {
+    "path": "/Users/jero/Downloads/401/work/20260715-003/frames8k/frame_00382.jpg",
+    "sha256": "9c3994e94930f19b5f232fd39b2a47786168d20c393b785ffe1ca775208655b5"
+   },
+   {
+    "path": "/Users/jero/Downloads/401/work/20260715-003/frames8k/frame_00388.jpg",
+    "sha256": "26d091aa7d5c2c113796d0eb6bc9d695d5525c2e7deb5bb4ed08a70fcc91e321"
+   },
+   {
+    "path": "/Users/jero/Downloads/401/work/20260715-003/frames8k/frame_00391.jpg",
+    "sha256": "ddf13485b59b168796b92105b329d8cd4163f06db3debe5e6542db5ef1397d4c"
+   }
+  ],
+  "observations": {
+   "frame_00383": {
+    "leaf_box_px": [
+     246,
+     192,
+     580,
+     842
+    ],
+    "panels_px": [
+     [
+      287,
+      230,
+      391,
+      283
+     ],
+     [
+      446,
+      230,
+      550,
+      283
+     ],
+     [
+      280,
+      330,
+      391,
+      530
+     ],
+     [
+      444,
+      330,
+      546,
+      530
+     ],
+     [
+      278,
+      598,
+      389,
+      794
+     ],
+     [
+      442,
+      598,
+      543,
+      794
+     ]
+    ],
+    "feature_definition": "Outer visible molded-panel relief bounds on closed white leaf, top pair/middle pair/bottom pair; approximate axis-aligned photo picks, not metric moulding survey.",
+    "visible_panel_count": 6,
+    "normalized_regions": [
+     [
+      0.12275449101796407,
+      0.4341317365269461,
+      0.86,
+      0.9415384615384615
+     ],
+     [
+      0.5988023952095808,
+      0.9101796407185628,
+      0.86,
+      0.9415384615384615
+     ],
+     [
+      0.10179640718562874,
+      0.4341317365269461,
+      0.48,
+      0.7876923076923077
+     ],
+     [
+      0.592814371257485,
+      0.8982035928143712,
+      0.48,
+      0.7876923076923077
+     ],
+     [
+      0.09580838323353294,
+      0.4281437125748503,
+      0.07384615384615385,
+      0.37538461538461537
+     ],
+     [
+      0.5868263473053892,
+      0.8892215568862275,
+      0.07384615384615385,
+      0.37538461538461537
+     ]
+    ],
+    "profile_path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/exterior/W-D1-frame_00383-profile.jpg",
+    "profile_sha256": "c78215328dccbcdcf29b51027c04347e6376e6cf0d3edf537e3312e20c982e44"
+   },
+   "frame_00382": {
+    "leaf_box_px": [
+     210,
+     193,
+     564,
+     843
+    ],
+    "panels_px": [
+     [
+      254,
+      226,
+      362,
+      284
+     ],
+     [
+      415,
+      226,
+      523,
+      284
+     ],
+     [
+      249,
+      330,
+      361,
+      536
+     ],
+     [
+      411,
+      329,
+      522,
+      533
+     ],
+     [
+      242,
+      596,
+      353,
+      796
+     ],
+     [
+      404,
+      596,
+      514,
+      796
+     ]
+    ],
+    "feature_definition": "Outer visible molded-panel relief bounds on closed white leaf, top pair/middle pair/bottom pair; approximate axis-aligned photo picks, not metric moulding survey.",
+    "visible_panel_count": 6,
+    "normalized_regions": [
+     [
+      0.12429378531073447,
+      0.4293785310734463,
+      0.86,
+      0.9492307692307692
+     ],
+     [
+      0.5790960451977402,
+      0.884180790960452,
+      0.86,
+      0.9492307692307692
+     ],
+     [
+      0.11016949152542373,
+      0.4265536723163842,
+      0.4723076923076923,
+      0.7892307692307692
+     ],
+     [
+      0.5677966101694916,
+      0.8813559322033898,
+      0.47692307692307695,
+      0.7907692307692308
+     ],
+     [
+      0.0903954802259887,
+      0.403954802259887,
+      0.07230769230769231,
+      0.38
+     ],
+     [
+      0.5480225988700564,
+      0.8587570621468926,
+      0.07230769230769231,
+      0.38
+     ]
+    ],
+    "profile_path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/exterior/W-D1-frame_00382-profile.jpg",
+    "profile_sha256": "05ae16c110a0d78c8eb2ef7ef34e5fce2b9b2e38898561564d2abbb1994db913"
+   },
+   "frame_00388": {
+    "leaf_box_px": [
+     252,
+     192,
+     602,
+     843
+    ],
+    "panels_px": [
+     [
+      292,
+      226,
+      400,
+      284
+     ],
+     [
+      455,
+      226,
+      568,
+      284
+     ],
+     [
+      287,
+      333,
+      398,
+      533
+     ],
+     [
+      454,
+      333,
+      565,
+      533
+     ],
+     [
+      284,
+      597,
+      395,
+      795
+     ],
+     [
+      448,
+      597,
+      562,
+      795
+     ]
+    ],
+    "feature_definition": "Outer visible molded-panel relief bounds on closed white leaf, top pair/middle pair/bottom pair; approximate axis-aligned photo picks, not metric moulding survey.",
+    "visible_panel_count": 6,
+    "normalized_regions": [
+     [
+      0.11428571428571428,
+      0.4228571428571429,
+      0.858678955453149,
+      0.9477726574500768
+     ],
+     [
+      0.58,
+      0.9028571428571428,
+      0.858678955453149,
+      0.9477726574500768
+     ],
+     [
+      0.1,
+      0.41714285714285715,
+      0.47619047619047616,
+      0.783410138248848
+     ],
+     [
+      0.5771428571428572,
+      0.8942857142857142,
+      0.47619047619047616,
+      0.783410138248848
+     ],
+     [
+      0.09142857142857143,
+      0.4085714285714286,
+      0.07373271889400922,
+      0.3778801843317972
+     ],
+     [
+      0.56,
+      0.8857142857142857,
+      0.07373271889400922,
+      0.3778801843317972
+     ]
+    ],
+    "profile_path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/exterior/W-D1-frame_00388-profile.jpg",
+    "profile_sha256": "8db59eab97b21ac78962e6b9304b3cb9bdb5fe9bfe10cebb1289349098616dfe"
+   },
+   "frame_00391": {
+    "leaf_box_px": [
+     252,
+     174,
+     598,
+     825
+    ],
+    "panels_px": [
+     [
+      293,
+      200,
+      398,
+      257
+     ],
+     [
+      451,
+      200,
+      565,
+      257
+     ],
+     [
+      287,
+      297,
+      395,
+      504
+     ],
+     [
+      449,
+      296,
+      564,
+      505
+     ],
+     [
+      284,
+      573,
+      395,
+      770
+     ],
+     [
+      446,
+      573,
+      562,
+      770
+     ]
+    ],
+    "feature_definition": "Outer visible molded-panel relief bounds on closed white leaf, top pair/middle pair/bottom pair; approximate axis-aligned photo picks, not metric moulding survey.",
+    "visible_panel_count": 6,
+    "normalized_regions": [
+     [
+      0.11849710982658959,
+      0.42196531791907516,
+      0.8725038402457758,
+      0.9600614439324117
+     ],
+     [
+      0.5751445086705202,
+      0.9046242774566474,
+      0.8725038402457758,
+      0.9600614439324117
+     ],
+     [
+      0.10115606936416185,
+      0.41329479768786126,
+      0.4930875576036866,
+      0.8110599078341014
+     ],
+     [
+      0.569364161849711,
+      0.9017341040462428,
+      0.4915514592933948,
+      0.8125960061443932
+     ],
+     [
+      0.09248554913294797,
+      0.41329479768786126,
+      0.08448540706605223,
+      0.3870967741935484
+     ],
+     [
+      0.5606936416184971,
+      0.8959537572254336,
+      0.08448540706605223,
+      0.3870967741935484
+     ]
+    ],
+    "profile_path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/model-operations-implementation-20261018/exterior/W-D1-frame_00391-profile.jpg",
+    "profile_sha256": "214c5e5624f4869dee256fcf7a798ff61c527c8dd9c321391504cdf04dd70463"
+   }
+  },
+  "normalized_regions": [
+   [
+    0.12062580042227683,
+    0.4261178369652946,
+    0.86,
+    0.948501713340423
+   ],
+   [
+    0.5795480225988701,
+    0.903740710156895,
+    0.86,
+    0.948501713340423
+   ],
+   [
+    0.1014762382748953,
+    0.42184826472962067,
+    0.4780952380952381,
+    0.7884615384615384
+   ],
+   [
+    0.5732535094962841,
+    0.8962446535500428,
+    0.4784615384615385,
+    0.7892307692307692
+   ],
+   [
+    0.0919570602807597,
+    0.4109331131296449,
+    0.07378943637008153,
+    0.37894009216589863
+   ],
+   [
+    0.5603468208092486,
+    0.8874679213002565,
+    0.07378943637008153,
+    0.37894009216589863
+   ]
+  ],
+  "visible_panel_count": 6,
+  "panel_grid": [
+   2,
+   3
+  ],
+  "uncertainty": "Visible six-panel pattern confirmed in four sharp original captures. Axis-aligned profile box picks about10px and modest perspective create roughly.04 normalized boundary uncertainty. Existing10mm proud relief retained as representation assumption; actual relief/bevel depth not measured. No new physical width/height/placement claim.",
+  "preserve": [
+   "fill bounds",
+   "installed frame",
+   "wall",
+   "void",
+   "separate dark casing",
+   "OverallWidth",
+   "OverallHeight",
+   "OperationType",
+   "swing",
+   "stable paths and relationships"
+  ]
+ },
+ "reviewed_entry_stairwell_openings": {
+  "schema": "marpa.401_pearl.reviewed_entry_stairwell_openings.v1",
+  "baseline_sha256": "097030d2468d1b436e0316fc5ccdada59c1f6d2ff1c67d95ff1d519fa6900a38",
+  "coordinate_frame": "house_uv_m_theta14.6547_z_up",
+  "rows": [
+   {
+    "id": "S1",
+    "opening": "35f19eb0-1e08-5e03-a27a-020ecefab98e",
+    "host": "d89e408b-0a12-54fb-abcf-4550ec4795bb",
+    "action": "REMOVE_UNSUPPORTED_100MM_SILHOUETTE_FILL_KEEP_CURRENT_RECTANGULAR_VOID",
+    "source_identity": "South same-plane pair west/left aperture in555s; video looks through to stair newel/rail; metric south face v=-4.61 holds two cutouts.",
+    "identity_basis": "UNIQUE_PAIRED_PLANE_OWNER_FLOORPLAN_AND_VIDEO_CONTINUITY_NOT_SOLVED_CAMERA_POSE"
+   },
+   {
+    "id": "S2",
+    "opening": "3aa597eb-80a5-500a-9777-6c9282180160",
+    "host": "d89e408b-0a12-54fb-abcf-4550ec4795bb",
+    "action": "REMOVE_UNSUPPORTED_100MM_SILHOUETTE_FILL_KEEP_CURRENT_RECTANGULAR_VOID",
+    "source_identity": "South same-plane pair east/right aperture partialin555s, then next full aperture565s during continuous pan. Source metric south-plane second opening is higher and narrower than S1.",
+    "identity_basis": "UNIQUE_PAIRED_PLANE_OWNER_FLOORPLAN_AND_VIDEO_CONTINUITY_NOT_SOLVED_CAMERA_POSE"
+   },
+   {
+    "id": "W1",
+    "opening": "f36109f8-f81a-5c16-8fec-797c26f37726",
+    "host": "8fd895c5-b2a5-54a4-b5f1-ee4df64be079",
+    "action": "SEMANTICS_ONLY_PRESERVE_EXISTING_RECTANGULAR_HOST_MESH",
+    "source_identity": "Only cutout on perpendicular west face u≈-2.02; ownerplan and accepted metric source; foreground560s not assumed to be W1. Current host/void rectangle interference only2.19e-8m3 numerical residue.",
+    "identity_basis": "METRIC_PERPENDICULAR_SURFACE_NORMAL_AND_OWNER_FLOORPLAN_VIDEO_IDENTITY_NOT_FULLY_SOLVED"
+   }
+  ],
+  "sources": [
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/00_inbox/captures/owner-plan-markup-20261018/main-level-plan-markup.jpg",
+    "sha256": "336e5e96082226ae319e8ed51539b8b4f061b04fdab0223be093129115a0ee9f"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/tooling-opening-audit-20261018/openings-upper/stair-clear-opening-measurements.json",
+    "sha256": "c132651f1b49197f9d049afb8cbbc456eeb0a8ba849a2268da409830e88c71da"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/tooling-opening-audit-20261018/openings-upper/lidar_stair-d89e408b-lower-stair-elevation.png",
+    "sha256": "cd79700eca9fa4f8ecee0288dd70663ab38dec07b3028126dc8bc4d63b0b5fe9"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/10_receipts/output/tooling-opening-audit-20261018/openings-upper/lidar_stair-8fd895c5-lower-stair-elevation.png",
+    "sha256": "51e1f2157dc9193f65e57a5ce78344f69185af969c0d92370df0574be093a2ef"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/09_delivery/twin-presentation/plan-to-walk-20261017/splats/lidar_stair.bin",
+    "sha256": "13d26a036c89d7200dae9e371e42904e6f2b1c347740d0f9caa06e36486d746c"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames_hd/401_0001-clip1_00520s.jpg",
+    "sha256": "4cefcb62f3211cefeb8bea3fe53e220104914ccb2a40c8f3169cf315d4fd234e"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames_hd/401_0001-clip1_00540s.jpg",
+    "sha256": "cd9b19d6dcfa3d028d88772207e6d5c91bd964335f79ec121148098b2487e7a2"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames_hd/401_0001-clip1_00555s.jpg",
+    "sha256": "caab6698c9d4599465eb60bc9ad552a6fc3b4f9202cc4b15d4f3b0aaf937a7a1"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames_hd/401_0001-clip1_00560s.jpg",
+    "sha256": "0068c89bdb2bf3eeab2a1cea4b6ba8104602d54eeff8b1e38707257d95d03758"
+   },
+   {
+    "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/video-review/clip1/frames_hd/401_0001-clip1_00565s.jpg",
+    "sha256": "cd90cd65ed9d10c4ee5fbb7f4deac32a01a4f8bca97b33733773ca3d651d65e1"
+   }
+  ],
+  "expected_component_mesh_hashes": {
+   "d89e408b-0a12-54fb-abcf-4550ec4795bb": "9301488253a7b3b50c2769eb66c56b143f13224552567897c0d70662dc337345",
+   "f36109f8-f81a-5c16-8fec-797c26f37726": "a00bb5940215df45a0c3906d8239a19abe7a6539b8b3136201bd24e108b0182a",
+   "35f19eb0-1e08-5e03-a27a-020ecefab98e": "7f5a66a8d4f7ae0fd1cd0f5aa10de08c657e18ba5207d056b2c905768d743d85",
+   "3aa597eb-80a5-500a-9777-6c9282180160": "540f84f18fd6e0009d0087d84f1c940d7c5ec351880207839510ac2865db77e2",
+   "8fd895c5-b2a5-54a4-b5f1-ee4df64be079": "438dbd615b91596bd560dc718a00b373d6a71a580eaa1e872157f8a3e12ed453"
+  },
+  "owner_edge_rounding_intent": "PRESERVED_ROUND_FINISHED_EDGES_RADIUS_AND_PROFILE_UNQUALIFIED",
+  "geometry_scope": "Only d89e south host; subtract its already declared rectangular S1/S2 voids to remove unsupported100mm 2D corner infills. W1west host and all three void meshes remain exact. No width,height,jamb,sill,head,normal or world-position correction. No new framing/window/glazing.",
+  "dimensions_status": "EXISTING_BOUNDS_RETAINED_SOURCE_CLEAR_VS_ROUGH_UNRESOLVED",
+  "source_identity_limit": "No calibrated clip1 camera extrinsics solved. Pair/plane identity is based on unique topological correspondence with independent metric capture and owner floorplan plus sequential555→565 views. W1video exactforeground identity unqualified; noW1geometry alteration.",
+  "qualification_note": "In source video, rough apertures have rectangular silhouettes and chipped/unfinished edges; this does not establish a sharp final3Dedge. Existing100mm silhouette radius was a coding interpretation of rounded edges, not a source measurement.",
+  "numeric_boolean_clearance_m": 0.00002,
+  "numeric_clearance_basis": "20micrometre host cutter tolerance eliminates coplanar micro-skins; all existing declared void geometry and dimensions remain exact. Not a physical rough-opening measurement."
+ }
 }

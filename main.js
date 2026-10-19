@@ -18,6 +18,7 @@ import { furnish } from './furniture.js';
 import { Post } from './post.js';
 import { layout, sample, channel } from './timeline.js';
 import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
+import { makeObservation, captureTriplet, replayObservation } from './observations.mjs';
 
 const Q = new URLSearchParams(location.search);
 const REC = Q.has('rec');
@@ -797,6 +798,12 @@ scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 new HDRLoader().loadAsync('assets/hdri/qwantani_late_afternoon_puresky_1k.hdr').then((t) => { t.mapping = THREE.EquirectangularReflectionMapping; scene.environment = pmrem.fromEquirectangular(t).texture; scene.environmentRotation = new THREE.Euler(Math.PI / 2, 0, 0); t.dispose(); }).catch((e) => console.warn('hdr', e.message));
 scene.environmentIntensity = 0.9;
 
+const loadedCaptureHashes = {};
+const bufferSha256 = async (buffer) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', buffer))].map((v)=>v.toString(16).padStart(2,'0')).join('');
+async function captureBytes(key,url) {
+  const response=await fetch(url); if (!response.ok) throw new Error('Capture unavailable');
+  const bytes=await response.arrayBuffer(); loadedCaptureHashes[key]=await bufferSha256(bytes); return bytes;
+}
 let splat = null, interior = null;
 const splatReady = (async () => {
   try {
@@ -805,9 +812,9 @@ const splatReady = (async () => {
     const spark = new SparkRenderer({ renderer, enableLod: false, sortRadial: true, minSortIntervalMs: 0 });
     spark.layers.set(1);
     scene.add(spark);
-    splat = new SplatMesh({ url: 'splats/exterior_clean_v2.spz' });
+    splat = new SplatMesh({ fileBytes: await captureBytes('splat','splats/exterior_clean_v2.spz'), fileName:'exterior_clean_v2.spz' });
     splat.opacity = Number($('opScan').value) / 100;
-    interior = new SplatMesh({ url: 'splats/interior_ground_all.spz' });
+    interior = new SplatMesh({ fileBytes: await captureBytes('scan','splats/interior_ground_all.spz'), fileName:'interior_ground_all.spz' });
     for (const s of [splat, interior]) { s.layers.set(1); world.add(s); }
     interior.visible = false;
     await Promise.all([splat.initialized, interior.initialized]);
@@ -1543,6 +1550,7 @@ function navHeld() { return navHold && performance.now() < navHold.until ? navHo
 
 // ---------- selection: every element by its IFCX path; Edit writes 99z, Flag writes a BCF topic ----------
 let selected = null;
+let comparisonBusy = false, comparisonEnabled = false;
 const ray = new THREE.Raycaster();
 const panel = $('panel');
 let lastPick = null; // { mesh, point (scene frame), normalZ } of the last click: where a new tag is pinned
@@ -1556,7 +1564,11 @@ function pick(ndc) {
 function select(mesh) {
   selected = mesh ? { mesh } : null;
   panel.hidden = !mesh;
+  comparisonEnabled = false;
+  $('pnFlag').querySelector('button[type=submit]').textContent = STATIC ? 'Save comparison' : 'Flag as BCF';
   if (!mesh) { stopShapeEdit(); return; }
+  const chosen = selected;
+  if (!STATIC) getJSON('api/rebuild-status').then((s) => { if (selected === chosen) chosen.revision = s.revision; }).catch((err) => { if (selected === chosen) $('pnStatus').textContent = err.message; });
   const e = mesh.userData.e;
   $('pnName').textContent = e.name || e.cls;
   const rows = [['Class', e.cls], ['Path', e.id || '— (proxy, not in the model)'], ['GUID', e.guid || '—'], ['Layer', e.layer || '—'], ['Material', e.material || '—'], ['Edited', e.edited ? 'yes (99z)' : 'no']];
@@ -1586,19 +1598,27 @@ $('pnEdit').addEventListener('submit', async (ev) => {
   const e = selected?.mesh.userData.e; if (!e?.id) return;
   const hex = $('pnColor').value, color = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
   $('pnStatus').textContent = 'Writing to 99z-presentation-edits…';
-  try { const r = await post('api/edit', { path: e.id, color, material: $('pnMat').value || undefined }); $('pnStatus').textContent = `Saved in ${r.layer}. Rebuilding…`; pendingSel = e.id; }
+  try { const editing = selected; const r = await post('api/edit', { path: e.id, color, material: $('pnMat').value || undefined, expected_revision: editing.revision }); editing.revision = r.revision; $('pnStatus').textContent = r.state === 'queued' ? 'Saved; queued for rebuild.' : 'Saved; rebuilding the shared model…'; pendingSel = e.id; }
   catch (err) { $('pnStatus').textContent = `Not saved: ${err.message}`; }
 });
 $('pnFlag').addEventListener('submit', async (ev) => {
   ev.preventDefault();
   const e = selected?.mesh.userData.e; if (!e?.id) return;
+  let observation = null;
+  try { if (STATIC && !comparisonEnabled) await prepareComparison(); if (comparisonEnabled) observation = await saveComparison(); }
+  catch (err) { $('pnStatus').textContent=err.message; return; }
   render();
-  const png = canvas.toDataURL('image/png');
+  const png = observation?.frames.blend.png || canvas.toDataURL('image/png');
+  if (STATIC) {
+    const url=URL.createObjectURL(new Blob([JSON.stringify(observation,null,2)+'\n'],{type:'application/json'}));
+    const link=document.createElement('a');link.href=url;link.download=`401-pearl-comparison-${new Date().toISOString().replaceAll(':','-')}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    $('pnStatus').textContent='Comparison saved to your downloads. Share it with your review notes.';return;
+  }
   const dir = new THREE.Vector3(); camera.getWorldDirection(dir);
   // BCF camera in the model frame (undo the house rotation)
   const back = (v) => { const x = v.x * Math.cos(AXIS * DEG) - v.y * Math.sin(AXIS * DEG), y = v.x * Math.sin(AXIS * DEG) + v.y * Math.cos(AXIS * DEG); return [x, y, v.z]; };
   try {
-    const r = await post('api/flag', { path: e.id, title: $('pnTitle').value || undefined, description: (() => { const r = roomOf(selected.mesh); return `Flagged in the ${mode === 'walk' ? 'free walk' : 'presentation'}${r ? ` in ${r.label}${r.apt ? `, ${r.apt}` : ''}` : ''} on ${e.name || e.id}`; })(), camera: { position: back(camera.position), direction: back(dir), up: [0, 0, 1], fov: camera.fov, aspect: camera.aspect }, png, at: lastPick && lastPick.mesh === selected.mesh ? back(lastPick.point) : undefined });
+    const r = await post('api/flag', { path: e.id, title: $('pnTitle').value || undefined, description: (() => { const r = roomOf(selected.mesh); return `Flagged in the ${mode === 'walk' ? 'free walk' : 'presentation'}${r ? ` in ${r.label}${r.apt ? `, ${r.apt}` : ''}` : ''} on ${e.name || e.id}`; })(), camera: { position: back(camera.position), direction: back(dir), up: [0, 0, 1], fov: camera.fov, aspect: camera.aspect }, png, observation, at: lastPick && lastPick.mesh === selected.mesh ? back(lastPick.point) : undefined });
     $('pnStatus').textContent = `Flagged: BCF 3.0 topic ${r.guid.slice(0, 8)} saved in the model's bcf folder.`;
     say(`Flagged “${$('pnTitle').value || r.element}” on ${r.element} · BCF topic ${r.guid.slice(0, 8)} saved`);
     $('pnTitle').value = '';
@@ -1857,10 +1877,11 @@ async function startShapeEdit(mesh) {
   let e;
   try { e = await getJSON(`api/element-profile?path=${encodeURIComponent(path)}`); } catch (err) { $('shVals').innerHTML = `<dt>Not editable</dt><dd>${err.message}</dd>`; return; }
   if (selected?.mesh !== mesh) return; // the selection moved on while reading
+  const revision = e.revision;
   e = { name: e.name || mesh.userData.e.name, normal: e.normal, thickness: e.thickness, profile: { outlines: e.profile.outlines || [], holes: e.profile.holes || [] }, features: e.features || [] };
   e.profile.outlines = e.profile.outlines.map(simplifyLoop); e.profile.holes = e.profile.holes.map(simplifyLoop); e.features.forEach((f) => { f.loop = simplifyLoop(f.loop); });
   const wallLike = /IfcWall|IfcSlab|IfcRoof|IfcCovering/.test(mesh.userData.e.cls || '');
-  shape = { path, name: e.name, e, wallLike, orig: clone(e), group: new THREE.Group(), handles: [], sel: null, drag: null, drawing: null };
+  shape = { path, name: e.name, e, revision, wallLike, orig: clone(e), group: new THREE.Group(), handles: [], sel: null, drag: null, drawing: null };
   overlay.add(shape.group);
   redrawShape();
 }
@@ -1871,12 +1892,15 @@ function stopShapeEdit() {
 $('shReset').addEventListener('click', () => { if (!shape) return; shape.e = clone(shape.orig); shape.sel = null; shape.drawing = null; redrawShape(); });
 $('shSave').addEventListener('click', async () => {
   if (!shape) return;
-  const { path, name, e } = shape;
+  const editing = shape;
+  const { path, name, e } = editing;
   try {
-    await post('api/element-shape', { path, name, normal: e.normal, thickness: e.thickness, profile: e.profile, features: e.features });
+    const saved = await post('api/element-shape', { path, name, normal: e.normal, thickness: e.thickness, profile: e.profile, features: e.features, expected_revision: editing.revision });
+    editing.revision = saved.revision;
+    pendingSel = path;
     say(`Saved ${name} · rebuilding it from your nodes…`);
-    $('pnStatus').textContent = 'Saved to opening-params.json; the element is being rebuilt (about a minute).';
-    shape.orig = clone(e);
+    $('pnStatus').textContent = saved.state === 'queued' ? 'Saved. Waiting for the current rebuild.' : 'Saved. Rebuilding the shared model.';
+    editing.orig = clone(e);
   } catch (err) { $('pnStatus').textContent = `Not saved: ${err.message}`; }
 });
 
@@ -1961,6 +1985,7 @@ function openIssue(f) {
   $('icMeta').textContent = `${f.description || ''}${f.description ? ' · ' : ''}${isNaN(d) ? '' : d.toLocaleString()} · ${f.author || ''} · topic ${f.guid}`;
   $('icShot').hidden = !f.snapshot;
   if (f.snapshot) $('icShot').src = `api/flag-snapshot?guid=${encodeURIComponent(f.guid)}`;
+  $('icCompare').hidden = !f.comparison;
   $('icResolve').textContent = f.status === 'Closed' ? 'Reopen' : 'Resolve';
   $('issueCard').hidden = false;
 }
@@ -2245,6 +2270,7 @@ async function ensureScan(sc) {
     const r = await fetch(sc.url);
     if (!r.ok) throw new Error('not placed yet');
     const buf = await r.arrayBuffer();
+    loadedCaptureHashes[sc.key] = await bufferSha256(buf);
     const n = new Uint32Array(buf, 0, 1)[0];
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(buf, 4, n * 3), 3));
@@ -2383,12 +2409,22 @@ if (window.EventSource && !Q.has('nolive') && !STATIC) {
     const b = JSON.parse(ev.data);
     if (b.id === M.build?.id) return;
     try {
-      const [data, build] = await Promise.all([getJSON(`model.json?b=${b.id}`), getJSON('build.json')]);
+      const [data, build] = await Promise.all([getJSON(`model.json?b=${b.id}`), getJSON(`build.json?b=${b.id}`)]);
+      if (data.source?.sha256 !== build.model_sha256) throw new Error('Model and build revision differ; reload after rebuilding');
       rebuild(data, build);
       builds.push({ id: build.id, at: build.at, edited: data.edited?.length || 0 });
       say('Model updated');
     } catch (err) { console.error('live rebuild failed', err); }
   });
+  es.addEventListener('rebuild-status', (ev) => {
+    const state = JSON.parse(ev.data);
+    const failure = state.failure || state.delivery_failure;
+    if (failure) { $('pnStatus').textContent = `Rebuild failed: ${failure.message}. The last delivered model is retained.`; say('Rebuild failed; your edits are preserved.'); }
+    else if (state.pending) $('pnStatus').textContent = 'Saved. Another revision is queued.';
+    else if (state.active) $('pnStatus').textContent = 'Rebuilding the shared model.';
+    else if (state.last_good) $('pnStatus').textContent = 'Shared model rebuilt.';
+  });
+  getJSON('api/rebuild-status').then((state) => { if (state.failure || state.delivery_failure) say('The previous rebuild failed; saved edits are preserved.'); else if (state.active || state.pending) say('Saved edits are rebuilding.'); }).catch(console.error);
   es.addEventListener('build-error', (ev) => say(`Model build failed: ${JSON.parse(ev.data).message.slice(0, 120)}`));
 }
 
@@ -2401,6 +2437,7 @@ if (Q.has('at')) target = prog = Number(Q.get('at'));
 let last = performance.now();
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (comparisonBusy) { requestAnimationFrame(frame); return; }
   if (mode === 'walk') { if (!REC) stepWalk(dt); } // in recording the hooks drive the walk deterministically
   else {
     if (Math.abs(target - prog) > 2e-4 && !insp.drag) { const k = Math.exp(-dt * 3.0); insp.yaw *= k; insp.pitch *= k; if (Math.abs(insp.yaw) + Math.abs(insp.pitch) < 0.05) insp.yaw = insp.pitch = 0; } // scrolling on: back onto the route
@@ -2424,9 +2461,132 @@ if (!REC) requestAnimationFrame(() => { roll.style.transition = 'width 2.4s cubi
 else roll.style.width = '0vw';
 requestAnimationFrame(frame);
 
+// Save/replay the existing view; no second renderer or model is introduced.
+const compareButton=document.createElement('button');
+compareButton.type='button'; compareButton.className='pill mono'; compareButton.textContent='Compare capture';
+$('pnFlag').appendChild(compareButton);
+if (STATIC) $('pnFlag').style.setProperty('display','grid','important');
+const importButton=document.createElement('button');importButton.type='button';importButton.className='pill mono';importButton.textContent='Open comparison';
+const importInput=document.createElement('input');importInput.type='file';importInput.accept='.json,application/json';importInput.hidden=true;
+$('pnFlag').append(importButton,importInput);
+importButton.addEventListener('click',()=>importInput.click());
+importInput.addEventListener('change',async()=>{
+  try {const file=importInput.files[0];if (!file) return;if (file.size>50000000) throw new Error('Comparison file is too large.');await replayComparison(JSON.parse(await file.text()));$('pnStatus').textContent='Comparison restored.';}
+  catch(err) {$('pnStatus').textContent=err.message;} finally {importInput.value='';}
+});
+const replayButton=document.createElement('button');
+replayButton.type='button'; replayButton.className='pill'; replayButton.id='icCompare'; replayButton.textContent='Replay comparison'; replayButton.hidden=true;
+$('icGo').parentElement.appendChild(replayButton);
+async function currentObservationContext() {
+  const context=await getJSON(STATIC ? 'observation-context.json' : 'api/observation-context');
+  if (context.revision.model_sha256 !== M.build?.model_sha256 || (context.revision.parameter_sha256 ?? null) !== (M.build?.parameter_sha256 ?? null)) throw new Error('The model changed. Reload before saving a comparison.');
+  return context;
+}
+function observationState() {
+  camera.updateMatrixWorld(true);
+  return {mode,progress:prog,target,pausedTour:structuredClone(pausedTour),selectedElement:selected?.mesh.userData.e.id || null,
+    camera:{position:camera.position.toArray(),quaternion:camera.quaternion.toArray(),up:camera.up.toArray(),
+      fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,
+      matrixWorld:camera.matrixWorld.toArray(),matrixWorldInverse:camera.matrixWorldInverse.toArray(),projectionMatrix:camera.projectionMatrix.toArray()},
+    walk:{position:walk.pos.toArray(),floor:walk.floor,yaw:walk.yaw,pitch:walk.pitch,fov:walk.fov,extra:structuredClone(Object.fromEntries(Object.entries(walk).filter(([key])=>!['pos','floor','yaw','pitch','fov'].includes(key))))},heldKeys:[...keys],
+    inspection:{yaw:insp.yaw,pitch:insp.pitch}, layers:{...layers},
+    opacity:{model:CU.uModelOp.value,capture:CU.uScanOp.value},
+    visibleElements:M.meshes.filter((m)=>m.visible).map((m)=>m.userData.e.id),contextVisible:ctxGroup.visible,
+    doorAngles:Object.fromEntries(Object.entries(M.doors || {}).map(([key,d])=>[key,d.pivot.rotation.z])),
+    clipping:{cut:U.uCut.value,phaseCuts:[...U.uPhaseCut.value],all:U.uAll.value,
+      reveal1:[...U.uRev1.value],reveal2:[...U.uRev2.value],existing:[...U.uExist.value]}};
+}
+function applyObservationState(state) {
+  mode=state.mode; prog=state.progress; target=state.target; pausedTour=structuredClone(state.pausedTour);
+  insp.yaw=state.inspection.yaw; insp.pitch=state.inspection.pitch;
+  walk.pos.fromArray(state.walk.position); Object.assign(walk,state.walk.extra,{floor:state.walk.floor,yaw:state.walk.yaw,pitch:state.walk.pitch,fov:state.walk.fov});keys.clear();for(const key of state.heldKeys) keys.add(key);
+  Object.assign(layers,state.layers); CU.uModelOp.value=state.opacity.model; CU.uScanOp.value=state.opacity.capture;
+  applyLayers(); CU.uSplat.value=splat && layers.splat ? 1 : 0;
+  if (splat) splat.opacity=state.opacity.capture;
+  if (interior) {interior.opacity=state.opacity.capture;interior.visible=!!layers.scan;}
+  const visible=new Set(state.visibleElements);
+  for (const mesh of M.meshes) mesh.visible=visible.has(mesh.userData.e.id);
+  ctxGroup.visible=state.contextVisible;
+  for (const [key,angle] of Object.entries(state.doorAngles)) if (M.doors[key]) M.doors[key].pivot.rotation.z=angle;
+  U.uCut.value=state.clipping.cut;U.uPhaseCut.value.set(state.clipping.phaseCuts);U.uAll.value=state.clipping.all;
+  U.uRev1.value.set(state.clipping.reveal1);U.uRev2.value.set(state.clipping.reveal2);U.uExist.value.set(state.clipping.existing);
+  const c=state.camera; camera.position.fromArray(c.position);camera.quaternion.fromArray(c.quaternion);camera.up.fromArray(c.up);
+  Object.assign(camera,{fov:c.fov,aspect:c.aspect,near:c.near,far:c.far});camera.updateProjectionMatrix();camera.updateMatrixWorld(true);
+  document.body.classList.toggle('walking',mode==='walk');walkHud.hidden=mode!=='walk';$('resumePill').hidden=mode!=='walk';
+  for (const [id,key] of [['lyModel','model'],['lySplat','splat'],['lyScan','scan'],...SCANS.map((sc)=>['ly_'+sc.key,sc.key])]) if ($(id)) $(id).checked=!!layers[key];
+  for (const [id,value] of [['opModel',state.opacity.model],['opScan',state.opacity.capture]]) {$(id).value=String(value*100);$(`${id}V`).textContent=`${Math.round(value*100)}%`;const scrub=document.querySelector(`.scrub[data-for="${id}"] b`);if(scrub)scrub.textContent=`${Math.round(value*100)}%`;}
+  if (state.selectedElement && selected?.mesh.userData.e.id!==state.selectedElement) select(meshOfPath(state.selectedElement));
+  if (mode==='walk') lenis?.stop();else lenis?.start();
+  syncSplatPill();render();
+}
+const observationAdapter={read:observationState,apply:applyObservationState,
+  settle:()=>new Promise((resolve)=>requestAnimationFrame(()=>requestAnimationFrame(resolve))),
+  snapshot:()=>{render();return canvas.toDataURL('image/png');}};
+async function prepareComparison() {
+  if (!selected?.mesh.userData.e.id) throw new Error('Choose an element first.');
+  if (!Object.entries(layers).some(([k,v])=>k!=='model' && v)) {
+    const room=roomOf(selected.mesh);const phase=selected.mesh.userData.phase;
+    const key=phase===3 || (room?.floorZ ?? M.FFL)>=M.storeys.upper.elevation-.5 ? 'polycamUpper' : (room?.floorZ ?? M.FFL)<M.FFL-.5 ? 'kiriBasement' : room?.apt==='Apartment A' ? 'lidarMain' : 'polycamMain';
+    const capture=SCANS.find((sc)=>sc.key===key);layers[key]=true;await ensureScan(capture);
+    if (!scanObj[key]) throw new Error('Choose an available capture from Layers.');
+  }
+  CU.uModelOp.value=.5;CU.uScanOp.value=.5;$('opModel').value='50';$('opScan').value='50';
+  for (const id of ['opModel','opScan']) {$(`${id}V`).textContent='50%';const scrub=document.querySelector(`.scrub[data-for="${id}"] b`);if(scrub)scrub.textContent='50%';}
+  applyLayers();render();comparisonEnabled=true;$('pnFlag').querySelector('button[type=submit]').textContent='Save comparison';
+  const sources=SCANS.filter((sc)=>layers[sc.key]).map((sc)=>sc.label);if(layers.splat)sources.push('Drone scan');if(layers.scan)sources.push('Interior Gaussian capture');
+  $('pnStatus').textContent=`${sources.join(' · ')}. Adjust the view and blend, describe what is wrong, then save the comparison.`;
+}
+async function saveComparison() {
+  if (comparisonBusy) throw new Error('A comparison is already being saved.');
+  if (shape) throw new Error('Close the shape editor before saving a comparison. Your edits stay in the editor.');
+  comparisonBusy=true;
+  try {
+    const context=await currentObservationContext();
+    const captures=context.captures.filter((c)=>layers[c.key]).map((c)=>{
+      if (loadedCaptureHashes[c.key]!==c.sha256) throw new Error('The capture changed or is still loading. Reload or wait before saving.');
+      const object=c.key==='splat'?splat:c.key==='scan'?interior:scanObj[c.key];
+      object.updateWorldMatrix(true,false);
+      return {...c,visible:object.visible,instance_matrix_world:object.matrixWorld.toArray()};
+    });
+    const state=observationState();const e=selected?.mesh.userData.e;const room=selected && roomOf(selected.mesh);
+    const observation=makeObservation({context,state,captures,element:{path:e.id,global_id:e.guid,name:e.name},room:room?{id:room.id,name:room.name || room.label}:null,title:$('pnTitle').value});
+    Object.assign(observation,await captureTriplet(observationAdapter));
+    // Detect model/capture publication during screenshot capture before persistence.
+    const after=await currentObservationContext();
+    await replayObservation(observation,after,{read:observationState,apply:()=>{}});
+    return observation;
+  } finally {comparisonBusy=false;}
+}
+async function replayComparison(observation) {
+  const context=await currentObservationContext();
+  // Stale revisions are checked before loading captures or changing the view.
+  await replayObservation(observation,context,{read:()=>null,apply:()=>{}});
+  const previous=observationState();
+  comparisonBusy=true;
+  try {
+    for (const capture of observation.captures) {
+      const sc=SCANS.find((c)=>c.key===capture.key);if (sc) await ensureScan(sc);
+      if (loadedCaptureHashes[capture.key]!==capture.sha256) throw new Error('Reload to use the capture saved with this comparison.');
+      const object=capture.key==='splat'?splat:capture.key==='scan'?interior:scanObj[capture.key];object.updateWorldMatrix(true,false);
+      if (object.matrixWorld.toArray().some((v,i)=>Math.abs(v-capture.instance_matrix_world[i])>1e-9)) throw new Error('The capture placement differs from the saved comparison.');
+    }
+    await replayObservation(observation,context,observationAdapter);
+    // Continue walking from this precise camera rather than re-entering the old tour.
+    if (mode==='walk') {walk.pos.fromArray(observation.state.camera.position);walk.fov=observation.state.camera.fov;}
+    comparisonEnabled=true;$('pnFlag').querySelector('button[type=submit]').textContent='Save comparison';
+    return observationState();
+  } catch(err) {applyObservationState(previous);throw err;} finally {comparisonBusy=false;}
+}
+compareButton.addEventListener('click',()=>prepareComparison().catch((err)=>$('pnStatus').textContent=err.message));
+replayButton.addEventListener('click',async()=>{
+  try {const observation=await getJSON(`api/flag-observation?guid=${encodeURIComponent(cardFlag.guid)}`);await replayComparison(observation);$('issueCard').hidden=true;say('Comparison restored.');}
+  catch (err) {say(err.message);}
+});
+
 // deterministic hooks for recording and checks
 window.__P401 = {
   ready: true,
+  observation:{state:observationState,prepare:prepareComparison,capture:saveComparison,replay:replayComparison,context:currentObservationContext},
   axisDeg: AXIS, get ffl() { return M.FFL; }, get build() { return M.build; }, builds,
   get stops() { return dossiers.map((d) => ({ key: d.st.key, n: d.n, via: !!d.via, h0: +d.shot.h0.toFixed(1), h1: +d.shot.h1.toFixed(1), p: +((d.shot.h0 + d.shot.h1) / 2 / TOTAL).toFixed(4), rooms: d.st.rooms.map((r) => r.name) })); },
   get shots() { return shots.map((q) => ({ id: q.id, h0: +q.h0.toFixed(1), h1: +q.h1.toFixed(1), g1: +q.g1.toFixed(1), p0: +(q.h0 / TOTAL).toFixed(4) })); },
