@@ -19,6 +19,7 @@ import { Post } from './post.js';
 import { layout, sample, channel, advanceProgress } from './timeline.js';
 import { buildRoomTransfer, directedPose } from './room-transfer.js';
 import { createGeometryClearance } from './geometry-clearance.js';
+import { applyReviewedRoomHeading } from './room-headings.js';
 import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 import { makeObservation, captureTriplet, replayObservation, comparisonCapture } from './observations.mjs';
 
@@ -997,7 +998,7 @@ function qualifiedStop(r,n) {
 function floorCenterFor(key){const room=M.spaces.find(r=>r.name===key),peers=room?M.spaces.filter(r=>Math.abs(r.floorZ-room.floorZ)<.3):M.spaces;return [(Math.min(...peers.map(r=>r.bbox[0]))+Math.max(...peers.map(r=>r.bbox[2])))/2,(Math.min(...peers.map(r=>r.bbox[1]))+Math.max(...peers.map(r=>r.bbox[3])))/2];}
 function roomPose(st) {
   const q=st.qualification,r=st.rooms[0], pos=q.eye||[r.cu,r.cv,flightAltitude()];
-  return directedPose(pos,90,q.status==='SAFE_ROOM'?0:89,q.status==='SAFE_ROOM'?72:32,{roomKey:st.key,cut:q.status==='SAFE_ROOM'?OFF():r.floorZ+1.2});
+  return applyReviewedRoomHeading(directedPose(pos,90,q.status==='SAFE_ROOM'?0:89,q.status==='SAFE_ROOM'?72:32,{roomKey:st.key,cut:q.status==='SAFE_ROOM'?OFF():r.floorZ+1.2}),r.s.id,q.status);
 }
 function buildTimeline() {
   shots=[]; dossiers=[]; revWin=[]; routeRows=[]; clearance.refresh();
