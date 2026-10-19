@@ -806,6 +806,7 @@ const splatReady = (async () => {
     spark.layers.set(1);
     scene.add(spark);
     splat = new SplatMesh({ url: 'splats/exterior_clean_v2.spz' });
+    splat.opacity = Number($('opScan').value) / 100;
     interior = new SplatMesh({ url: 'splats/interior_ground_all.spz' });
     for (const s of [splat, interior]) { s.layers.set(1); world.add(s); }
     interior.visible = false;
@@ -2317,6 +2318,7 @@ for (const [id, u] of [['opModel', 'uModelOp'], ['opScan', 'uScanOp']]) {
 $('opScan').addEventListener('input', (e) => {
   const v = e.target.value / 100;
   layers.scan = v > 0; $('lyScan').checked = layers.scan;
+  if (splat) splat.opacity = v;
   if (interior) { interior.opacity = v; interior.visible = layers.scan; }
   applyLayers(); render();
 });
