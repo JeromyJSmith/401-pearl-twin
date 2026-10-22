@@ -25333,84 +25333,84 @@
               6.715343
             ],
             [
-              5.049618,
-              -4.064714,
-              5.290642
+              5.024789,
+              -4.028055,
+              5.384141
             ],
             [
-              4.445848,
-              -1.755842,
-              5.987036
+              4.466289,
+              -1.892303,
+              6.205134
             ],
             [
-              4.474872,
-              -1.748252,
-              5.987036
+              4.495313,
+              -1.884713,
+              6.205134
             ],
             [
-              5.078643,
-              -4.057124,
-              5.290642
+              5.053813,
+              -4.020465,
+              5.384141
             ],
             [
-              5.049618,
-              -4.064714,
-              5.090642
+              5.024789,
+              -4.028055,
+              5.184141
             ],
             [
-              4.445848,
-              -1.755842,
-              5.787036
+              4.466289,
+              -1.892303,
+              6.005134
             ],
             [
-              4.474872,
-              -1.748252,
-              5.787036
+              4.495313,
+              -1.884713,
+              6.005134
             ],
             [
-              5.078643,
-              -4.057124,
-              5.090642
+              5.053813,
+              -4.020465,
+              5.184141
             ],
             [
-              4.445848,
-              -1.755842,
-              5.987036
+              4.466289,
+              -1.892303,
+              6.205134
             ],
             [
-              3.931136,
-              0.212462,
-              5.351774
+              3.911918,
+              0.227663,
+              5.442493
             ],
             [
-              3.96016,
-              0.220052,
-              5.351774
+              3.940942,
+              0.235253,
+              5.442493
             ],
             [
-              4.474872,
-              -1.748252,
-              5.987036
+              4.495313,
+              -1.884713,
+              6.205134
             ],
             [
-              4.445848,
-              -1.755842,
-              5.787036
+              4.466289,
+              -1.892303,
+              6.005134
             ],
             [
-              3.931136,
-              0.212462,
-              5.151774
+              3.911918,
+              0.227663,
+              5.242493
             ],
             [
-              3.96016,
-              0.220052,
-              5.151774
+              3.940942,
+              0.235253,
+              5.242493
             ],
             [
-              4.474872,
-              -1.748252,
-              5.787036
+              4.495313,
+              -1.884713,
+              6.005134
             ]
           ],
           "faceVertexIndices": [
@@ -25710,19 +25710,19 @@
         "bsi::ifc::v5a::Pset_CoveringCommon::Status": "EXISTING",
         "bsi::ifc::v5a::Pset_CoveringCommon::Reference": "Gable rake boards (dark blue-gray)",
         "bsi::ifc::v5a::ePset_MARPA_IfcxElement::BaseGlobalId": "1gENFfJ05HZxKDPgyCU3Sc",
-        "bsi::ifc::v5a::ePset_MARPA_IfcxElement::SolidStepSha256": "768b961f2cb43d92fcb93b8d446c8b78796d2e884d1888d6a04440eb2bdbc5ff",
+        "bsi::ifc::v5a::ePset_MARPA_IfcxElement::SolidStepSha256": "8aee1c6312038f15141dec957f4713b59c7ce7aa91d28d9dd01d189bd2dbc80c",
         "bsi::ifc::v5a::ePset_MARPA_IfcxElement::SourceLayer": "103-fix33-roof-resolve",
-        "bsi::ifc::v5a::ePset_MARPA_IfcxElement::FixId": "fix33-roof-resolve-20261018",
+        "bsi::ifc::v5a::ePset_MARPA_IfcxElement::FixId": "fix33-roof-resolve-20261018+east-rake-align-20261022",
         "bsi::ifc::v5a::ePset_MARPA_IfcxElement::ScanSource": "f003_8k_local_v2_step28000_clean_v2.ply (RANSAC 4 cm + SVD on 10 cm top-surface points, house theta 14.6547 deg)",
         "bsi::ifc::v5a::ePset_MARPA_IfcxElement::IFCXPath": "11821ba2-0f21-58dd-85d2-be491393ff58",
         "marpa::model": {
           "global_id": "1gENFfJ05HZxKDPgyCU3Sc",
           "source_layer": "103-fix33-roof-resolve",
-          "fix_id": "fix33-roof-resolve-20261018",
+          "fix_id": "fix33-roof-resolve-20261018+east-rake-align-20261022",
           "scan_source": "f003_8k_local_v2_step28000_clean_v2.ply (RANSAC 4 cm + SVD on 10 cm top-surface points, house theta 14.6547 deg)",
           "base_file": "f003_8k_local_v2_step28000_clean_v2.ply",
           "base_sha256": "0349d06c0e9e8a5c75e88e9ff81e3418bdf66ec08078daabdaf2fa5c176303d1",
-          "solid_step_sha256": "768b961f2cb43d92fcb93b8d446c8b78796d2e884d1888d6a04440eb2bdbc5ff"
+          "solid_step_sha256": "8aee1c6312038f15141dec957f4713b59c7ce7aa91d28d9dd01d189bd2dbc80c"
         },
         "bsi::ifc::system::partofsystem": [
           {
