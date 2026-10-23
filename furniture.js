@@ -160,6 +160,8 @@ const LAYOUT = {
     piece(r, 'kitB', 1.285, 1.12, 2.19, 0.6, [0, -1], { free: true, sinkAt: 1.27 - 1.285, uppers: [[-1.095, -0.53], [0.55, 1.095]], shelves: [-0.53, 0.55], round: 1 }),
     piece(r, 'kitB', 2.515, -0.97, 1.89, 0.6, [0, 1], { free: true, cooktopAt: 2.52 - 2.515 }),
     piece(r, 'kitB', -0.08, -0.74, 1.06, 0.58, [1, 0], { free: true }),
+    // the white ceiling fan with its light bowl, as captured (the splat looking up: centre u 1.52, v 0.08, blades 1.3 m)
+    piece(r, 'fan', 1.52, 0.08, 1.3, 1.3, [0, -1], { free: true, ceil: r.height }),
   ],
   'AptB - Nook': (r) => [
     piece(r, 'plank', r.cu, r.cv, r.w, r.d, [0, -1], { poly: r.poly, free: true }),

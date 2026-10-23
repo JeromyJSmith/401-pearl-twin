@@ -164,8 +164,8 @@ float revealAt(vec3 wp, vec3 nw, float phase, out int idx, out float pass) {
 // show siding outside and plaster inside (the room-id map decides which face is which); floors show wood on top and a
 // ceiling below; the foundation's top is the porch deck. Surface detail is procedural (lap lines, shingle courses,
 // standing seams, stone) with the CC0 oak floor and plaster textures.
-const SLOT = { plaster: 0, siding: 1, roof: 2, fascia: 3, stone: 4, floor: 5, concrete: 6, door: 7, stair: 8, furniture: 9, partition: 10, valance: 11, deck: 12, ceiling: 13, membrane: 14, counter: 15, glass: 16 };
-const NS = 17;
+const SLOT = { plaster: 0, siding: 1, roof: 2, fascia: 3, stone: 4, floor: 5, concrete: 6, door: 7, stair: 8, furniture: 9, partition: 10, valance: 11, deck: 12, ceiling: 13, membrane: 14, counter: 15, glass: 16, porch: 17, bluepaint: 18 };
+const NS = 19;
 function slotOf(e) {
   const m = (e.material || '').toLowerCase(), c = e.cls;
   if (c === 'IfcDoor') return SLOT.door;
@@ -174,6 +174,8 @@ function slotOf(e) {
   if (/clapboard|exterior wall|siding/.test(m)) return SLOT.siding;
   if (/plaster|party wall|half wall/.test(m)) return SLOT.plaster;
   if (/wood stud partition/.test(m)) return SLOT.partition;
+  if (/porch slab/.test(m)) return SLOT.porch; // owner 2026-10-23: a thick concrete slab, glossy blue-grey paint
+  if (/paint on concrete \(blue\)/.test(m)) return SLOT.bluepaint; // the porch slab's painted face
   if (/foundation|stone/.test(m)) return SLOT.stone;
   if (/shingle|standing seam|metal roof/.test(m) || (c === 'IfcRoof' && !/membrane/.test(m))) return SLOT.roof;
   if (/membrane/.test(m)) return SLOT.membrane;
@@ -187,13 +189,14 @@ function slotOf(e) {
   return SLOT.fascia;
 }
 const hexes = (list) => list.map((h) => new THREE.Color(h)); // sRGB hex -> linear
-// slot order: plaster, siding, roof, fascia, stone, floor, concrete, door, stair, furniture, partition, valance, deck, ceiling, membrane, counter
+// slot order: plaster, siding, roof, fascia, stone, floor, concrete, door, stair, furniture, partition, valance, deck, ceiling, membrane, counter,
+// glass, porch (the slab's paint, from the owner's photo), bluepaint (its face)
 const PALETTES = {
-  A: hexes(['#ebe7df', '#e6e4de', '#a9adb0', '#24365a', '#b9a58c', '#a87b52', '#8e9192', '#efeeea', '#c9c7c2', '#ffffff', '#c9c7c2', '#f3f2ee', '#8e9192', '#f1efea', '#b4b6b6', '#9b7350', '#e4ecef']),
-  B: hexes(['#f1ede4', '#ece5d6', '#3b3e42', '#1f1f1f', '#b98a5c', '#b4895c', '#a2a3a1', '#7b5a3e', '#b4895c', '#ffffff', '#d9d3c8', '#f4f1ea', '#7b5a3e', '#f6f3ec', '#4a4d51', '#b4895c', '#b9c8cf']),
-  C: hexes(['#f1ede4', '#2b302c', '#1d1f21', '#1d1f21', '#b98a5c', '#9c6b3f', '#a2a3a1', '#9c6b3f', '#9c6b3f', '#ffffff', '#d9d3c8', '#efeeea', '#6e5038', '#f6f3ec', '#26292c', '#9c6b3f', '#b9c8cf']),
+  A: hexes(['#ebe7df', '#e6e4de', '#a9adb0', '#24365a', '#b9a58c', '#a87b52', '#8e9192', '#efeeea', '#c9c7c2', '#ffffff', '#c9c7c2', '#f3f2ee', '#8e9192', '#f1efea', '#b4b6b6', '#9b7350', '#e4ecef', '#8d929f', '#3f6c8f']),
+  B: hexes(['#f1ede4', '#ece5d6', '#3b3e42', '#1f1f1f', '#b98a5c', '#b4895c', '#a2a3a1', '#7b5a3e', '#b4895c', '#ffffff', '#d9d3c8', '#f4f1ea', '#7b5a3e', '#f6f3ec', '#4a4d51', '#b4895c', '#b9c8cf', '#8d929f', '#3f6c8f']),
+  C: hexes(['#f1ede4', '#2b302c', '#1d1f21', '#1d1f21', '#b98a5c', '#9c6b3f', '#a2a3a1', '#9c6b3f', '#9c6b3f', '#ffffff', '#d9d3c8', '#efeeea', '#6e5038', '#f6f3ec', '#26292c', '#9c6b3f', '#b9c8cf', '#8d929f', '#3f6c8f']),
 };
-const ROUGH = [0.92, 0.8, 0.6, 0.5, 0.95, 0.55, 0.85, 0.45, 0.6, 0.7, 0.9, 0.7, 0.75, 0.95, 0.85, 0.4, 0.05];
+const ROUGH = [0.92, 0.8, 0.6, 0.5, 0.95, 0.55, 0.85, 0.45, 0.6, 0.7, 0.9, 0.7, 0.75, 0.95, 0.85, 0.4, 0.05, 0.22, 0.3];
 // the story plays the house as it is (owner 2026-10-23): direction A unless ?ext= asks for a design direction
 const STORY = true; // the story page: no element file, flags or free walk
 const EXT = PALETTES[(Q.get('ext') || 'A').toUpperCase()] ? (Q.get('ext') || 'A').toUpperCase() : 'A';
@@ -230,6 +233,7 @@ vec3 slotFinish(int s, vec3 wp, vec3 n, bool proposed, out float rough) {
   } else if (s == ${SLOT.floor} || s == ${SLOT.deck} || s == ${SLOT.stair} && proposed) {
     vec3 w = texture(uWood, wp.xy / 2.2).rgb; base = w * mix(vec3(1.05), base * 1.6, 0.3); rough = texture(uWoodR, wp.xy / 2.2).g;
   } else if (s == ${SLOT.concrete}) { base *= 0.9 + 0.12 * n2(wp.xy * 3.0) + 0.04 * n2(wp.xy * 40.0); }
+  else if (s == ${SLOT.porch} || s == ${SLOT.bluepaint}) { base *= 0.95 + 0.07 * n2(wp.xy * 1.3) - 0.03 * n2(wp.xy * 25.0); } // painted concrete: brush and wear
   else if (s == ${SLOT.plaster} || s == ${SLOT.ceiling}) { base *= 0.96 + 0.04 * n2(hz * 9.0); }
   return base;
 }`;
@@ -260,7 +264,7 @@ function cutMaterial(params) {
     if (s == ${SLOT.siding}) { int ri = roomAt(vWp, nW); if (ri >= 0) s = ${SLOT.plaster}; }      // inside face of an exterior wall
     if (s == ${SLOT.floor} && nW.z < -0.5) s = ${SLOT.ceiling};
     if ((s == ${SLOT.roof} || s == ${SLOT.membrane}) && roomAt(vWp, nW) >= 0) s = ${SLOT.ceiling};       // a roof seen from inside is a ceiling                                        // underside of a floor
-    if (s == ${SLOT.stone} && nW.z > 0.5) s = ${SLOT.deck};                                            // top of the foundation: porch deck
+    if (s == ${SLOT.stone} && nW.z > 0.5) s = ${SLOT.concrete};                                        // top of the foundation (the porch is its own slab)
     gRough = uRough[s];
     if (vEdit > 0.5) diffuseColor.rgb = vCol;
     else diffuseColor.rgb = slotFinish(s, vWp, nW, gPass > 1.5, gRough);
@@ -1458,7 +1462,9 @@ function applyModelUniforms() {
   CU.tAnn.value = M.ann; CU.tLblA.value = M.lblA; CU.tLblB.value = M.lblB;
   CU.uAnnMin.value.set(...M.sheetB.min); CU.uAnnSize.value.set(...M.sheetB.size);
   CU.uFFL.value = M.FFL; CU.uFFL2.value = M.storeys.upper?.elevation ?? 99;
-  ground.position.set(M.center.x, M.center.y, M.FFL - 0.012);
+  // the ground sheet at the site's grade: the drone splat puts the ground in front of the porch 0.40 m under the main
+  // floor, and the porch slab (top 0.18 m under it, owner 2026-10-23) must stand clear of the sheet
+  ground.position.set(M.center.x, M.center.y, M.FFL - 0.40);
   // sun: elevation 32°, late afternoon from the west-south-west (reference "warm" preset: #ffd9a8)
   { const el = 32 * DEG, d = new THREE.Vector2(-0.88, -0.47).normalize(); sun.position.set(M.center.x + 140 * Math.cos(el) * d.x, M.center.y + 140 * Math.cos(el) * d.y, M.center.z + 140 * Math.sin(el)); }
   sun.target.position.copy(M.center);
