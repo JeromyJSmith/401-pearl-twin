@@ -16,11 +16,12 @@ const KIT = {
   barstool: [0.48, 0.48, 0.75, 0x5c5248], cab: [1.0, 0.62, 0.92, 0x2e4440], sinkrun: [1.9, 0.62, 0.92, 0x2e4440],
   range: [0.91, 0.74, 0.92, 0xbfc3c5], bed2: [1.6, 2.1, 1.15, 0xd9d2c4], night2: [0.5, 0.4, 0.55, 0x5b3b26],
   dresser: [1.14, 0.49, 1.88, 0x8a6a4a], vanity2: [0.75, 0.46, 0.85, 0x5b3b26], showerkit: [1.0, 0.12, 2.1, 0xece8e1],
-  kitB: [1.0, 0.6, 0.92, 0x1f2b3d], doorleaf: [0.9, 0.045, 2.03, 0x4a6872], builtin: [0.88, 0.22, 2.04, 0xf2f0ea], minisplit: [0.8, 0.22, 0.3, 0xf4f4f2],
+  kitB: [1.0, 0.6, 0.92, 0x1f2b3d], nicheshelf: [0.83, 0.09, 1.9, 0xf2f0ea], doorleaf: [0.9, 0.045, 2.03, 0x4a6872], builtin: [0.88, 0.22, 2.04, 0xf2f0ea], minisplit: [0.8, 0.22, 0.3, 0xf4f4f2],
   fan: [1.3, 1.3, 0.3, 0xf4f4f2], heater: [0.5, 0.09, 0.62, 0xf4f4f2], curtain: [1.1, 0.06, 2.3, 0xf3f0ea], plank: [1, 1, 0.008, 0x8a7b6a],
   bistro: [0.75, 0.75, 0.74, 0x5b3b26],
   lounge: [1.0, 1.19, 1.17, 0x7d6f5f], marble: [1, 1, 0.008, 0xf1f2f3], tub: [1.7, 0.8, 0.6, 0xf4f3ef],
   laundry: [1.3, 0.66, 0.92, 0xeeeeec], wetbar: [1.5, 0.58, 0.92, 0x2e4440], art: [0.59, 0.03, 0.84, 0x8a6a4a], sidetable: [0.55, 0.45, 0.55, 0x8a6a4a], plant: [0.59, 0.63, 1.35, 0x557a46], fridge2: [0.86, 0.62, 2.13, 0xbfc3c5], pocketdoor: [0.76, 0.035, 2.0, 0xf1eee8],
+  toilet2: [0.42, 0.7, 0.81, 0xf6f5f1], cornersink: [0.85, 0.42, 0.85, 0xf2f0ea], pantryshelf: [1.5, 0.3, 2.12, 0xc08f58],
 };
 // pieces hung on the wall: centre height above the floor (the TV's bottom edge about 0.94 m up, clear of the credenza)
 const MOUNT = { tv: 1.35, art: 1.5 };
@@ -72,6 +73,8 @@ const LAYOUT = {
       piece(r, 'credenza', u1 - 0.03 - 0.19, sv, 0.38, 1.8, [-1, 0]),
       piece(r, 'tv', u1 - 0.06, sv, 0.06, 1.42, [-1, 0], { free: true }),
       ...[0.55, 1.25, 1.95].map((k) => piece(r, 'barstool', u1 - k, v1 - 0.17, 0.48, 0.48, [0, 1], { free: true })),
+      // the three shelves of the arched niche in the west wall (model layer 150: v -2.43..-1.60, 9 cm deep, room face u -5.711)
+      piece(r, 'nicheshelf', -5.711 - 0.045, -2.015, 0.09, 0.83, [1, 0], { free: true, shelves: [0.908, 1.30, 1.694] }),
     ];
   },
   // Apartment A kitchen (owner 2026-10-23: "the kitchen is where the food is cooked"; no table). The north wall: base
@@ -92,8 +95,18 @@ const LAYOUT = {
       // the pantry's 30-inch pocket door in wall 06 (doorway v 3.62..4.38, opening-params.json, owner 2026-10-23),
       // slid almost all the way into its pocket: only the leading edge with its pull shows
       piece(r, 'pocketdoor', -2.505, 4.38 - 0.15 + 0.38, 0.035, 0.76, [-1, 0], { free: true }),
+      // shelves in the flat-headed recess in the east wall beside the range (model layer 150, kitchen-east-shelf-niche:
+      // v 1.92..2.45, 8 cm deep from the face at u -2.31, sill 0.66 m and head 2.31 m above the floor)
+      piece(r, 'nicheshelf', -2.31 + 0.04, 2.185, 0.08, 0.53, [-1, 0], { free: true, shelves: [1.07, 1.48, 1.89] }),
     ];
   },
+  // the pantry (owner 2026-10-23: L-shaped shelving along the walls as you walk in, more shelving than the one small
+  // unit): oak boards on the east wall the whole length of the room, returning along the north wall; the floor by the
+  // doorway in wall 06 (v 3.62..4.38) stays clear. Faces: wall 06 u -2.44, wall 10 u -1.66, north v 5.21, south v 3.64
+  'AptA - Pantry': (r) => [
+    piece(r, 'pantryshelf', -1.66 - 0.15, (3.66 + 5.19) / 2, 0.3, 1.53, [-1, 0], { free: true, seed: 5 }),
+    piece(r, 'pantryshelf', (-2.42 - 1.96) / 2, 5.21 - 0.15, 0.46, 0.3, [0, -1], { free: true, seed: 9 }),
+  ],
   // the upper floor (owner 2026-10-23, checkpoint 3): attic rooms under the main gable, flat ceilings at about 2.2 m.
   // Each bedroom: an upholstered bed with its head on a wall, nightstands with lamps where there is room, a wool rug.
   // Room 1 is the upstairs bathroom (owner 2026-10-23): a freestanding tub in the south-east corner against the hall
@@ -160,6 +173,21 @@ const LAYOUT = {
   'AptB - Shower Area': (r) => [piece(r, 'marble', r.cu, r.cv, r.w, r.d, [0, -1], { poly: r.poly, free: true, tex: 'hex' }), piece(r, 'showerkit', -0.5, 5.37 - 0.03 - 0.06, 1.9, 0.12, [0, -1], { free: true })],
   'AptB - Toilet Area': (r) => [piece(r, 'marble', r.cu, r.cv, r.w, r.d, [0, -1], { poly: r.poly, free: true, tex: 'hex' })],
   'AptB - Bathroom': () => [],
+  // Apartment A's bathroom (owner 2026-10-23), one room over the model's Bathroom, Shower Area and Toilet Area spaces:
+  // the toilet in the south-west corner with its back on wall 04, a corner vanity in the north-east corner, and the door
+  // down to the basement in wall 04's doorway (u -1.09..-0.51, opening-params.json), shut. No shower: the doorway in from
+  // the living area is in the west wall's middle, where the model's shower area is. Faces: west u -2.16, east u -0.52,
+  // south v -2.62, north v -0.80
+  'AptA - Bathroom': (r) => [
+    piece(r, 'toilet2', -1.78, -2.62 + 0.35, 0.42, 0.7, [0, 1], { free: true }),
+    piece(r, 'cornersink', -0.52 - 0.3, -0.80 - 0.3, 0.85, 0.85, [-1, -1], { free: true, leg: 0.6 }),
+    piece(r, 'doorleaf', -0.8, -2.69, 0.58, 0.04, [0, 1], { free: true, solid: true, color: 0xf2f0ea }),
+  ],
+  'AptA - Shower Area': () => [],
+  // the entry stays clear: the front door hangs on its east jamb and swings in along the east wall (owner 2026-10-23),
+  // and the west side is the arch to the front room
+  'AptA - Entry': () => [],
+  'AptA - Toilet Area': () => [],
   // the refrigerator nook (it opens west into the kitchen): one built-in column, floor to ceiling, filling the nook
   'AptA - Refrigerator': (r) => {
     const [u0, v0, u1, v1] = r.bbox;

@@ -443,7 +443,7 @@ const KIND_MODEL = { sofa: 'sofa_02', coffee: 'modern_coffee_table_01', chair: '
 // owner 2026-10-23: some colour in the living area; Sofa_01's cream fabric (one material, legs included) dyed a deep sage
 // model elements a staged piece replaces in the story: Apartment A's refrigerator (owner 2026-10-23: a built-in that fills the nook)
 // and Apartment B's kitchen runs, sink, range and bookshelf, restyled from its 360 capture (staged at the same extents)
-const STAGED_OVER = /^Apartment A refrigerator$|^Apartment B kitchen |^Apartment B range|^Apartment B inset bookshelf|^S-D2 Front east door|^S-D2 door glazing/;
+const STAGED_OVER = /^Apartment A refrigerator$|^Apartment B kitchen (?!flat ceiling)|^Apartment B range|^Apartment B inset bookshelf|^S-D2 Front east door|^S-D2 door glazing/;
 const MODEL_TINT = { Sofa_01: 0x7f9f97 };
 // decor added next to a kind: [model, offset along the piece's width, offset forward, z on top of the piece (1) or floor (0)]
 const KIND_DECOR = { coffee: [['ceramic_vase_01', 0.25, 0, 1], ['book_encyclopedia_set_01', -0.2, 0, 1]], sofa: [['throw_pillows_01', 0, 0.05, 0.45], ['potted_plant_01', 1.35, 0.15, 0]], sofa3: [['throw_pillows_01', 0, 0.05, 0.45], ['potted_plant_01', -1.15, 0.12, 0]],
@@ -817,14 +817,77 @@ const PROC = {
     const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.24, 0.025, 30), PMAT.iron); foot.rotation.x = Math.PI / 2; foot.position.z = 0.013; g.add(foot);
     return g;
   },
-  // a painted half-glass door leaf (pc.color): two stacked frosted lites over a cross-braced panel, a round knob
+  // a painted half-glass door leaf (pc.color): two stacked frosted lites over a cross-braced panel, a round knob;
+  // pc.solid: a plain two-panel leaf (the bathroom's door down to the basement)
   doorleaf: (w, d, pc) => {
     const g = new THREE.Group(), paint = new THREE.MeshStandardMaterial({ color: pc.color ?? 0x4a6872, roughness: 0.45 }), h = 2.03;
     box(g, paint, w, d, h, 0, 0, h / 2);
+    if (pc.solid) {
+      for (const y of [-d / 2 - 0.003, d / 2 + 0.003]) for (const [z, ph] of [[0.55, 0.8], [1.5, 0.8]]) {
+        for (const s of [-1, 1]) { box(g, PMAT.groove, 0.006, 0.004, ph, s * (w / 2 - 0.12), y, z); box(g, PMAT.groove, w - 0.24, 0.004, 0.006, 0, y, z + s * ph / 2); }
+      }
+      for (const y of [-d / 2 - 0.03, d / 2 + 0.03]) { const k = new THREE.Mesh(new THREE.SphereGeometry(0.028, 16, 10), PMAT.brass); k.position.set(-w / 2 + 0.07, y, 0.95); g.add(k); }
+      return g;
+    }
     for (const z of [1.3, 1.72]) box(g, PMAT.frost, w - 0.24, d + 0.006, 0.36, 0, 0, z);
     for (const s of [-1, 1]) for (const y of [-d / 2 - 0.004, d / 2 + 0.004]) { const b = box(g, paint, Math.hypot(w - 0.24, 0.62), 0.008, 0.06, 0, y, 0.5); b.rotation.y = s * Math.atan2(0.62, w - 0.24); }
     for (const y of [-d / 2 - 0.004, d / 2 + 0.004]) { box(g, paint, w - 0.2, 0.008, 0.05, 0, y, 0.82); box(g, paint, w - 0.2, 0.008, 0.05, 0, y, 0.18); }
     for (const y of [-d / 2 - 0.03, d / 2 + 0.03]) { const k = new THREE.Mesh(new THREE.SphereGeometry(0.028, 16, 10), PMAT.chrome); k.position.set(w / 2 - 0.07, y, 0.95); g.add(k); }
+    return g;
+  },
+  // painted shelves across a wall niche, at pc.shelves heights above the floor
+  nicheshelf: (w, d, pc) => {
+    const g = new THREE.Group();
+    for (const z of pc.shelves || []) box(g, PMAT.paint, w - 0.004, d - 0.004, 0.022, 0, 0, z);
+    return g;
+  },
+  // a close-coupled toilet in white vitreous china: an elongated bowl turned on a lathe (narrow foot, flared rim), a
+  // closed seat and lid, the tank on the back with its lid and a chrome lever; its back on the wall (+y)
+  toilet2: (w, d) => {
+    const g = new THREE.Group(), china = PMAT.enamel, by = -d / 2 + 0.27; // the bowl's centre, 0.27 m from the front
+    const prof = [[0, 0], [0.12, 0], [0.12, 0.02], [0.105, 0.06], [0.11, 0.2], [0.15, 0.31], [0.185, 0.37], [0.19, 0.39], [0.175, 0.395], [0, 0.395]];
+    const bowl = new THREE.Mesh(new THREE.LatheGeometry(prof.map(([r, z]) => new THREE.Vector2(r, z)), 48), china);
+    bowl.rotation.x = Math.PI / 2; bowl.scale.set(0.36 / 0.38, 1, 0.48 / 0.38); bowl.position.y = by; g.add(bowl);
+    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.12, 0.38, 32), china); neck.rotation.x = Math.PI / 2; neck.scale.set(1, 1, 1.3); neck.position.set(0, d / 2 - 0.2, 0.19); g.add(neck);
+    const seat = new THREE.Mesh(new THREE.TorusGeometry(0.15, 0.024, 12, 48), china); seat.scale.set(1.15, 1.45, 0.6); seat.position.set(0, by, 0.41); g.add(seat);
+    const lid = new THREE.Mesh(new THREE.CylinderGeometry(0.175, 0.175, 0.018, 48), china); lid.rotation.x = Math.PI / 2; lid.scale.set(1, 1, 1.3); lid.position.set(0, by, 0.432); g.add(lid);
+    const hinge = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.22, 12), PMAT.chrome); hinge.rotation.z = Math.PI / 2; hinge.position.set(0, by + 0.24, 0.43); g.add(hinge);
+    box(g, china, 0.42, 0.19, 0.36, 0, d / 2 - 0.115, 0.6); // the tank
+    box(g, china, 0.44, 0.21, 0.03, 0, d / 2 - 0.115, 0.795); // its lid
+    box(g, PMAT.chrome, 0.06, 0.015, 0.015, -0.15, d / 2 - 0.215, 0.72); // the lever
+    return g;
+  },
+  // a corner vanity for a corner (owner 2026-10-23: the sink in the bathroom's north-east corner): a painted cabinet on a
+  // triangle with a bowed front, a stone top, an undermount basin and a chrome tap in the corner. Its corner is the
+  // holder's back (0, h); the walls run from it at 45 degrees; the bowed front faces -y
+  cornersink: (w, d, pc) => {
+    const g = new THREE.Group(), h = (pc.leg || 0.6) / Math.SQRT2;
+    const foot = (k) => { const s = new THREE.Shape(); s.moveTo(0, h); s.lineTo(-h - k, -k); s.quadraticCurveTo(0, -0.16 - k, h + k, -k); s.closePath(); return s; }; // k: the front's overhang (negative: set back)
+    const body = new THREE.Mesh(new THREE.ExtrudeGeometry(foot(0), { depth: 0.72, bevelEnabled: false }), PMAT.paint); body.position.z = 0.1; g.add(body);
+    const kick = new THREE.Mesh(new THREE.ExtrudeGeometry(foot(-0.04), { depth: 0.1, bevelEnabled: false }), PMAT.kick); g.add(kick);
+    const top = new THREE.Mesh(new THREE.ExtrudeGeometry(foot(0.02), { depth: 0.03, bevelEnabled: false }), PMAT.stone); top.position.z = 0.82; g.add(top);
+    box(g, PMAT.groove, 0.004, 0.004, 0.62, 0, -0.085, 0.45); // the two door leaves meet on the centre line
+    for (const s of [-1, 1]) { const k = new THREE.Mesh(new THREE.SphereGeometry(0.014, 12, 8), PMAT.chrome); k.position.set(s * 0.05, -0.09, 0.72); g.add(k); }
+    const basin = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.004, 40), PMAT.ceramic); basin.rotation.x = Math.PI / 2; basin.scale.set(1, 1, 0.8); basin.position.set(0, h * 0.25, 0.853); g.add(basin);
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.006, 8, 40), PMAT.groove); rim.scale.set(1, 0.8, 1); rim.position.set(0, h * 0.25, 0.853); g.add(rim);
+    g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[0, h - 0.12, 0.85], [0, h - 0.12, 1.06], [0, h - 0.2, 1.1], [0, h - 0.26, 1.03]].map(([x, y, z]) => new THREE.Vector3(x, y, z))), 20, 0.011, 8), PMAT.chrome));
+    return g;
+  },
+  // pantry shelving on a wall: oak boards on cleats at pc.shelves heights, stocked with canisters, jars and boxes
+  pantryshelf: (w, d, pc) => {
+    const g = new THREE.Group(); let seed = pc.seed || 3; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const shelves = pc.shelves || [0.12, 0.52, 0.92, 1.32, 1.72, 2.1];
+    for (const z of shelves) {
+      box(g, PMAT.oak, w, d, 0.025, 0, 0, z);
+      box(g, PMAT.oak, w, 0.02, 0.04, 0, d / 2 - 0.01, z - 0.032); // the cleat on the wall
+      if (z > 1.9) continue; // the top board stays clear
+      for (let x = -w / 2 + 0.06; x < w / 2 - 0.08;) {
+        const k = rnd(), y = -d / 2 + 0.07 + rnd() * 0.06;
+        if (k < 0.35) { const r = 0.045 + rnd() * 0.02, hh = 0.12 + rnd() * 0.08; const c = new THREE.Mesh(new THREE.CylinderGeometry(r, r, hh, 20), rnd() < 0.5 ? PMAT.ceramic : PMAT.steel); c.rotation.x = Math.PI / 2; c.position.set(x + r, y, z + 0.0125 + hh / 2); g.add(c); x += 2 * r + 0.03; }
+        else if (k < 0.7) { const bw = 0.08 + rnd() * 0.1, bh = 0.18 + rnd() * 0.12; box(g, rnd() < 0.5 ? PMAT.linen : PMAT.block, bw, 0.12 + rnd() * 0.08, bh, x + bw / 2, y + 0.02, z + 0.0125 + bh / 2); x += bw + 0.02; }
+        else x += 0.08 + rnd() * 0.12; // a gap
+      }
+    }
     return g;
   },
   // a flat-panel pocket door leaf; its leading edge (+x, the south end in the kitchen) carries a flush pull both sides
@@ -965,7 +1028,8 @@ function buildModel(data) {
   M.fp = [a, b, c, d];
   M.center = new THREE.Vector3((a + c) / 2, (b + d) / 2, M.FFL);
 
-  // doors: the exterior IfcDoor nearest each apartment's front room; leaves swing inward on their west edge
+  // doors: the exterior IfcDoor nearest each apartment's front room; both leaves swing in. Apartment A's front door hangs on
+  // its east jamb, on the right as you come in from the porch (owner 2026-10-23); Apartment B's on its west jamb
   const doorNear = (room) => {
     let best = null, bd = 1e9;
     for (const m of M.meshes) {
@@ -978,20 +1042,25 @@ function buildModel(data) {
   };
   const byName = (n) => M.spaces.find((r) => r.name === n);
   M.doors = {};
-  for (const [key, roomName] of [['west', 'AptA - Entry'], ['east', 'AptB - Front Room']]) {
+  for (const [key, roomName, hingeEast] of [['west', 'AptA - Entry', true], ['east', 'AptB - Front Room', false]]) {
     const r = byName(roomName);
     const dr = r && doorNear(r);
     if (!dr) continue;
-    const pivot = new THREE.Group();
-    pivot.position.set(dr.box.min.x, dr.box.max.y, 0);
+    const pivot = new THREE.Group(), hx = hingeEast ? dr.box.max.x : dr.box.min.x;
+    pivot.position.set(hx, dr.box.max.y, 0); // the hinge on the inside face
     const holder = new THREE.Group();
-    holder.position.set(-dr.box.min.x, -dr.box.max.y, 0);
+    holder.position.set(-hx, -dr.box.max.y, 0);
     pivot.add(holder);
-    M.group.remove(dr.mesh);
-    dr.mesh.geometry.applyMatrix4(world.matrixWorld);
-    holder.add(dr.mesh);
+    // the leaf and its glazing (a separate IfcPlate inside the leaf's box) swing together
+    const grown = dr.box.clone().expandByScalar(0.05);
+    const glazing = M.meshes.filter((m) => m.userData.e.cls === 'IfcPlate' && /glazing/i.test(m.userData.e.name || '') && grown.containsBox(new THREE.Box3().setFromObject(m)));
+    for (const m of [dr.mesh, ...glazing]) {
+      M.group.remove(m);
+      m.geometry.applyMatrix4(world.matrixWorld);
+      holder.add(m);
+    }
     scene.add(pivot);
-    M.doors[key] = { ...dr, pivot, at: new THREE.Vector3(dr.center.x, dr.center.y, M.FFL) };
+    M.doors[key] = { ...dr, pivot, swing: hingeEast ? -1 : 1, at: new THREE.Vector3(dr.center.x, dr.center.y, M.FFL) }; // swing: the turn that opens it inward
   }
 
   // room-id maps per storey
@@ -1051,11 +1120,18 @@ function buildModel(data) {
   M.stops = buildStops();
   M.furn = new THREE.Group();
   const inPoly = (pt, poly) => { let c2 = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if ((yi > pt[1]) !== (yj > pt[1]) && pt[0] < ((xj - xi) * (pt[1] - yi)) / (yj - yi) + xi) c2 = !c2; } return c2; };
+  // the ceiling over a point: the first model surface straight up (a space's recorded height can sit above a sloped
+  // roof: the back wing's low-slope roof falls to 2.5 m at the north wall, and staged pieces poked through it)
+  M.group.updateMatrixWorld(true);
+  const solids = M.meshes.filter((m) => m.visible && !/IfcSpace|IfcOpeningElement/.test(m.userData.e.cls || ''));
+  const up = new THREE.Raycaster(), UP = new THREE.Vector3(0, 0, 1);
+  const ceilingOver = (x, y, z) => { up.set(new THREE.Vector3(x, y, z), UP); const h = up.intersectObjects(solids, false)[0]; return h ? h.point.z : Infinity; };
   for (const st of M.stops) for (const r of st.rooms) {
     // pieces stand on the slab: some upper spaces record their floor 5 cm under the slab top (3.04 vs 3.09 m)
     const z0 = Math.max(r.floorZ, (/upper/i.test(r.storey) ? M.storeys.upper?.elevation : M.storeys.main?.elevation) ?? r.floorZ);
     for (const pc of furnish(r, st.stand)) {
       const [cx, cy, cz] = pc.center, [sx, sy, sz] = pc.size;
+      if (pc.ceil) pc.ceil = Math.min(pc.ceil, ceilingOver(cx, cy, z0 + 1.0) - z0);
       const corners = [[cx - sx / 2, cy - sy / 2], [cx + sx / 2, cy - sy / 2], [cx + sx / 2, cy + sy / 2], [cx - sx / 2, cy + sy / 2]];
       if (!pc.free && !corners.every((q) => inPoly(q, r.poly))) continue;
       const ph = /upper/i.test(r.storey) ? 3 : 2;
@@ -1184,7 +1260,14 @@ new HDRLoader().loadAsync('assets/hdri/qwantani_late_afternoon_puresky_1k.hdr').
 scene.environmentIntensity = 0.9;
 
 let splat = null, interior = null;
+// Gaussian splats go once the model is checked against them, room by room (owner 2026-10-23: arches, ceilings, framing
+// first); until then they stay on and ?splat=0 shows the modelled-only house. Tag story-with-splats-20261023 keeps the
+// first published version.
+const COMPARE = Q.get('compare') === '1'; // the room check's capture layers (debug)
+const SPLATS = Q.get('splat') !== '0' || COMPARE;
+const captures = [], compareState = { model: true, capture: false, furniture: false };
 const splatReady = (async () => {
+  if (!SPLATS) { parts.splat = 1; setLoad(); return; }
   try {
     const { SparkRenderer, SplatMesh } = await import('@sparkjsdev/spark');
     // stable splats while the camera moves: no LoD swapping, radial sort (order holds under rotation), sort every frame
@@ -1194,13 +1277,22 @@ const splatReady = (async () => {
     // the drone capture is the site; the rooms are drawn and furnished, so the interior scan is not loaded (owner 2026-10-23)
     splat = new SplatMesh({ url: 'splats/exterior_clean_v2.spz' });
     splat.layers.set(1); world.add(splat);
-    if (Q.get('scan') === 'aptb') { // look-only: Apartment B's placed 360 capture with the model hidden, for reading the rooms
+    if (COMPARE) { // the room check: every placed capture, toggled against the model with __P401.layers()
       const meta = await getJSON('splats/aptb_360_20261019.json');
-      interior = new SplatMesh({ url: 'splats/aptb_360_20261019.ply' });
-      interior.matrixAutoUpdate = false;
-      interior.matrix.fromArray(new THREE.Matrix4().fromArray(meta.matrix_splat_to_model.flat()).transpose().elements);
-      interior.layers.set(1); world.add(interior);
-      await interior.initialized;
+      const aptb = new SplatMesh({ url: 'splats/aptb_360_20261019.ply' });
+      aptb.matrixAutoUpdate = false;
+      aptb.matrix.fromArray(new THREE.Matrix4().fromArray(meta.matrix_splat_to_model.flat()).transpose().elements);
+      const main = new SplatMesh({ url: 'splats/interior_ground_all.spz' }); // Apartment A's main floor, model frame
+      for (const m of [aptb, main]) { m.layers.set(1); world.add(m); captures.push(m); }
+      for (const name of ['polycam_upper_lidar_registered', 'kiri_basement']) { // coloured point layers (uint32 n, xyz f32, rgb u8)
+        const b = await (await fetch(`splats/${name}.bin`)).arrayBuffer(), n = new DataView(b).getUint32(0, true);
+        const g = new THREE.BufferGeometry();
+        g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(b, 4, n * 3), 3));
+        g.setAttribute('color', new THREE.BufferAttribute(new Uint8Array(b, 4 + n * 12, n * 3), 3, true));
+        const pts = new THREE.Points(g, new THREE.PointsMaterial({ size: 0.014, vertexColors: true }));
+        pts.layers.set(1); world.add(pts); captures.push(pts);
+      }
+      await Promise.all([aptb.initialized, main.initialized]);
     }
     await splat.initialized;
   } catch (err) {
@@ -1626,8 +1718,8 @@ function update(p) {
   U.uExtRev1.value = cubic(band(s, extWin[0], extWin[1])) * asBuilt;
   U.uExtRev2.value = 0; // no design direction over the house as found
   U.uAll.value = Q.get('all') ? 1 : 0; // ?all=1: every surface revealed (debug)
-  if (M.doors.west) M.doors.west.pivot.rotation.z = -cubic(band(s, ...doorWin.west)) * 95 * DEG;
-  if (M.doors.east) M.doors.east.pivot.rotation.z = -cubic(band(s, ...doorWin.east)) * 95 * DEG;
+  if (M.doors.west) M.doors.west.pivot.rotation.z = M.doors.west.swing * cubic(band(s, ...doorWin.west)) * 95 * DEG;
+  if (M.doors.east) M.doors.east.pivot.rotation.z = M.doors.east.swing * cubic(band(s, ...doorWin.east)) * 95 * DEG;
   // floor annotations: the plan sheet on the sheet shots; big room labels while rooms are paper
   CU.uAnnOp.value = Math.max(1 - band(s, heroShot.h1, heroShot.g1 * 0.6), band(s, asbuiltShot.h0 - 40, asbuiltShot.h0));
   CU.uRedOp.value = 0; envMat.opacity = 0;
@@ -1651,7 +1743,7 @@ function update(p) {
   const scanOn = inStop && inStop.st.rooms.some((r) => U.uExist.value[r.i] > 0.5 && U.uRev1.value[r.i] > 0.02 && U.uRev2.value[r.i] < 0.6);
   if (interior) interior.visible = !!scanOn;
   if (splat) splat.visible = CU.uSplat.value > 0.01 && outdoors && U.uCut.value > M.box.max.z - 0.3;
-  if (Q.get('scan') === 'aptb' && interior) { interior.visible = true; M.group.visible = M.furn.visible = false; }
+  if (COMPARE) { M.group.visible = compareState.model; M.furn.visible = compareState.model && !!compareState.furniture; for (const c of captures) c.visible = compareState.capture; if (compareState.capture) splat && (splat.visible = false); }
   // chrome
   const hf = band(s, 0.5 * heroShot.h1, 0.5 * heroShot.h1 + 40);
   hero.style.opacity = String(1 - hf); hero.style.transform = `translateY(${-50 * hf}px)`;
@@ -2004,6 +2096,13 @@ window.__P401 = {
   splat: () => ({ exterior: splat?.packedSplats?.numSplats ?? 0, interior: interior?.packedSplats?.numSplats ?? 0 }),
   setProgress(p) { if (mode === 'walk') leaveWalk(); target = prog = p; update(p); render(); },
   pose(o) { debugPose = o || null; update(prog); render(); },
+  layers(o) { Object.assign(compareState, o); update(prog); render(); return { ...compareState, captures: captures.length }; },
+  // where the ray through a screen pixel meets the plane u = value or v = value (house frame), for measuring a capture
+  wallPoint(x, y, axis, value) {
+    const r = new THREE.Raycaster(); r.setFromCamera(new THREE.Vector2((x / innerWidth) * 2 - 1, -(y / innerHeight) * 2 + 1), camera);
+    const i = axis === 'u' ? 0 : 1, t = (value - r.ray.origin.getComponent(i)) / r.ray.direction.getComponent(i);
+    return r.ray.origin.clone().addScaledVector(r.ray.direction, t).toArray().map((v) => +v.toFixed(3));
+  },
   roll(w) { roll.style.transition = 'none'; roll.style.width = w; },
   walk(x, y, yaw, floorKey = 'main', pitch = 0) {
     if (mode !== 'walk') enterWalk();
