@@ -80,3 +80,7 @@ Machine-readable index: MANIFEST.json. Raw API responses, download lists, script
 - glTF is Y-up in metres; dims_m is the loaded default-scene bbox. Some models face a different axis than Poly Haven's listed W/D (coffee table, bookshelf, standing frame are long along Z): rotate 90 degrees when placing.
 - grey_roof_01 is listed by Poly Haven as an 8 m tile, which looks large for its small shingle-like tiles; check scale visually (roof_slates_03, 3 m, is the alternative).
 - No standing-seam texture exists; corrugated_iron_02 is the metal-roof stand-in. No asphalt-shingle texture exists; grey_roof_01 is the closest.
+
+## Added 2026-10-23
+- living · sofa_elegant · Sofa_01 · 1.571 x 0.658 x 0.797 m (w x d x h) · https://polyhaven.com/a/Sofa_01 · CC0 1.0 · 1k glTF, 5 files, md5 checked against the API (owner: a more elegant couch for the living area)
+- living · media_credenza · modern_wooden_cabinet · 2.44 x 0.52 x 0.68 m (w x d x h) · https://polyhaven.com/a/modern_wooden_cabinet · CC0 1.0 · 1k glTF, 5 files, md5 checked against the API (owner: a high-end living area, low credenza under the TV)

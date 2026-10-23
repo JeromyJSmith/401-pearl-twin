@@ -10,7 +10,7 @@ precision highp float;
 uniform sampler2D tSrc; uniform float uThreshold, uKnee, uExposure;
 in vec2 vUv; out vec4 o;
 void main() {
-  vec3 c = fin(texture(tSrc, vUv)).rgb * uExposure;
+  vec3 c = texture(tSrc, vUv).rgb * uExposure;
   float l = max(c.r, max(c.g, c.b));
   float k = clamp((l - uThreshold + uKnee) / (2.0 * uKnee), 0.0, 1.0);
   float w = max(l - uThreshold, 0.0) + k * k * uKnee;
@@ -23,17 +23,17 @@ uniform sampler2D tSrc; uniform vec2 uDir; uniform vec2 uTexel;
 in vec2 vUv; out vec4 o;
 void main() {
   // 9-tap gaussian along uDir
-  vec4 s = fin(texture(tSrc, vUv)) * 0.227027;
+  vec4 s = texture(tSrc, vUv) * 0.227027;
   vec2 d = uDir * uTexel;
-  s += (fin(texture(tSrc, vUv + d * 1.3846)) + fin(texture(tSrc, vUv - d * 1.3846))) * 0.3162162;
-  s += (fin(texture(tSrc, vUv + d * 3.2308)) + fin(texture(tSrc, vUv - d * 3.2308))) * 0.0702703;
+  s += (texture(tSrc, vUv + d * 1.3846) + texture(tSrc, vUv - d * 1.3846)) * 0.3162162;
+  s += (texture(tSrc, vUv + d * 3.2308) + texture(tSrc, vUv - d * 3.2308)) * 0.0702703;
   o = s;
 }`;
 
 const ADD_FS = /* glsl */`
 precision highp float;
 uniform sampler2D t1, t2, t3; in vec2 vUv; out vec4 o;
-void main() { o = fin(texture(t1, vUv)) * 0.5 + fin(texture(t2, vUv)) * 0.32 + fin(texture(t3, vUv)) * 0.18; }`;
+void main() { o = texture(t1, vUv) * 0.5 + texture(t2, vUv) * 0.32 + texture(t3, vUv) * 0.18; }`;
 
 // ambient occlusion: sample a disc in screen space scaled by depth, count samples above the surface plane
 const AO_FS = /* glsl */`
@@ -70,7 +70,7 @@ void main() {
 
 function quad(fs, uniforms) {
   return new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.RawShaderMaterial({
-    glslVersion: THREE.GLSL3, vertexShader: QUAD_VS, fragmentShader: `precision highp float;\nvec4 fin(vec4 v) { bvec4 n = notEqual(v, v); return clamp(vec4(n.x ? 0.0 : v.x, n.y ? 0.0 : v.y, n.z ? 0.0 : v.z, n.w ? 0.0 : v.w), -1.0e4, 64.0); }\n${fs.replace('precision highp float;', '')}`,
+    glslVersion: THREE.GLSL3, vertexShader: QUAD_VS, fragmentShader: `precision highp float;\n${fs.replace('precision highp float;', '')}`,
     uniforms, depthTest: false, depthWrite: false,
   }));
 }
@@ -89,7 +89,7 @@ export class Post {
     this.blur = quad(BLUR_FS, { tSrc: { value: null }, uDir: { value: new THREE.Vector2(1, 0) }, uTexel: { value: new THREE.Vector2() } });
     this.add = quad(ADD_FS, { t1: { value: null }, t2: { value: null }, t3: { value: null } });
     this.aoq = quad(AO_FS, { tND: { value: null }, tW: { value: null }, uViewToWorld: { value: new THREE.Matrix3() }, uRes: { value: new THREE.Vector2() }, uRadius: { value: 0.5 }, uPixA: { value: 0.001 }, uBias: { value: 0.08 } });
-    this.copy = quad('uniform sampler2D tSrc; in vec2 vUv; out vec4 o; void main(){ o = fin(texture(tSrc, vUv)); }', { tSrc: { value: null } });
+    this.copy = quad('uniform sampler2D tSrc; in vec2 vUv; out vec4 o; void main(){ o = texture(tSrc, vUv); }', { tSrc: { value: null } });
   }
   setSize(w, h) {
     this.w = w; this.h = h;

@@ -31,7 +31,7 @@ export function sheetBounds(footprint) {
   return { min: [cu - half, cv - half], size: [2 * half, 2 * half] };
 }
 
-export function drawSheet({ rooms, footprint, bounds, northDeg, fixtures = [], px = 4096 }) {
+export function drawSheet({ rooms, footprint, bounds, northDeg, px = 4096 }) {
   const c = document.createElement('canvas');
   c.width = c.height = px;
   const g = c.getContext('2d');
@@ -93,8 +93,6 @@ export function drawSheet({ rooms, footprint, bounds, northDeg, fixtures = [], p
 
   // room labels, fitted to the room; small rooms get the number tag only
   for (const r of rooms) {
-    // parts of a bathroom (shower area, toilet area) carry no words: the fixtures drawn in them say what they are
-    if (/\b(shower|toilet)\s+area\b/i.test(r.label)) continue;
     const w = m(r.w), h = m(r.d);
     const cx = X(r.cu), cy = Y(r.cv);
     const name = r.label.toUpperCase();
@@ -121,26 +119,6 @@ export function drawSheet({ rooms, footprint, bounds, northDeg, fixtures = [], p
     g.fillStyle = INK; g.font = `500 ${m(0.14)}px "Geist Mono"`; g.textBaseline = 'middle';
     g.fillText(String(r.n).padStart(2, '0'), tx, ty + m(0.01));
   }
-
-  // fixtures: plan symbols from the model's own elements, no words (owner 2026-10-18: "just draw what they are")
-  g.save(); g.strokeStyle = INK; g.lineWidth = m(0.014);
-  for (const f of fixtures) {
-    const [u0, v0, u1, v1] = f.box, x = X(u0), y = Y(v1), w = m(u1 - u0), h = m(v1 - v0), cx = x + w / 2, cy = y + h / 2, k = f.kind;
-    const rr = (ax, ay, aw, ah, r) => { g.beginPath(); g.roundRect(ax, ay, aw, ah, r); g.stroke(); };
-    const long = w >= h; // the fixture's long side
-    if (/toilet|water ?closet|wc\b/.test(k)) { // tank on the long back edge, bowl as an ellipse
-      const tw = long ? w : h * 0.32, th = long ? h * 0.32 : h;
-      rr(x, y, long ? w : w * 0.32, long ? h * 0.32 : h, m(0.03));
-      g.beginPath(); g.ellipse(long ? cx : x + w * 0.62, long ? y + h * 0.64 : cy, long ? w * 0.36 : w * 0.34, long ? h * 0.34 : h * 0.36, 0, 0, Math.PI * 2); g.stroke();
-    } else if (/bath ?tub|tub\b/.test(k)) { rr(x, y, w, h, m(0.05)); rr(x + m(0.08), y + m(0.08), w - m(0.16), h - m(0.16), Math.min(w, h) * 0.35); }
-    else if (/shower/.test(k)) { rr(x, y, w, h, 0); g.beginPath(); g.moveTo(x, y); g.lineTo(x + w, y + h); g.moveTo(x + w, y); g.lineTo(x, y + h); g.stroke(); g.beginPath(); g.arc(cx, cy, m(0.05), 0, Math.PI * 2); g.stroke(); }
-    else if (/sink|basin|lavatory/.test(k)) { rr(x, y, w, h, m(0.02)); g.beginPath(); g.ellipse(cx, cy, w * 0.32, h * 0.3, 0, 0, Math.PI * 2); g.stroke(); }
-    else if (/range|stove|cooktop|oven/.test(k)) { rr(x, y, w, h, 0); for (const [a, b] of [[0.3, 0.3], [0.7, 0.3], [0.3, 0.7], [0.7, 0.7]]) { g.beginPath(); g.arc(x + w * a, y + h * b, Math.min(w, h) * 0.14, 0, Math.PI * 2); g.stroke(); } }
-    else if (/refrigerator|fridge/.test(k)) { rr(x, y, w, h, 0); g.beginPath(); g.moveTo(x, y); g.lineTo(x + w, y + h); g.stroke(); }
-    else if (/washer|dryer|laundry/.test(k)) { rr(x, y, w, h, m(0.02)); g.beginPath(); g.arc(cx, cy, Math.min(w, h) * 0.33, 0, Math.PI * 2); g.stroke(); }
-    else { rr(x, y, w, h, m(0.02)); } // cabinets, counters, bars: their outline
-  }
-  g.restore();
 
   // north arrow (grid north, from the house-axis rotation) and scale bar, south-west corner
   const na = [X(u0 - 1.2), Y(v0 - 3.9)];

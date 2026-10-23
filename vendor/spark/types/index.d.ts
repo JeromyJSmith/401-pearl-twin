@@ -6,6 +6,8 @@ export { SplatLoader, getSplatFileType, } from "./SplatLoader";
 export { transcodeSpz, writeSpz, type SpzWriteVersion, type WriteSpzOptions, type TranscodeSpzFileInput, type TranscodeSpzInput, } from "./spz";
 export { PackedSplats, type PackedSplatsOptions } from "./PackedSplats";
 export { ExtSplats, type ExtSplatsOptions } from "./ExtSplats";
+export * from "./PagedSplats";
+export type { PagedSplatsFetcher } from "./PagedSplatsFetcher";
 export * from "./SplatPager";
 export { SplatGenerator, type GsplatGenerator, SplatModifier, type GsplatModifier, SplatTransformer, } from "./SplatGenerator";
 export { Readback, type Rgba8Readback, type ReadbackBuffer } from "./Readback";

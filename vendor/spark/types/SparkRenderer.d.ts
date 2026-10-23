@@ -1,9 +1,10 @@
 import * as THREE from "three";
 import { ExtSplats } from "./ExtSplats";
 import { PackedSplats } from "./PackedSplats";
+import { PagedSplats } from "./PagedSplats";
 import { SplatAccumulator } from "./SplatAccumulator";
 import { SplatMesh } from "./SplatMesh";
-import { PagedSplats, SplatPager } from "./SplatPager";
+import { SplatPager } from "./SplatPager";
 import { SplatWorker } from "./SplatWorker";
 export interface SparkRendererOptions {
     /**
@@ -341,8 +342,10 @@ export declare class SparkRenderer extends THREE.Mesh {
     display: SplatAccumulator;
     current: SplatAccumulator;
     accumulators: SplatAccumulator[];
+    private isDisposed;
     sorting: boolean;
     sortDirty: boolean;
+    private latestMappingVersion;
     lastSortTime: number;
     sortWorker: SplatWorker | null;
     sortTimeoutId: ReturnType<typeof setTimeout> | undefined;
@@ -382,6 +385,7 @@ export declare class SparkRenderer extends THREE.Mesh {
     }>;
     lodIdToSplats: Map<number, PackedSplats | ExtSplats | PagedSplats>;
     lodInitQueue: (PackedSplats | ExtSplats | PagedSplats)[];
+    private lodInitFailed;
     lastLod?: {
         pos: THREE.Vector3;
         quat: THREE.Quaternion;
@@ -519,6 +523,7 @@ export declare class SparkRenderer extends THREE.Mesh {
         };
     };
     dispose(): void;
+    private dropErrorIfDisposed;
     setDirty(): void;
     onBeforeRender(renderer: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera): void;
     clearSplats(): void;
