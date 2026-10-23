@@ -91,8 +91,9 @@ body { overflow-x: hidden; }
 .openfile { background: none; border: 0; padding: 0; color: var(--ink); cursor: pointer; font-size: 9.5px; letter-spacing: .12em; text-decoration: underline; text-underline-offset: 3px; }
 .hud { pointer-events: auto; }
 .ruler #rulerTicks i { position: absolute; right: 0; width: 22px; height: 1px; background: var(--ink); }
-#walkPill { background: var(--paper); cursor: pointer; font: inherit; font-size: 10.5px; letter-spacing: .16em; opacity: 0; pointer-events: none; transition: opacity .4s; }
-#walkPill.on { opacity: 1; pointer-events: auto; }
+#walkPill, #splatPill { background: var(--paper); cursor: pointer; font: inherit; font-size: 10.5px; letter-spacing: .16em; opacity: 0; pointer-events: none; transition: opacity .4s; }
+#walkPill.on, #splatPill.on { opacity: 1; pointer-events: auto; }
+#splatPill.active { background: var(--ink); color: var(--paper); }
 
 /* element panel */
 .panel { position: fixed; z-index: 30; left: 24px; bottom: 64px; width: 340px; padding: 18px 20px; background: rgba(239,235,226,.96); border: 1px solid var(--ink); display: flex; flex-direction: column; gap: 10px; }

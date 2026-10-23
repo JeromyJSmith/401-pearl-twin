@@ -1,175 +1,43 @@
 {
- "label": "KIRI basement 3DGS (splat centres, SH-DC colour), placed on the basement stair and walls",
- "points": 600000,
- "frame": "MODEL frame (composed IFCX local metres, z up)",
- "source": {
-  "file": "/Volumes/MARPA/projects/marpa/0001-401-pearl/00_inbox/captures/kiri-engine/3DGS.ply",
-  "sha256": "6afcad23cba5e8c55a851998a614e05b58213b15e1099462eefc4e9137e9dab0"
- },
- "transform": {
-  "matrix_capture_zup_to_model": [
-   [
-    0.9627738094409493,
-    -0.27030832738664656,
-    0.0,
-    -0.0577004873139891
-   ],
-   [
-    0.270308327386645,
-    0.9627738094409477,
-    0.0,
-    -1.0972553625997392
-   ],
-   [
-    0.0,
-    0.0,
-    1.0,
-    -1.8224529999494552
-   ],
-   [
-    0.0,
-    0.0,
-    0.0,
-    1.0
-   ]
-  ],
-  "yaw_deg": 15.683,
-  "mirror": false,
-  "scale_m_per_unit": 1.0,
-  "translation_m": [
-   -0.0577,
-   -1.0973,
-   -1.8225
-  ],
-  "kiri_to_zup": [
-   [
-    1,
-    0,
-    0
-   ],
-   [
-    0,
-    0,
-    1
-   ],
-   [
-    0,
-    -1,
-    0
-   ]
-  ],
-  "residual_wall_band_to_model_within_1m": {
-   "fraction": 0.9285,
-   "median_cm": 25.73,
-   "p90_cm": 75.36
+  "label": "KIRI basement 3D scan (calibrated via 3DModel_aligned.gltf to basement walls, floor, ceiling, and stair)",
+  "points": 600000,
+  "frame": "MODEL frame (composed IFCX local metres, z up)",
+  "source": {
+    "gltf": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/building-model/ifcx-model/scans/basement-foundation-3D-model/3DModel_aligned.gltf",
+    "bin": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/building-model/ifcx-model/scans/basement-foundation-3D-model/3DModel.bin",
+    "tex": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/building-model/ifcx-model/scans/basement-foundation-3D-model/3DModel.jpg"
   },
-  "per_element": {
-   "Foundation (all round, under the front patio)": {
-    "n": 40221,
-    "median_cm": 8.4,
-    "p90_cm": 49.72
-   },
-   "Storage divider 05 (interior E-W at v=1.97)": {
-    "n": 3757,
-    "median_cm": 47.03,
-    "p90_cm": 73.42
-   },
-   "Basement north crawlspace access step & sill (KIRI 3D scan)": {
-    "n": 1215,
-    "median_cm": 40.62,
-    "p90_cm": 84.91
-   },
-   "Storage divider 01 (interior E-W at v=1.97)": {
-    "n": 2275,
-    "median_cm": 37.47,
-    "p90_cm": 83.06
-   },
-   "Basement stair": {
-    "n": 5795,
-    "median_cm": 42.28,
-    "p90_cm": 81.5
-   },
-   "Basement floor": {
-    "n": 10537,
-    "median_cm": 59.02,
-    "p90_cm": 85.8
-   },
-   "Storage divider 04 (interior N-S at u=0.90)": {
-    "n": 10539,
-    "median_cm": 49.82,
-    "p90_cm": 90.12
-   }
-  }
- },
- "scale_evidence": {
-  "method": "glTF positions are KIRI metric (the units the owner measured in the KIRI viewer); scale 1.0 unless --scale",
-  "floor_capture": -0.108,
-  "ceiling_capture": 2.51,
-  "floor_to_ceiling_capture": 2.618,
-  "riser_period_capture": 0.3238,
-  "tread_levels_capture": [
-   0.19,
-   0.33,
-   0.53,
-   0.61,
-   0.87,
-   1.01,
-   1.17,
-   1.35,
-   1.51,
-   1.69,
-   1.85,
-   2.13
-  ],
-  "scale_m_per_unit": 1.0,
-  "owner_viewer_m": {
-   "corridor_width": [
-    2.44,
-    2.43
-   ],
-   "corridor_length": [
-    8.003,
-    8.153
-   ],
-   "end_room": 3.125,
-   "stair_width": [
-    1.308,
-    1.32,
-    1.324,
-    1.398,
-    1.424,
-    1.468
-   ]
+  "transform": {
+    "matrix_col_major": [
+      -0.7582871,
+      -0.2447502,
+      0.0,
+      0.0,
+      -0.2415902,
+      0.7425512,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      -0.64726,
+      0.0,
+      -2.2320604,
+      -0.6227553,
+      -0.2205,
+      1.0
+    ]
   },
-  "measured_capture": {
-   "corridor_width_x_-0.36_to_2.09": 2.45,
-   "stair_tread_span_x": "1.15-1.47 (-2.11..-0.64)"
-  }
- },
- "filter": {
-  "vertices": 4237260,
-  "texture": "4096x4096",
-  "node_rotation": [
-   0.7071068286895752,
-   0,
-   0,
-   0.7071068286895752
+  "bbox": [
+    [
+      -6.427000045776367,
+      -7.163000106811523,
+      -2.007999897003174
+    ],
+    [
+      1.1100000143051147,
+      3.0139999389648438,
+      -0.03799999877810478
+    ]
   ],
-  "gltf_sha256": "3115b792dac64d3d812f0274ed8e0746619538e0b27b4e35ad6460f60e4f3d79",
-  "texture_sha256": "31956ec20860f6cc7704cc2f4dfa0b5dd5dd99cb32da9951f1226ab6ee5b9f02"
- },
- "bbox": [
-  [
-   -3.375,
-   -9.168000221252441,
-   -2.1050000190734863
-  ],
-  [
-   6.234000205993652,
-   3.884999990463257,
-   0.9399999976158142
-  ]
- ],
- "sha256": "b2937f350207b57cacf2b4f6f4a2c6f527aa4e2df168b292624abcbfcc23147e",
- "script": "marpa-desk scripts/place_kiri_basement_401.py"
+  "sha256": "cbca11bfce667f753c69c31507551637dc89733909b70a51ad35dc0b32c78535"
 }

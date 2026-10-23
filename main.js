@@ -95,7 +95,7 @@ const overlay = new THREE.Scene(); // red-line envelope, drawn over the composit
 const U = {
   uCut: { value: 99 },
   uPhaseCut: { value: new Float32Array(NP).fill(99) },
-  uRoomMapA: { value: null }, uRoomMapB: { value: null },
+  uRoomMap0: { value: null }, uRoomMapA: { value: null }, uRoomMapB: { value: null },
   uMapMin: { value: new THREE.Vector2() }, uMapSize: { value: new THREE.Vector2(1, 1) },
   uMapZ: { value: new THREE.Vector4(-9, -9, -9, -9) },
   uRev1: { value: new Float32Array(NR) }, uRev2: { value: new Float32Array(NR) },
@@ -124,7 +124,7 @@ const COMMON_GLSL = /* glsl */`
 #define NP ${NP}
 #endif
 uniform float uCut; uniform float uPhaseCut[NP];
-uniform sampler2D uRoomMapA, uRoomMapB; uniform vec2 uMapMin, uMapSize; uniform vec4 uMapZ;
+uniform sampler2D uRoomMap0, uRoomMapA, uRoomMapB; uniform vec2 uMapMin, uMapSize; uniform vec4 uMapZ;
 uniform float uRev1[NR], uRev2[NR], uRad[NR], uExist[NR]; uniform vec3 uOrg[NR];
 uniform float uAll, uBand; uniform vec3 uExtOrg; uniform float uExtRev1, uExtRev2, uExtRad;
 bool cutAway(vec3 wp, float phase) { return wp.z > min(uCut, uPhaseCut[int(phase + 0.5)]); }
@@ -133,6 +133,7 @@ int roomAt(vec3 wp, vec3 nw) {
   float r;
   if (wp.z > uMapZ.x && wp.z < uMapZ.y) r = texture(uRoomMapA, uv).r;
   else if (wp.z > uMapZ.z && wp.z < uMapZ.w) r = texture(uRoomMapB, uv).r;
+  else if (wp.z <= uMapZ.x && wp.z > -2.3) r = texture(uRoomMap0, uv).r;
   else return -1;
   return int(r * 255.0 + 0.5) - 1;
 }
@@ -334,7 +335,7 @@ const ROOM_GROUPS = [
  ['AptA - Bathroom', 'AptA - Shower Area', 'AptA - Toilet Area'], ['AptA - Stairs up'], ['Upper - Stairs', 'Upper - Hallway'], ['Upper - Room 2', 'Upper - Closet'],
   // Room 1, the toilet room and the shower are the one upstairs bathroom, with laundry and a wet bar (owner 2026-10-23)
   ['Upper - Room 1', 'Upper - Toilet', 'Upper - Shower'], ['Upper - Room 3', 'Upper - Room 3 closet'], ['AptA - Stairs to basement'],
-  ['@basement'], ['@porch-east'], ['AptB - Front Room'], ['AptB - Kitchen'], ['AptB - Nook'], ['AptB - Bathroom', 'AptB - Shower Area', 'AptB - Toilet Area'], ['AptB - Bedroom'],
+  ['Basement - Stair Landing & Transition', 'Basement - Main Room', 'Basement - Storage Cubbies (01-05)', 'Basement - Mechanical & East Area'], ['@porch-east'], ['AptB - Front Room'], ['AptB - Kitchen'], ['AptB - Nook'], ['AptB - Bathroom', 'AptB - Shower Area', 'AptB - Toilet Area'], ['AptB - Bedroom'],
 ];
 
 function phaseOf(e, storeys) {
@@ -1014,7 +1015,7 @@ function buildModel(data) {
     const apt = (s.name.match(/^Apt\s?([A-Z])/i) || [])[1];
     return {
       i, s, poly, name: s.name, bbox, floorZ: s.floor_z, storey: storeys[s.storey]?.name || '',
-      apt: apt ? `Apartment ${apt}` : /upper/i.test(s.name) ? 'Upper level' : '',
+      apt: apt ? `Apartment ${apt}` : /upper/i.test(s.name) ? 'Upper level' : /basement/i.test(s.name) ? 'Basement' : '',
       label: s.name.replace(/^[^-]*-\s*/, ''), area: s.net_floor_area, height: s.height,
       w: bbox[2] - bbox[0], d: bbox[3] - bbox[1], cu: (bbox[0] + bbox[2]) / 2, cv: (bbox[1] + bbox[3]) / 2,
       n: order.indexOf(s.name) + 1,
@@ -1050,6 +1051,30 @@ function buildModel(data) {
     const r = byName(roomName);
     const dr = r && doorNear(r);
     if (!dr) continue;
+    // Front west door (3886a384) combines its outer door frame/threshold and inner swinging leaf in one mesh:
+    // keep the outer casing/jambs stationary in M.group and pivot only the leaf (u in [-1.488, -0.662], z in [0.188, 2.081])
+    if (key === 'west') {
+      const e = dr.mesh.userData.e, P = e.positions, idx = e.indices;
+      const leafIdx = [], frameIdx = [];
+      for (let k = 0; k < idx.length; k += 3) {
+        const i0 = idx[k], i1 = idx[k + 1], i2 = idx[k + 2];
+        const [u0] = toHouse([P[i0 * 3], P[i0 * 3 + 1]]), [u1] = toHouse([P[i1 * 3], P[i1 * 3 + 1]]), [u2] = toHouse([P[i2 * 3], P[i2 * 3 + 1]]);
+        const zmin = Math.min(P[i0 * 3 + 2], P[i1 * 3 + 2], P[i2 * 3 + 2]), zmax = Math.max(P[i0 * 3 + 2], P[i1 * 3 + 2], P[i2 * 3 + 2]);
+        if (Math.min(u0, u1, u2) >= -1.488 && Math.max(u0, u1, u2) <= -0.662 && zmin >= 0.188 && zmax <= 2.081) leafIdx.push(i0, i1, i2);
+        else frameIdx.push(i0, i1, i2);
+      }
+      if (leafIdx.length && frameIdx.length) {
+        const col = (e.color || [0.8, 0.8, 0.8]).map(srgbToLinear), phase = dr.mesh.userData.phase;
+        const frameMesh = new THREE.Mesh(geometryFor({ ...e, indices: frameIdx }, phase, 0, col, e.edited, toHouse, slotOf(e)), MAT.solid);
+        frameMesh.castShadow = frameMesh.receiveShadow = true;
+        frameMesh.userData = { ...dr.mesh.userData };
+        M.group.add(frameMesh); M.meshes.push(frameMesh);
+        dr.mesh.geometry.dispose();
+        dr.mesh.geometry = geometryFor({ ...e, indices: leafIdx }, phase, 0, col, e.edited, toHouse, slotOf(e));
+        world.updateMatrixWorld(true);
+        dr.box = new THREE.Box3().setFromObject(dr.mesh);
+      }
+    }
     const pivot = new THREE.Group(), hx = hingeEast ? dr.box.max.x : dr.box.min.x;
     pivot.position.set(hx, dr.box.max.y, 0); // the hinge on the inside face
     const holder = new THREE.Group();
@@ -1084,7 +1109,8 @@ function buildModel(data) {
     t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; t.colorSpace = THREE.NoColorSpace;
     return t;
   };
-  U.uRoomMapA.value?.dispose(); U.uRoomMapB.value?.dispose();
+  U.uRoomMap0.value?.dispose(); U.uRoomMapA.value?.dispose(); U.uRoomMapB.value?.dispose();
+  U.uRoomMap0.value = roomMap(M.spaces.filter((r) => base && r.s.storey === base.id));
   U.uRoomMapA.value = roomMap(M.spaces.filter((r) => r.s.storey === main.id));
   U.uRoomMapB.value = roomMap(M.spaces.filter((r) => upper && r.s.storey === upper.id));
   U.uMapMin.value.set(...sb.min); U.uMapSize.value.set(...sb.size);
@@ -1177,7 +1203,11 @@ function buildModel(data) {
 const pointIn = (pt, poly) => { let c2 = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if ((yi > pt[1]) !== (yj > pt[1]) && pt[0] < ((xj - xi) * (pt[1] - yi)) / (yj - yi) + xi) c2 = !c2; } return c2; };
 // the camera is indoors when it stands over the main footprint below the roof
 const cameraIndoors = () => { const q = camera.position; return q.x > M.fp[0] && q.x < M.fp[2] && q.y > M.fp[1] && q.y < M.fp[3] && q.z < M.box.max.z - 0.5 && q.z > (M.storeys.base?.elevation ?? -3) - 0.5; };
-const TITLE = { 'Upper - Room 1+Upper - Toilet+Upper - Shower': 'Bath, laundry + wet bar' }; // the model calls the bathroom Room 1
+const BASEMENT_GROUP_KEY = 'Basement - Stair Landing & Transition+Basement - Main Room+Basement - Storage Cubbies (01-05)+Basement - Mechanical & East Area';
+const TITLE = {
+  'Upper - Room 1+Upper - Toilet+Upper - Shower': 'Bath, laundry + wet bar',
+  [BASEMENT_GROUP_KEY]: 'Basement · Main Room, Cubbies & Mechanical',
+}; // the model calls the bathroom Room 1
 const VIEW_OVERRIDE = {
   'AptB - Nook': { stand: [0.9, 0.25], look: [-2.0, 0.6] }, // from the kitchen: the fridge, the table and the mini-split
   'AptB - Bedroom': { stand: [0.95, 1.85], look: [2.4, 4.7] }, // from the door corner: the bed head-on
@@ -1185,18 +1215,13 @@ const VIEW_OVERRIDE = {
   'AptA - Kitchen w/ bar': { stand: [-5.4, 3.3], look: [-2.45, 3.82] }, // from the west door: sink run, range and hood, the fridge nook
   'AptA - Living area': { stand: [-3.75, -2.45], look: [-4.0, 1.2] }, // from the stair-side corner: couch, TV and bar stools in one view
   'AptA - Pantry+AptA - Refrigerator': { stand: [-3.7, 3.3], look: [-1.7, 3.8] }, // fridge face (v 2.7-3.4) and the pantry doorway beside it (v 3.7-3.9)
+  [BASEMENT_GROUP_KEY]: { stand: [-2.8, -4.8], look: [-2.8, 1.5] },
 };
 function buildStops() {
   const byName = (n) => M.spaces.find((r) => r.name === n);
   const stops = [];
   let prev = [M.doors.west?.at.x ?? M.center.x, (M.doors.west?.at.y ?? M.fp[1]) - 1];
   for (const names of ROOM_GROUPS) {
-    if (names[0] === '@basement') {
-      const z = M.storeys.base?.elevation ?? M.FFL - 2.1;
-      const stand = [M.center.x - 1.2, M.center.y - 2.5];
-      stops.push({ key: 'basement', rooms: [], stand, floorZ: z, look: [M.center.x - 1.0, M.center.y + 3.5], fov: 74, title: 'Basement', apt: 'Storage', meta: 'No room data in the model yet · storage dividers only' });
-      prev = stand; continue;
-    }
     if (names[0] === '@porch-east') {
       const d = M.doors.east;
       if (!d) continue;
@@ -1230,13 +1255,15 @@ function buildStops() {
     // small rooms seen through their doorway from the room next door (owner 2026-10-23; openings found by casting rays
     // from each room's centre at 1 m in the baked model): the bathroom opens west into the living area, the
     // refrigerator nook (and the pantry behind it) opens west into the kitchen. House-frame metres.
-    const ov = VIEW_OVERRIDE[names.join('+')];
+    const rawKey = names.join('+');
+    const ov = VIEW_OVERRIDE[rawKey];
     if (ov) { stand = ov.stand; look = ov.look; }
     const main = rooms[0];
     const area = rooms.reduce((s, r) => s + (r.area || 0), 0);
+    const isBasement = names[0].startsWith('Basement');
     stops.push({
-      key: names.join('+'), rooms, stand, floorZ: main.floorZ, look, fov: Math.max(u1 - u0, v1 - v0) < 2.2 ? 90 : 86, // wide first-person lens: tight rooms
-      title: TITLE[names.join('+')] || (/Bathroom/.test(main.name) ? main.label : rooms.map((r) => r.label).join(' + ')), apt: main.apt, n: main.n,
+      key: isBasement ? 'basement' : rawKey, rooms, stand, floorZ: main.floorZ, look, fov: isBasement ? 74 : Math.max(u1 - u0, v1 - v0) < 2.2 ? 90 : 86,
+      title: TITLE[rawKey] || (/Bathroom/.test(main.name) ? main.label : rooms.map((r) => r.label).join(' + ')), apt: main.apt, n: main.n,
       meta: `${(u1 - u0).toFixed(2)} × ${(v1 - v0).toFixed(2)} M · ${area.toFixed(1)} M² · CEILING ${main.height.toFixed(2)}`,
       door: names[0] === 'AptA - Entry' ? 'west' : names[0] === 'AptB - Front Room' ? 'east' : null,
     });
@@ -1264,12 +1291,37 @@ new HDRLoader().loadAsync('assets/hdri/qwantani_late_afternoon_puresky_1k.hdr').
 scene.environmentIntensity = 0.9;
 
 let splat = null, interior = null;
-// Gaussian splats go once the model is checked against them, room by room (owner 2026-10-23: arches, ceilings, framing
-// first); until then they stay on and ?splat=0 shows the modelled-only house. Tag story-with-splats-20261023 keeps the
-// first published version.
 const COMPARE = Q.get('compare') === '1'; // the room check's capture layers (debug)
 const SPLATS = Q.get('splat') !== '0' || COMPARE;
 const captures = [], compareState = { model: true, capture: false, furniture: false };
+let roomSplatsLoading = null, splatViewMode = 0; // 0: off, 1: overlay (.ply/.spz + CAD), 2: splat only (.ply/.spz)
+async function ensureRoomSplats() {
+  if (captures.length) return captures;
+  if (roomSplatsLoading) return roomSplatsLoading;
+  roomSplatsLoading = (async () => {
+    const { SplatMesh } = await import('@sparkjsdev/spark');
+    const meta = await getJSON('splats/aptb_360_20261019.json');
+    const aptb = new SplatMesh({ url: 'splats/aptb_360_20261019.ply' });
+    aptb.matrixAutoUpdate = false;
+    aptb.matrix.fromArray(new THREE.Matrix4().fromArray(meta.matrix_splat_to_model.flat()).transpose().elements);
+    aptb.userData.zone = 'main';
+    const main = new SplatMesh({ url: 'splats/interior_ground_all.spz' }); // Apartment A's main floor, model frame
+    main.userData.zone = 'main';
+    for (const m of [aptb, main]) { m.visible = false; m.layers.set(1); world.add(m); captures.push(m); }
+    for (const [name, zone] of [['polycam_upper_lidar_registered', 'upper'], ['kiri_basement', 'base']]) { // coloured point layers (uint32 n, xyz f32, rgb u8)
+      const b = await (await fetch(`splats/${name}.bin`)).arrayBuffer(), n = new DataView(b).getUint32(0, true);
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(b, 4, n * 3), 3));
+      g.setAttribute('color', new THREE.BufferAttribute(new Uint8Array(b, 4 + n * 12, n * 3), 3, true));
+      const pts = new THREE.Points(g, new THREE.PointsMaterial({ size: 0.014, vertexColors: true }));
+      pts.userData.zone = zone;
+      pts.visible = false; pts.layers.set(1); world.add(pts); captures.push(pts);
+    }
+    await Promise.all([aptb.initialized, main.initialized]);
+    return captures;
+  })();
+  return roomSplatsLoading;
+}
 const splatReady = (async () => {
   if (!SPLATS) { parts.splat = 1; setLoad(); return; }
   try {
@@ -1278,26 +1330,9 @@ const splatReady = (async () => {
     const spark = new SparkRenderer({ renderer, enableLod: false, sortRadial: true, minSortIntervalMs: 0 });
     spark.layers.set(1);
     scene.add(spark);
-    // the drone capture is the site; the rooms are drawn and furnished, so the interior scan is not loaded (owner 2026-10-23)
     splat = new SplatMesh({ url: 'splats/exterior_clean_v2.spz' });
     splat.layers.set(1); world.add(splat);
-    if (COMPARE) { // the room check: every placed capture, toggled against the model with __P401.layers()
-      const meta = await getJSON('splats/aptb_360_20261019.json');
-      const aptb = new SplatMesh({ url: 'splats/aptb_360_20261019.ply' });
-      aptb.matrixAutoUpdate = false;
-      aptb.matrix.fromArray(new THREE.Matrix4().fromArray(meta.matrix_splat_to_model.flat()).transpose().elements);
-      const main = new SplatMesh({ url: 'splats/interior_ground_all.spz' }); // Apartment A's main floor, model frame
-      for (const m of [aptb, main]) { m.layers.set(1); world.add(m); captures.push(m); }
-      for (const name of ['polycam_upper_lidar_registered', 'kiri_basement']) { // coloured point layers (uint32 n, xyz f32, rgb u8)
-        const b = await (await fetch(`splats/${name}.bin`)).arrayBuffer(), n = new DataView(b).getUint32(0, true);
-        const g = new THREE.BufferGeometry();
-        g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(b, 4, n * 3), 3));
-        g.setAttribute('color', new THREE.BufferAttribute(new Uint8Array(b, 4 + n * 12, n * 3), 3, true));
-        const pts = new THREE.Points(g, new THREE.PointsMaterial({ size: 0.014, vertexColors: true }));
-        pts.layers.set(1); world.add(pts); captures.push(pts);
-      }
-      await Promise.all([aptb.initialized, main.initialized]);
-    }
+    if (COMPARE || Q.get('splats') === 'all') await ensureRoomSplats();
     await splat.initialized;
   } catch (err) {
     console.error('splat unavailable:', err?.message || err);
@@ -1398,7 +1433,7 @@ void main() {
   bool onFloorB = hit && abs(w.z - uFFL2) < 0.08;
   vec3 col;
   if (state == 4.0) { float s = uSplat * (captured ? 1.0 : 0.0); col = mix(paper, real, s); edge *= 1.0 - s * 0.85; }
-  else if (state == 3.0) col = uInk;
+  else if (state == 3.0) { col = (uInkReal > 0.5 && captured) ? real : uInk; }
   else if (state == 1.0) { if (captured) { col = real; edge *= uInkReal; } else col = paper * (0.93 + 0.07 * light); }
   else if (state == 2.0) {
     float j = joints(w.xyz, n, pxw);
@@ -1679,8 +1714,29 @@ let debugPose = null;
 // ---------- page chrome ----------
 const $ = (id) => document.getElementById(id);
 const hero = $('hero'), chapter = $('chapter'), caption = $('caption'), walkTag = $('walkTag'), hud = $('hud');
-const count = $('count'), rulerMark = $('rulerMark'), phaseChip = $('phase'), roll = $('roll'), walkPill = $('walkPill');
+const count = $('count'), rulerMark = $('rulerMark'), phaseChip = $('phase'), roll = $('roll'), walkPill = $('walkPill'), splatPill = $('splatPill');
 const hint = walkTag;
+async function toggleSplatView() {
+  splatViewMode = (splatViewMode + 1) % 3;
+  const labels = ['Gaussian splats: Off', 'Gaussian splats: Overlay', 'Gaussian splats: Splat only'];
+  if (splatPill) {
+    splatPill.textContent = labels[splatViewMode];
+    splatPill.classList.toggle('active', splatViewMode > 0);
+  }
+  if (splatViewMode > 0 && !captures.length) {
+    say('Loading room Gaussian splats (.ply / .spz)…');
+    try {
+      await ensureRoomSplats();
+      say('Room Gaussian splats loaded');
+    } catch (err) {
+      console.error('room splats failed:', err);
+      say(`Room splats unavailable: ${err.message || err}`);
+    }
+  }
+  if (mode === 'scroll') update(prog);
+  render();
+}
+if (splatPill) splatPill.addEventListener('click', toggleSplatView);
 function buildRuler() {
   const ticks = $('rulerTicks'); ticks.innerHTML = '';
   for (const d of dossiers) {
@@ -1750,6 +1806,22 @@ function update(p) {
   if (interior) interior.visible = !!scanOn;
   if (splat) splat.visible = CU.uSplat.value > 0.01 && outdoors && U.uCut.value > M.box.max.z - 0.3;
   if (COMPARE) { M.group.visible = compareState.model; M.furn.visible = compareState.model && !!compareState.furniture; for (const c of captures) c.visible = compareState.capture; if (compareState.capture) splat && (splat.visible = false); }
+  else if (splatViewMode > 0) {
+    M.group.visible = splatViewMode === 1;
+    M.furn.visible = false;
+    for (const d of Object.values(M.doors)) d.pivot.visible = splatViewMode === 1;
+    const zZone = camera.position.z < 0.25 ? 'base' : camera.position.z > 2.85 ? 'upper' : outdoors ? 'all' : 'main';
+    for (const c of captures) c.visible = zZone === 'all' || c.userData.zone === zZone || c.userData.zone === 'main';
+    if (splat) splat.visible = zZone === 'all';
+    CU.uSplat.value = 1;
+    U.uAll.value = 1;
+    CU.uInkReal.value = splatViewMode === 1 ? 0.75 : 0;
+  } else {
+    M.group.visible = true;
+    M.furn.visible = true;
+    for (const d of Object.values(M.doors)) d.pivot.visible = true;
+    for (const c of captures) c.visible = false;
+  }
   // chrome
   const hf = band(s, 0.5 * heroShot.h1, 0.5 * heroShot.h1 + 40);
   hero.style.opacity = String(1 - hf); hero.style.transform = `translateY(${-50 * hf}px)`;
@@ -1797,7 +1869,8 @@ function render() {
   const sel = selected?.mesh;
   for (const m of [...M.meshes, ...ctxGroup.children]) m.material = m.userData.color;
   ground.visible = false;
-  camera.layers.set(0); camera.layers.enable(1);
+  if (splatViewMode > 0) camera.layers.set(1);
+  else { camera.layers.set(0); camera.layers.enable(1); }
   renderer.setRenderTarget(rtColor);
   renderer.setClearColor(0xefebe2, 0); // alpha 0: nothing captured or modelled here
   renderer.clear();
@@ -1917,6 +1990,8 @@ function leaveWalk() {
 }
 walkPill.addEventListener('click', enterWalk);
 addEventListener('keydown', (e) => {
+  if (/INPUT|TEXTAREA/.test(e.target?.tagName || '')) return;
+  if (e.key.toLowerCase() === 'g' && !e.metaKey && !e.ctrlKey) { toggleSplatView(); return; }
   if (mode !== 'walk') return;
   if (e.key === 'Escape') return leaveWalk();
   if (e.key === '1') walk.floor = M.FFL;
@@ -2028,6 +2103,23 @@ function stepWalk(dt) {
   CU.uPixA.value = 2 * Math.tan((walk.fov / 2) * DEG) / H();
   const r0 = roomUnder(walk.pos.x, walk.pos.y, walk.floor);
   if (splat) splat.visible = !cameraIndoors();
+  if (splatViewMode > 0) {
+    M.group.visible = splatViewMode === 1;
+    M.furn.visible = false;
+    for (const d of Object.values(M.doors)) d.pivot.visible = splatViewMode === 1;
+    const outdoors = !cameraIndoors();
+    const zZone = camera.position.z < 0.25 ? 'base' : camera.position.z > 2.85 ? 'upper' : outdoors ? 'all' : 'main';
+    for (const c of captures) c.visible = zZone === 'all' || c.userData.zone === zZone || c.userData.zone === 'main';
+    if (splat) splat.visible = zZone === 'all';
+    CU.uSplat.value = 1;
+    U.uAll.value = 1;
+    CU.uInkReal.value = splatViewMode === 1 ? 0.75 : 0;
+  } else if (!COMPARE) {
+    M.group.visible = true;
+    M.furn.visible = true;
+    for (const d of Object.values(M.doors)) d.pivot.visible = true;
+    for (const c of captures) c.visible = false;
+  }
   $('walkWhere').textContent = r0 ? `${r0.label.toUpperCase()} · ${r0.area.toFixed(1)} M² · ${r0.apt.toUpperCase()}` : walk.floor < M.FFL - 1 ? 'BASEMENT' : 'OUTSIDE';
 }
 

@@ -1,0 +1,58 @@
+{
+ "layer": "aptb_360_20261019.ply",
+ "frame": "the splat's own trained frame; matrix_splat_to_model places it (column vectors)",
+ "matrix_splat_to_model": [
+  [
+   -5.117238097604237,
+   -2.439814035764027,
+   3.846585217788395,
+   1.525725120030854
+  ],
+  [
+   -4.341172014535214,
+   0.8600669383607221,
+   -5.229679389422141,
+   -1.1116231166477422
+  ],
+  [
+   1.3795419192745266,
+   -6.343707783845279,
+   -2.1884404859480835,
+   1.649251751177789
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "splats_in": 995317,
+ "splats_kept": 664236,
+ "sh_degree": 1,
+ "crop": {
+  "plan_reach_m": 0.35,
+  "z_model_m": [
+   -0.069,
+   3.0
+  ],
+  "min_opacity": 0.05
+ },
+ "sources": {
+  "splat": {
+   "path": "/Volumes/Goggles/DCIM/CAM_001/VID_20261019_092845_025_dataset_2/outputs/VID_20261019_092845_025_dataset_2_20261023-044203/step-000030000.ckpt/splat.ply",
+   "sha256": "0c4f770247843dc355cda90c2f3ac33d58bc74be859b572f7df19bb436988c56"
+  },
+  "placement": {
+   "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/02_extract/reality-capture/aptb-splat-20261019/placement.json",
+   "sha256": "4f0debe7fe1f3c4f580e7c633fcb5c3fff56ffdeb537d503c21e5045114a9630"
+  },
+  "reference": {
+   "path": "/Volumes/MARPA/projects/marpa/0001-401-pearl/09_delivery/twin-presentation/plan-to-walk-20261017/splats/polycam_main_aptb.bin",
+   "sha256": "f79cecbe7aa0c935689a45b9c03ee6e3e964853ae3c1567098c759896af08ad6"
+  }
+ },
+ "sha256": "a3951e6e5312eab6fc2854cdd5c6d466b8adbfe61d2e771475dc7d59aad1182b",
+ "bytes": 61110290,
+ "made_by": "marpa-twin scripts/crop_splat_401.py"
+}
